@@ -119,6 +119,13 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
+        .btn:focus,
+        .btn:focus-visible {
+            outline: 3px solid #333;
+            outline-offset: 3px;
+            box-shadow: 0 0 0 5px rgba(102, 126, 234, 0.4);
+        }
+        
         .btn:active {
             transform: translateY(0);
         }
@@ -194,40 +201,40 @@
     <div class="container">
         <section class="features">
             <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3><span>🔧</span>Agent Swarm Execution</h3>
+                <div class="feature-icon" aria-hidden="true">🤖</div>
+                <h3><span aria-hidden="true">🔧</span>Agent Swarm Execution</h3>
                 <p>Watch as specialized agents collaborate - Planner, Coder, Reviewer, and Executor work together to solve complex tasks through intelligent task distribution.</p>
             </div>
             
             <div class="feature-card">
-                <div class="feature-icon">🧠</div>
-                <h3><span>👁️</span>Cognitive Trace Viewer</h3>
+                <div class="feature-icon" aria-hidden="true">🧠</div>
+                <h3><span aria-hidden="true">👁️</span>Cognitive Trace Viewer</h3>
                 <p>Transparent AI reasoning with step-by-step visualization of agent thoughts, decisions, and actions in an interactive tree format.</p>
             </div>
             
             <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <h3><span>⚡</span>Auto-Scaling Intelligence</h3>
+                <div class="feature-icon" aria-hidden="true">📈</div>
+                <h3><span aria-hidden="true">⚡</span>Auto-Scaling Intelligence</h3>
                 <p>Dynamic agent allocation based on workload demands - the system optimizes itself by adding or removing agents as needed for peak performance.</p>
             </div>
             
             <div class="feature-card">
-                <div class="feature-icon">🔬</div>
-                <h3><span>📊</span>Experimentation Engine</h3>
+                <div class="feature-icon" aria-hidden="true">🔬</div>
+                <h3><span aria-hidden="true">📊</span>Experimentation Engine</h3>
                 <p>Compare single-agent vs multi-agent approaches to find the optimal solution for any given task, with performance metrics and efficiency analysis.</p>
             </div>
         </section>
 
         <section class="demo-section">
-            <h2><span>▶️</span>Live Demo</h2>
+            <h2><span aria-hidden="true">▶️</span>Live Demo</h2>
             <p>See SwarmMind in action with a live demonstration of the multi-agent system solving a sample task.</p>
-            <button class="btn" id="runDemo">Run SwarmMind Demo</button>
-            <div id="demoOutput" style="margin-top: 1.5rem;"></div>
+            <button class="btn" id="runDemo" aria-describedby="demoOutput">Run SwarmMind Demo</button>
+            <div id="demoOutput" role="log" aria-live="polite" aria-atomic="false" style="margin-top: 1.5rem;"></div>
         </section>
 
         <section class="demo-section">
-            <h2><span>📋</span>Sample Cognitive Trace</h2>
-            <div class="trace-output" id="traceOutput">
+            <h2><span aria-hidden="true">📋</span>Sample Cognitive Trace</h2>
+            <div class="trace-output" id="traceOutput" role="log" aria-live="polite" aria-label="Cognitive trace output">
                 🧠 SWARM MINDS COGNITIVE TRACE
 ==================================================
 

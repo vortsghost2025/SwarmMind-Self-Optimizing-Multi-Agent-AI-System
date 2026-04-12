@@ -2,6 +2,14 @@
 ## Self-Verifying Software Validation
 ### Timestamp: 2026-04-12T18:17:00Z
 
+> **⚠️ Important — Manual Snapshot**
+> The data in this report and the accompanying JSON files (`agent_health.json`,
+> `system_check.json`, `gpu_status.json`, `routing_test.json`,
+> `hallucination_report.json`) are **manually curated snapshots** captured from a
+> reference run of the demo application. They are **not produced by the automated
+> CI pipeline** and do not gate commits or merges. Automated validation is
+> performed by the GitHub Actions workflow in `.github/workflows/ci.yml`.
+
 ## ✅ VERIFICATION STATUS: **ALL SYSTEMS GO**
 
 ### 📊 SYSTEM HEALTH SUMMARY

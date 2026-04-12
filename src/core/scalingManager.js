@@ -74,6 +74,7 @@ class ScalingManager {
               `processTaskQueue: no agent available for role "${role}" after ${MAX_RETRIES} retries. ` +
               'Aborting queue processing to prevent busy-wait.'
             );
+            this.processingQueue = false;
             break;
           }
           // Brief back-off before retrying
