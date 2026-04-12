@@ -42,7 +42,7 @@ class ExperimentationEngine {
          type: 'reviewing' 
        });
        
-       const executionResult = await singleAgent.execute({ 
+       await singleAgent.execute({ 
          goal: task.goal, 
          plan: planResult,
          code: codeResult,
@@ -60,7 +60,8 @@ class ExperimentationEngine {
          trace: this.traceViewer.getAgentTraces(singleAgent.id),
          performance: {
            timePerStep: (endTime - startTime) / 4,
-           efficiency: 0.80 // Efficiency score for generalist (between specialist and naive simulation)
+           // Efficiency measured as steps completed per second (normalised to [0,1] range)
+           efficiency: Math.min(1, 4 / ((endTime - startTime) / 1000))
          }
        };
        
@@ -111,7 +112,7 @@ class ExperimentationEngine {
         type: 'reviewing' 
       });
       
-      const executionResult = await executor.execute({ 
+      await executor.execute({ 
         goal: task.goal, 
         plan: planResult,
         code: codeResult,
@@ -129,7 +130,8 @@ class ExperimentationEngine {
         trace: this.traceViewer.getAllTraces(),
         performance: {
           timePerStep: (endTime - startTime) / 4,
-          efficiency: 0.90 // Higher efficiency due to specialization
+          // Efficiency: steps-per-second, normalised to [0,1]
+          efficiency: Math.min(1, 4 / ((endTime - startTime) / 1000))
         }
       };
       

@@ -42,13 +42,14 @@ class CognitiveTraceViewer {
 
   clearTraces() {
     this.traces = [];
-    this.agents.forEach((agent, id) => {
-      // Restore original logTrace method if it was overridden
+    // Restore each agent's original logTrace before re-patching so that
+    // repeated calls do not stack closure wrappers on top of each other.
+    this.agents.forEach((agent) => {
       if (agent.__originalLogTrace) {
+        // Restore to the unpatched version captured during registerAgent()
         agent.logTrace = agent.__originalLogTrace;
       }
-      // Re-override with current viewer's context
-      agent.__originalLogTrace = agent.logTrace.bind(agent);
+      // Re-apply a single fresh wrapper bound to the now-empty this.traces
       agent.logTrace = (action, details = {}) => {
         const traceEntry = agent.__originalLogTrace(action, details);
         this.traces.push(traceEntry);

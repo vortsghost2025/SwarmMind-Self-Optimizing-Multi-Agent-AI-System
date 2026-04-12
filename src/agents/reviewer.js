@@ -5,7 +5,7 @@ class ReviewerAgent extends Agent {
     super(id, 'Reviewer', 'reviewer');
   }
 
-  async processTask(task) {
+  async processTask(_task) {
     // Simulate review work
     await new Promise(resolve => setTimeout(resolve, 800));
     

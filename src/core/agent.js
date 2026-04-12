@@ -1,5 +1,5 @@
 class Agent {
-  constructor(id, name, role, maxTraceLength = 1000) {
+  constructor(id, name, role, maxTraceLength = 1000, taskTimeoutMs = 30000) {
     this.id = id;
     this.name = name;
     this.role = role;
@@ -7,6 +7,7 @@ class Agent {
     this.currentTask = null;
     this.trace = [];
     this.maxTraceLength = maxTraceLength;
+    this.taskTimeoutMs = taskTimeoutMs;
   }
 
   /**
@@ -18,24 +19,37 @@ class Agent {
     if (!task || typeof task !== 'object') {
       return false;
     }
-    
-    // Check for dangerous properties that could lead to code injection
+
+    // Check for dangerous properties that could lead to prototype pollution
     const dangerousKeys = ['constructor', '__proto__', 'prototype'];
     for (const key of dangerousKeys) {
-      if (task.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(task, key)) {
         return false;
       }
     }
-    
+
     // Validate string fields for length and content
     if (task.goal && (typeof task.goal !== 'string' || task.goal.length > 1000)) {
       return false;
     }
-    
+
     if (task.description && (typeof task.description !== 'string' || task.description.length > 1000)) {
       return false;
     }
-    
+
+    // Guard against oversized nested-object payloads (plan, code, review, etc.)
+    // A serialised size above 1 MB is considered malformed for this system.
+    const MAX_PAYLOAD_BYTES = 1024 * 1024; // 1 MB
+    try {
+      const serialised = JSON.stringify(task);
+      if (serialised.length > MAX_PAYLOAD_BYTES) {
+        return false;
+      }
+    } catch {
+      // Non-serialisable objects are rejected
+      return false;
+    }
+
     return true;
   }
 
@@ -46,7 +60,7 @@ class Agent {
       const excess = this.trace.length - this.maxTraceLength + 1;
       this.trace.splice(0, excess);
     }
-    
+
     const timestamp = new Date().toISOString();
     const traceEntry = {
       timestamp,
@@ -67,13 +81,21 @@ class Agent {
       this.status = 'error';
       throw error;
     }
-    
+
     this.status = 'working';
     this.currentTask = task;
     this.logTrace('task_start', { task });
-    
+
     try {
-      const result = await this.processTask(task);
+      // Enforce a wall-clock deadline so runaway tasks cannot block indefinitely
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(
+          () => reject(new Error(`Task timed out after ${this.taskTimeoutMs}ms`)),
+          this.taskTimeoutMs
+        );
+      });
+
+      const result = await Promise.race([this.processTask(task), timeoutPromise]);
       this.logTrace('task_complete', { result });
       this.status = 'completed';
       return result;
@@ -87,7 +109,7 @@ class Agent {
   }
 
   // To be implemented by subclasses
-  async processTask(task) {
+  async processTask(_task) {
     throw new Error('processTask method must be implemented by subclass');
   }
 
