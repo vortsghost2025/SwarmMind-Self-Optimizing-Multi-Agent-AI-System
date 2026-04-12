@@ -1,0 +1,29 @@
+{
+  "name": "swarmmind-self-optimizing-multi-agent-ai-system",
+  "version": "1.0.0",
+  "description": "A self-optimizing multi-agent AI system for hackathon demonstration",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "multi-agent",
+    "ai",
+    "swarm",
+    "self-optimizing",
+    "hackathon",
+    "devpost",
+    "huggingface"
+  ],
+  "author": "SwarmMind Team",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

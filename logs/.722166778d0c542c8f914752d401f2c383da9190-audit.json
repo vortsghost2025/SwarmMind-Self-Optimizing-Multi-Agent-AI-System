@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\.722166778d0c542c8f914752d401f2c383da9190-audit.json",
+    "files": [
+        {
+            "date": 1776023468067,
+            "name": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\mcp-puppeteer-2026-04-12.log",
+            "hash": "264a0566e8b20b0ec302e8b7c80a90b4e18fa9eb92ce40da58b396251b7d285d"
+        }
+    ],
+    "hashType": "sha256"
+}
