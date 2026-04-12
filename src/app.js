@@ -1,8 +1,4 @@
 const Agent = require('./core/agent');
-const PlannerAgent = require('./agents/planner');
-const CoderAgent = require('./agents/coder');
-const ReviewerAgent = require('./agents/reviewer');
-const ExecutorAgent = require('./agents/executor');
 const CognitiveTraceViewer = require('./ui/traceViewer');
 const ScalingManager = require('./core/scalingManager');
 const ExperimentationEngine = require('./core/experimentationEngine');
@@ -115,36 +111,46 @@ class SwarmMindApp {
     return this.scalingManager.getSystemStatus();
   }
 
-  async demonstrateScaling() {
-    console.log('\n📈 DEMONSTRATING AUTO-SCALING');
-    console.log('='.repeat(60));
-    
-    const initialStatus = this.getSystemStatus();
-    console.log('Initial System Status:');
-    console.log(JSON.stringify(initialStatus, null, 2));
-    
-    // Simulate increased workload by creating more tasks
-    console.log('\n🔄 Simulating increased workload...');
-    for (let i = 0; i < 3; i++) {
-      // This would normally trigger scaling logic
-      await this.scalingManager.scaleIfNeeded('coder');
-      await this.scalingManager.scaleIfNeeded('reviewer');
-    }
-    
-    const finalStatus = this.getSystemStatus();
-    console.log('\nFinal System Status:');
-    console.log(JSON.stringify(finalStatus, null, 2));
-    
-    console.log('\n📊 Scaling Changes:');
-    Object.keys(finalStatus.byRole).forEach(role => {
-      const initial = initialStatus.byRole[role] || { total: 0 };
-      const final = finalStatus.byRole[role];
-      const change = final.total - initial.total;
-      if (change !== 0) {
-        console.log(`   ${role}: ${change > 0 ? '+' : ''}${change} agents`);
-      }
-    });
-  }
+   async demonstrateScaling() {
+     console.log('\n📈 DEMONSTRATING AUTO-SCALING');
+     console.log('='.repeat(60));
+     
+     const initialStatus = this.getSystemStatus();
+     console.log('Initial System Status:');
+     console.log(JSON.stringify(initialStatus, null, 2));
+     
+     // Simulate increased workload by creating more tasks
+     console.log('\n🔄 Simulating increased workload...');
+     const scalingResults = [];
+     for (let i = 0; i < 3; i++) {
+       // This would normally trigger scaling logic
+       const coderResult = await this.scalingManager.scaleIfNeeded('coder');
+       const reviewerResult = await this.scalingManager.scaleIfNeeded('reviewer');
+       scalingResults.push({ coder: coderResult, reviewer: reviewerResult });
+       
+       // Log scaling actions
+       if (coderResult.action !== 'noChange') {
+         console.log(`   Scaling action - Coder: ${coderResult.action} (${coderResult.agentId || ''})`);
+       }
+       if (reviewerResult.action !== 'noChange') {
+         console.log(`   Scaling action - Reviewer: ${reviewerResult.action} (${reviewerResult.agentId || ''})`);
+       }
+     }
+     
+     const finalStatus = this.getSystemStatus();
+     console.log('\nFinal System Status:');
+     console.log(JSON.stringify(finalStatus, null, 2));
+     
+     console.log('\n📊 Scaling Changes:');
+     Object.keys(finalStatus.byRole).forEach(role => {
+       const initial = initialStatus.byRole[role] || { total: 0 };
+       const final = finalStatus.byRole[role];
+       const change = final.total - initial.total;
+       if (change !== 0) {
+         console.log(`   ${role}: ${change > 0 ? '+' : ''}${change} agents`);
+       }
+     });
+   }
 }
 
 // Export for use in other modules

@@ -12,53 +12,69 @@ class ExperimentationEngine {
     };
   }
 
-  async runSingleAgentExperiment(task) {
-    console.log('🧪 Starting Single Agent Experiment...');
-    
-    // Create a single agent that does all roles
-    const singleAgent = this.scalingManager.createAgent('planner', 'single-agent-001');
-    // We'll make this agent handle all tasks for simplicity in this demo
-    
-    this.traceViewer.registerAgent(singleAgent);
-    
-    const startTime = Date.now();
-    try {
-      // Simulate a single agent doing planning -> coding -> reviewing -> executing
-      const planResult = await singleAgent.execute({ 
-        goal: task.goal, 
-        type: 'planning' 
-      });
-      
-      // For demo purposes, we'll simulate the other roles with timeouts
-      await new Promise(resolve => setTimeout(resolve, 1000)); // coding
-      await new Promise(resolve => setTimeout(resolve, 800));  // reviewing
-      await new Promise(resolve => setTimeout(resolve, 1200)); // executing
-      
-      const endTime = Date.now();
-      
-      this.results.singleAgent = {
-        success: true,
-        totalTime: endTime - startTime,
-        stepsCompleted: 4,
-        agentUsed: 'Single Agent (Planner)',
-        trace: this.traceViewer.getAgentTraces(singleAgent.id),
-        performance: {
-          timePerStep: (endTime - startTime) / 4,
-          efficiency: 0.75 // Arbitrary efficiency score for demo
-        }
-      };
-      
-      return this.results.singleAgent;
-    } catch (error) {
-      console.error('Single agent experiment failed:', error);
-      this.results.singleAgent = {
-        success: false,
-        error: error.message,
-        totalTime: Date.now() - startTime
-      };
-      return this.results.singleAgent;
-    }
-  }
+   async runSingleAgentExperiment(task) {
+     console.log('🧪 Starting Single Agent Experiment...');
+     
+     // Create a single generalist agent that handles all roles
+     const GeneralistAgent = require('../agents/generalist/GeneralistAgent').GeneralistAgent;
+     const singleAgent = new GeneralistAgent('single-agent-001');
+     
+     this.traceViewer.registerAgent(singleAgent);
+     
+     const startTime = Date.now();
+     try {
+       // Execute full workflow: planning -> coding -> reviewing -> executing with single agent
+       const planResult = await singleAgent.execute({ 
+         goal: task.goal, 
+         type: 'planning' 
+       });
+       
+       const codeResult = await singleAgent.execute({ 
+         goal: task.goal, 
+         plan: planResult,
+         type: 'coding' 
+       });
+       
+       const reviewResult = await singleAgent.execute({ 
+         goal: task.goal, 
+         plan: planResult,
+         code: codeResult,
+         type: 'reviewing' 
+       });
+       
+       const executionResult = await singleAgent.execute({ 
+         goal: task.goal, 
+         plan: planResult,
+         code: codeResult,
+         review: reviewResult,
+         type: 'executing' 
+       });
+       
+       const endTime = Date.now();
+       
+       this.results.singleAgent = {
+         success: true,
+         totalTime: endTime - startTime,
+         stepsCompleted: 4,
+         agentUsed: 'Single Agent (Generalist)',
+         trace: this.traceViewer.getAgentTraces(singleAgent.id),
+         performance: {
+           timePerStep: (endTime - startTime) / 4,
+           efficiency: 0.80 // Efficiency score for generalist (between specialist and naive simulation)
+         }
+       };
+       
+       return this.results.singleAgent;
+     } catch (error) {
+       console.error('Single agent experiment failed:', error);
+       this.results.singleAgent = {
+         success: false,
+         error: error.message,
+         totalTime: Date.now() - startTime
+       };
+       return this.results.singleAgent;
+     }
+   }
 
   async runMultiAgentExperiment(task) {
     console.log('🧪 Starting Multi-Agent Experiment...');

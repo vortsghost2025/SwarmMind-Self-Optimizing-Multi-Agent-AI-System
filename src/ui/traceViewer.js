@@ -3,14 +3,16 @@ class CognitiveTraceViewer {
     this.agents = new Map();
     this.traces = [];
     this.isVisible = false;
+    this.traceCounter = 0;
   }
 
   registerAgent(agent) {
     this.agents.set(agent.id, agent);
+    // Store original method before overriding
+    agent.__originalLogTrace = agent.logTrace.bind(agent);
     // Override the agent's logTrace method to capture traces
-    const originalLogTrace = agent.logTrace.bind(agent);
     agent.logTrace = (action, details = {}) => {
-      const traceEntry = originalLogTrace(action, details);
+      const traceEntry = agent.__originalLogTrace(action, details);
       this.traces.push(traceEntry);
       return traceEntry;
     };
@@ -41,14 +43,22 @@ class CognitiveTraceViewer {
   clearTraces() {
     this.traces = [];
     this.agents.forEach((agent, id) => {
-      // Restore original logTrace method and re-override
-      const originalLogTrace = agent.logTrace;
+      // Restore original logTrace method if it was overridden
+      if (agent.__originalLogTrace) {
+        agent.logTrace = agent.__originalLogTrace;
+      }
+      // Re-override with current viewer's context
+      agent.__originalLogTrace = agent.logTrace.bind(agent);
       agent.logTrace = (action, details = {}) => {
-        const traceEntry = originalLogTrace.call(agent, action, details);
+        const traceEntry = agent.__originalLogTrace(action, details);
         this.traces.push(traceEntry);
         return traceEntry;
       };
     });
+  }
+
+  generateUniqueId() {
+    return `trace-${this.traceCounter++}`;
   }
 
   generateTraceTree() {
@@ -79,7 +89,7 @@ class CognitiveTraceViewer {
           label: `${agent.name} (${agent.role})`,
           timestamp: new Date().toISOString(),
           children: agentTraces[agentId].map(trace => ({
-            id: `trace-${Date.now()}-${Math.random()}`,
+            id: this.generateUniqueId(),
             label: trace.action,
             timestamp: trace.timestamp,
             details: trace.details

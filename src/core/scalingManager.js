@@ -8,12 +8,68 @@ class ScalingManager {
     };
     this.activeAgents = new Map();
     this.taskQueue = [];
+    this.processingQueue = false;
     this.scalingThresholds = {
       planner: { min: 1, max: 3, queueThreshold: 2 },
       coder: { min: 1, max: 5, queueThreshold: 3 },
       reviewer: { min: 1, max: 3, queueThreshold: 2 },
       executor: { min: 1, max: 4, queueThreshold: 2 }
     };
+  }
+
+  /**
+   * Add a task to the queue for processing
+   * @param {Object} task - The task to process
+   * @param {string} role - The role that should process this task
+   */
+  enqueueTask(task, role) {
+    this.taskQueue.push({ task, role, timestamp: Date.now() });
+    // Start processing if not already running
+    if (!this.processingQueue) {
+      this.processTaskQueue();
+    }
+    return this.taskQueue.length;
+  }
+
+  /**
+   * Process tasks from the queue using available agents
+   */
+  async processTaskQueue() {
+    if (this.processingQueue || this.taskQueue.length === 0) {
+      return;
+    }
+
+    this.processingQueue = true;
+
+    while (this.taskQueue.length > 0) {
+      const taskItem = this.taskQueue.shift();
+      const { task, role } = taskItem;
+
+      // Try to get an available agent for this role
+      const availableAgent = this.getAvailableAgent(role);
+
+      if (availableAgent) {
+        // Execute the task with the available agent
+        try {
+          await availableAgent.execute(task);
+        } catch (error) {
+          console.error(`Task execution failed for agent ${availableAgent.id}:`, error);
+        }
+      } else {
+        // No available agent, put task back and try to scale up
+        this.taskQueue.unshift(taskItem);
+        
+        // Attempt to scale up for this role
+        const scaleResult = await this.scaleIfNeeded(role);
+        if (scaleResult.action === 'noChange') {
+          // Can't scale up, wait a bit before trying again
+          await new Promise(resolve => setTimeout(resolve, 100));
+          break;
+        }
+      }
+    }
+
+    this.processingQueue = false;
   }
 
   getAgentPool(role) {
@@ -44,7 +100,7 @@ class ScalingManager {
         throw new Error(`Unknown agent role: ${role}`);
     }
 
-    const agentId = idOverride || `${role}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+     const agentId = idOverride || `${role}-${Date.now()}-${this.agentPools[role].length}`;
     const newAgent = new AgentClass(agentId);
     
     this.agentPools[role].push(newAgent);
