@@ -32,14 +32,19 @@ class ScalingManager {
   }
 
   /**
-   * Process tasks from the queue using available agents
+   * Process tasks from the queue using available agents.
+   * The guard flag is set synchronously before any await to prevent concurrent
+   * entries when multiple callers evaluate !this.processingQueue simultaneously.
    */
   async processTaskQueue() {
+    // Synchronous guard: set immediately so no other synchronous caller enters
     if (this.processingQueue || this.taskQueue.length === 0) {
       return;
     }
-
     this.processingQueue = true;
+
+    const MAX_RETRIES = 10;
+    let retries = 0;
 
     while (this.taskQueue.length > 0) {
       const taskItem = this.taskQueue.shift();
@@ -49,6 +54,7 @@ class ScalingManager {
       const availableAgent = this.getAvailableAgent(role);
 
       if (availableAgent) {
+        retries = 0; // reset retry counter on successful dispatch
         // Execute the task with the available agent
         try {
           await availableAgent.execute(task);
@@ -56,15 +62,22 @@ class ScalingManager {
           console.error(`Task execution failed for agent ${availableAgent.id}:`, error);
         }
       } else {
-        // No available agent, put task back and try to scale up
+        // No available agent — put task back and try to scale up
         this.taskQueue.unshift(taskItem);
-        
+
         // Attempt to scale up for this role
         const scaleResult = await this.scaleIfNeeded(role);
         if (scaleResult.action === 'noChange') {
-          // Can't scale up, wait a bit before trying again
+          retries += 1;
+          if (retries >= MAX_RETRIES) {
+            console.error(
+              `processTaskQueue: no agent available for role "${role}" after ${MAX_RETRIES} retries. ` +
+              'Aborting queue processing to prevent busy-wait.'
+            );
+            break;
+          }
+          // Brief back-off before retrying
           await new Promise(resolve => setTimeout(resolve, 100));
-          break;
         }
       }
     }
@@ -100,12 +113,18 @@ class ScalingManager {
         throw new Error(`Unknown agent role: ${role}`);
     }
 
-     const agentId = idOverride || `${role}-${Date.now()}-${this.agentPools[role].length}`;
+    const agentId = idOverride || `${role}-${Date.now()}-${this.agentPools[role].length}`;
+
+    // Guard against duplicate IDs which would silently corrupt the active-agents map
+    if (this.activeAgents.has(agentId)) {
+      throw new Error(`Agent with ID "${agentId}" already exists. IDs must be unique.`);
+    }
+
     const newAgent = new AgentClass(agentId);
-    
+
     this.agentPools[role].push(newAgent);
     this.activeAgents.set(newAgent.id, newAgent);
-    
+
     return newAgent;
   }
 

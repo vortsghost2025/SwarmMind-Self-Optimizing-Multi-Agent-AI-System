@@ -19,10 +19,6 @@
   ],
   "author": "SwarmMind Team",
   "license": "MIT",
-  "dependencies": {
-    "node-fetch": "^3.3.2"
-  },
-  "devDependencies": {},
   "engines": {
     "node": ">=16.0.0"
   },
