@@ -1,0 +1,372 @@
+
+> swarmmind-self-optimizing-multi-agent-ai-system@1.0.0 start
+> node src/app.js
+
+≡ƒÜÇ Initializing SwarmMind: Self-Optimizing Multi-Agent AI System
+≡ƒæÑ Created 4 initial agents
+Γ£à SwarmMind initialized successfully
+
+≡ƒÄ» Processing Task: Create a simple web application that displays 'Hello, SwarmMind!'
+============================================================
+≡ƒö¼ Running Comparative Experiment...
+≡ƒº¬ Starting Single Agent Experiment...
+≡ƒº¬ Starting Multi-Agent Experiment...
+
+≡ƒôè EXPERIMENT RESULTS
+============================================================
+≡ƒÅå WINNER: Single-Agent
+ΓÜí Speed Advantage: 12.4%
+≡ƒôê Efficiency Gain: 15.0%
+≡ƒÆí Recommendation: Single-agent approach is faster for this simple task, but multi-agent scales better
+
+≡ƒôï DETAILED BREAKDOWN:
+   Single Agent: 4017ms (4 steps)
+   Multi-Agent:  4514ms (4 steps)
+
+≡ƒºá COGNITIVE TRACE VIEWER
+============================================================
+≡ƒôê Total Trace Events: 8
+≡ƒæÑ Agent Activity:
+   Planner: 2 events
+   Coder: 2 events
+   Reviewer: 2 events
+   Executor: 2 events
+
+≡ƒöº Action Types:
+   task_start: 4 events
+   task_complete: 4 events
+
+≡ƒî│ TRACE TREE:
+≡ƒºá SWARM MINDS COGNITIVE TRACE
+==================================================
+
+≡ƒö╣ SwarmMind Execution
+   ΓÅ░ 6:11:15 p.m.
+  ≡ƒö╣ Planner (planner)
+     ΓÅ░ 6:11:15 p.m.
+    ≡ƒö╣ task_start
+       ΓÅ░ 6:11:10 p.m.
+       ≡ƒô¥        {
+         "task": {
+           "goal": "Create a simple web application that displays 'Hello, SwarmMind!'",
+           "type": "planning"
+         }
+       }
+    ≡ƒö╣ task_complete
+       ΓÅ░ 6:11:11 p.m.
+       ≡ƒô¥        {
+         "result": {
+           "goal": "Create a simple web application that displays 'Hello, SwarmMind!'",
+           "steps": [
+             {
+               "id": 1,
+               "description": "Analyze requirements",
+               "estimatedTime": "5m"
+             },
+             {
+               "id": 2,
+               "description": "Design solution architecture",
+               "estimatedTime": "10m"
+             },
+             {
+               "id": 3,
+               "description": "Create implementation plan",
+               "estimatedTime": "5m"
+             }
+           ],
+           "estimatedTotalTime": "20m",
+           "resourcesNeeded": [
+             "coder",
+             "reviewer"
+           ]
+         }
+       }
+  ≡ƒö╣ Coder (coder)
+     ΓÅ░ 6:11:15 p.m.
+    ≡ƒö╣ task_start
+       ΓÅ░ 6:11:11 p.m.
+       ≡ƒô¥        {
+         "task": {
+           "goal": "Create a simple web application that displays 'Hello, SwarmMind!'",
+           "plan": {
+             "goal": "Create a simple web application that displays 'Hello, SwarmMind!'",
+             "steps": [
+               {
+                 "id": 1,
+                 "description": "Analyze requirements",
+                 "estimatedTime": "5m"
+               },
+               {
+                 "id": 2,
+                 "description": "Design solution architecture",
+                 "estimatedTime": "10m"
+               },
+               {
+                 "id": 3,
+                 "description": "Create implementation plan",
+                 "estimatedTime": "5m"
+               }
+             ],
+             "estimatedTotalTime": "20m",
+             "resourcesNeeded": [
+               "coder",
+               "reviewer"
+             ]
+           },
+           "type": "coding"
+         }
+       }
+    ≡ƒö╣ task_complete
+       ΓÅ░ 6:11:13 p.m.
+       ≡ƒô¥        {
+         "result": {
+           "files": [
+             {
+               "name": "main.js",
+               "content": "// Main application code\nconsole.log(\"Hello from SwarmMind!\");"
+             },
+             {
+               "name": "utils.js",
+               "content": "// Utility functions\nfunction helper() { return true; }"
+             }
+           ],
+           "language": "JavaScript",
+           "linesOfCode": 42,
+           "dependencies": []
+         }
+       }
+  ≡ƒö╣ Reviewer (reviewer)
+     ΓÅ░ 6:11:15 p.m.
+    ≡ƒö╣ task_start
+       ΓÅ░ 6:11:13 p.m.
+       ≡ƒô¥        {
+         "task": {
+           "goal": "Create a simple web application that displays 'Hello, SwarmMind!'",
+           "plan": {
+             "goal": "Create a simple web application that displays 'Hello, SwarmMind!'",
+             "steps": [
+               {
+                 "id": 1,
+                 "description": "Analyze requirements",
+                 "estimatedTime": "5m"
+               },
+               {
+                 "id": 2,
+                 "description": "Design solution architecture",
+                 "estimatedTime": "10m"
+               },
+               {
+                 "id": 3,
+                 "description": "Create implementation plan",
+                 "estimatedTime": "5m"
+               }
+             ],
+             "estimatedTotalTime": "20m",
+             "resourcesNeeded": [
+               "coder",
+               "reviewer"
+             ]
+           },
+           "code": {
+             "files": [
+               {
+                 "name": "main.js",
+                 "content": "// Main application code\nconsole.log(\"Hello from SwarmMind!\");"
+               },
+               {
+                 "name": "utils.js",
+                 "content": "// Utility functions\nfunction helper() { return true; }"
+               }
+             ],
+             "language": "JavaScript",
+             "linesOfCode": 42,
+             "dependencies": []
+           },
+           "type": "reviewing"
+         }
+       }
+    ≡ƒö╣ task_complete
+       ΓÅ░ 6:11:13 p.m.
+       ≡ƒô¥        {
+         "result": {
+           "status": "approved",
+           "feedback": [
+             "Code follows best practices",
+             "Adequate error handling",
+             "Clear variable naming"
+           ],
+           "issues": [],
+           "suggestions": [
+             "Consider adding more comments",
+             "Could optimize loop in line 12"
+           ],
+           "confidenceScore": 0.92
+         }
+       }
+  ≡ƒö╣ Executor (executor)
+     ΓÅ░ 6:11:15 p.m.
+    ≡ƒö╣ task_start
+       ΓÅ░ 6:11:13 p.m.
+       ≡ƒô¥        {
+         "task": {
+           "goal": "Create a simple web application that displays 'Hello, SwarmMind!'",
+           "plan": {
+             "goal": "Create a simple web application that displays 'Hello, SwarmMind!'",
+             "steps": [
+               {
+                 "id": 1,
+                 "description": "Analyze requirements",
+                 "estimatedTime": "5m"
+               },
+               {
+                 "id": 2,
+                 "description": "Design solution architecture",
+                 "estimatedTime": "10m"
+               },
+               {
+                 "id": 3,
+                 "description": "Create implementation plan",
+                 "estimatedTime": "5m"
+               }
+             ],
+             "estimatedTotalTime": "20m",
+             "resourcesNeeded": [
+               "coder",
+               "reviewer"
+             ]
+           },
+           "code": {
+             "files": [
+               {
+                 "name": "main.js",
+                 "content": "// Main application code\nconsole.log(\"Hello from SwarmMind!\");"
+               },
+               {
+                 "name": "utils.js",
+                 "content": "// Utility functions\nfunction helper() { return true; }"
+               }
+             ],
+             "language": "JavaScript",
+             "linesOfCode": 42,
+             "dependencies": []
+           },
+           "review": {
+             "status": "approved",
+             "feedback": [
+               "Code follows best practices",
+               "Adequate error handling",
+               "Clear variable naming"
+             ],
+             "issues": [],
+             "suggestions": [
+               "Consider adding more comments",
+               "Could optimize loop in line 12"
+             ],
+             "confidenceScore": 0.92
+           },
+           "type": "executing"
+         }
+       }
+    ≡ƒö╣ task_complete
+       ΓÅ░ 6:11:15 p.m.
+       ≡ƒô¥        {
+         "result": {
+           "status": "executed",
+           "output": "Executed task: Unknown task",
+           "artifacts": [
+             {
+               "name": "output.log",
+               "content": "Task execution completed successfully\n"
+             },
+             {
+               "name": "result.txt",
+               "content": "Task result: SUCCESS"
+             }
+           ],
+           "performanceMetrics": {
+             "executionTime": "1.2s",
+             "memoryUsed": "45MB",
+             "cpuUsage": "15%"
+           }
+         }
+       }
+
+
+≡ƒôê DEMONSTRATING AUTO-SCALING
+============================================================
+Initial System Status:
+{
+  "totalAgents": 4,
+  "activeAgents": 0,
+  "idleAgents": 4,
+  "byRole": {
+    "planner": {
+      "total": 1,
+      "active": 0,
+      "idle": 1,
+      "error": 0
+    },
+    "coder": {
+      "total": 1,
+      "active": 0,
+      "idle": 1,
+      "error": 0
+    },
+    "reviewer": {
+      "total": 1,
+      "active": 0,
+      "idle": 1,
+      "error": 0
+    },
+    "executor": {
+      "total": 1,
+      "active": 0,
+      "idle": 1,
+      "error": 0
+    }
+  }
+}
+
+≡ƒöä Simulating increased workload...
+
+Final System Status:
+{
+  "totalAgents": 4,
+  "activeAgents": 0,
+  "idleAgents": 4,
+  "byRole": {
+    "planner": {
+      "total": 1,
+      "active": 0,
+      "idle": 1,
+      "error": 0
+    },
+    "coder": {
+      "total": 1,
+      "active": 0,
+      "idle": 1,
+      "error": 0
+    },
+    "reviewer": {
+      "total": 1,
+      "active": 0,
+      "idle": 1,
+      "error": 0
+    },
+    "executor": {
+      "total": 1,
+      "active": 0,
+      "idle": 1,
+      "error": 0
+    }
+  }
+}
+
+≡ƒôè Scaling Changes:
+
+≡ƒÄë SwarmMind Demo Complete!
+≡ƒÆí Key Features Demonstrated:
+   ΓÇó Agent Swarm Execution (Planner ΓåÆ Coder ΓåÆ Reviewer ΓåÆ Executor)
+   ΓÇó Cognitive Trace Visualization
+   ΓÇó Auto-Scaling Based on Workload
+   ΓÇó Experimentation Engine (Single vs Multi-Agent Comparison)
