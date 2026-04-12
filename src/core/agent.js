@@ -109,7 +109,7 @@ class Agent {
   }
 
   // To be implemented by subclasses
-  async processTask(task) {
+  async processTask(_task) {
     throw new Error('processTask method must be implemented by subclass');
   }
 

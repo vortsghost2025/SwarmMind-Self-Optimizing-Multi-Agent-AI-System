@@ -1,4 +1,3 @@
-const Agent = require('./core/agent');
 const CognitiveTraceViewer = require('./ui/traceViewer');
 const ScalingManager = require('./core/scalingManager');
 const ExperimentationEngine = require('./core/experimentationEngine');

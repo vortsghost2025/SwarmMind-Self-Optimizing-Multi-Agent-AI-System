@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/app.js",
     "dev": "node src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage --forceExit",
+    "lint": "eslint src tests"
   },
   "keywords": [
     "multi-agent",
@@ -30,5 +31,11 @@
   "bugs": {
     "url": "https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System/issues"
   },
-  "homepage": "https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System#readme"
+  "homepage": "https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.2.0",
+    "globals": "^17.5.0",
+    "jest": "^30.3.0"
+  }
 }

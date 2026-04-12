@@ -42,7 +42,7 @@ class ExperimentationEngine {
          type: 'reviewing' 
        });
        
-       const executionResult = await singleAgent.execute({ 
+       await singleAgent.execute({ 
          goal: task.goal, 
          plan: planResult,
          code: codeResult,
@@ -112,7 +112,7 @@ class ExperimentationEngine {
         type: 'reviewing' 
       });
       
-      const executionResult = await executor.execute({ 
+      await executor.execute({ 
         goal: task.goal, 
         plan: planResult,
         code: codeResult,

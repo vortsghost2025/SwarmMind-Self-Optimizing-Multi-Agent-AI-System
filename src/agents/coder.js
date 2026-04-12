@@ -5,7 +5,7 @@ class CoderAgent extends Agent {
     super(id, 'Coder', 'coder');
   }
 
-  async processTask(task) {
+  async processTask(_task) {
     // Simulate coding work
     await new Promise(resolve => setTimeout(resolve, 1500));
     
