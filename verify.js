@@ -39,61 +39,61 @@ class SwarmMindVerifier {
 
   checkAgentHealth() {
     console.log('🔍 Checking agent health...');
-    const result = this.runCommand('node -e "const app = require(\\\'./src/app.js\\\'); const Agent = require(\\\'./src/core/agent\\\').Agent; console.log(\\\'Agent class loaded successfully\\\');"');
-    
+    const result = this.runCommand('node -e "const Agent = require(\'./src/core/agent.js\').Agent; console.log(\'Agent class loaded successfully\');"');
+
     this.results.checks.agent_health = {
       passed: result.success && result.output.includes('Agent class loaded successfully'),
-      details: result.success 
-        ? 'Agent system loaded successfully' 
+      details: result.success
+        ? 'Agent system loaded successfully'
         : `Agent health check failed: ${result.error || result.output}`,
       output: result.output
     };
-    
+
     return this.results.checks.agent_health.passed;
   }
 
   checkTraceViewer() {
     console.log('🔍 Checking trace viewer...');
-    const result = this.runCommand('node -e "const viewer = require(\\\'./src/ui/traceViewer.js\\\'); const CognitiveTraceViewer = viewer; const instance = new CognitiveTraceViewer(); console.log(\\\'Trace viewer instantiated\\\'); console.log(\\\'Methods available:\\\', Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).join(\\\', \\\'));";');
-    
+    const result = this.runCommand('node -e "const CognitiveTraceViewer = require(\'./src/ui/traceViewer.js\'); const instance = new CognitiveTraceViewer(); console.log(\'Trace viewer instantiated\');"');
+
     this.results.checks.trace_viewer = {
       passed: result.success && result.output.includes('Trace viewer instantiated'),
-      details: result.success 
-        ? 'Trace viewer functioning correctly' 
+      details: result.success
+        ? 'Trace viewer functioning correctly'
         : `Trace viewer check failed: ${result.error || result.output}`,
       output: result.output
     };
-    
+
     return this.results.checks.trace_viewer.passed;
   }
 
   checkExperimentationEngine() {
     console.log('🔍 Checking experimentation engine...');
-    const result = this.runCommand('node -e "const engine = require(\\\'./src/core/experimentationEngine.js\\\'); console.log(\\\'Experimentation engine loaded\\\');"');
-    
+    const result = this.runCommand('node -e "const ExperimentationEngine = require(\'./src/core/experimentationEngine.js\'); console.log(\'Experimentation engine loaded\');"');
+
     this.results.checks.experimentation_engine = {
       passed: result.success,
-      details: result.success 
-        ? 'Experimentation engine loaded successfully' 
+      details: result.success
+        ? 'Experimentation engine loaded successfully'
         : `Experimentation engine check failed: ${result.error || result.output}`,
       output: result.output
     };
-    
+
     return this.results.checks.experimentation_engine.passed;
   }
 
   checkScalingManager() {
     console.log('🔍 Checking scaling manager...');
-    const result = this.runCommand('node -e "const manager = require(\\\'./src/core/scalingManager.js\\\'); console.log(\\\'Scaling manager loaded\\\');"');
-    
+    const result = this.runCommand('node -e "const ScalingManager = require(\'./src/core/scalingManager.js\'); console.log(\'Scaling manager loaded\');"');
+
     this.results.checks.scaling_manager = {
       passed: result.success,
-      details: result.success 
-        ? 'Scaling manager loaded successfully' 
+      details: result.success
+        ? 'Scaling manager loaded successfully'
         : `Scaling manager check failed: ${result.error || result.output}`,
       output: result.output
     };
-    
+
     return this.results.checks.scaling_manager.passed;
   }
 
