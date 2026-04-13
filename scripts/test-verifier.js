@@ -6,52 +6,64 @@ const result = {
   details: '',
   verifyJsPassed: false,
   scriptsPassed: false,
-  discrepancies: []
+  discrepancies: [],
+  command_executed: [],
+  raw_output: {}
 };
 
 try {
-  // Test 1: Run the main verify.js script
-  const verifyOutput = execSync('node verify.js', { 
+  // Test 1: Run verify.js and check its output file
+  execSync('node verify.js', { 
     encoding: 'utf8', 
     cwd: process.cwd(),
     timeout: 60000 
   });
+  result.command_executed.push('node verify.js');
   
-  const verifyPassed = verifyOutput.includes('verification_passed": true') || 
-                    verifyOutput.includes('verification_passed: true') ||
-                    verifyOutput.includes('PASS');
-                    
-  result.verifyJsPassed = verifyPassed;
+  // Read the JSON file verify.js creates
+  const verifyFile = fs.readFileSync('verification/system_check.json', 'utf8');
+  const verifyData = JSON.parse(verifyFile);
+  result.verifyJsPassed = verifyData.verification_passed === true;
+  result.raw_output.verify = verifyData.verification_passed;
   
-  // Test 2: Run the scripts check
-  const scriptsOutput = execSync('node scripts/run-all-checks.js', { 
+} catch (e) {
+  result.raw_output.verify_error = e.message;
+}
+
+try {
+  // Test 2: Run scripts check
+  execSync('node scripts/run-all-checks.js', { 
     encoding: 'utf8', 
     cwd: process.cwd(),
     timeout: 30000 
   });
+  result.command_executed.push('node scripts/run-all-checks.js');
   
-  const scriptsPassed = scriptsOutput.includes('verification_passed": true') ||
-                       scriptsOutput.includes('verification_passed: true');
-                       
-  result.scriptsPassed = scriptsPassed;
+  // Read the JSON file scripts creates
+  const scriptsFile = fs.readFileSync('verification/check_results.json', 'utf8');
+  const scriptsData = JSON.parse(scriptsFile);
+  result.scriptsPassed = scriptsData.verification_passed === true;
+  result.raw_output.scripts = scriptsData.verification_passed;
   
-  // Compare results
-  if (verifyPassed !== scriptsPassed) {
-    result.discrepancies.push({
-      verifyJs: verifyPassed,
-      scripts: scriptsPassed,
-      mismatch: 'verify.js and scripts give different results'
-    });
-  }
-  
-  result.passed = verifyPassed && scriptsPassed;
-  result.details = verifyPassed 
-    ? 'verify.js and scripts both pass' 
-    : 'Discrepancy between verify.js and scripts';
-
 } catch (e) {
-  result.details = `Verifier test failed: ${e.message}`;
-  result.error = e.message;
+  result.raw_output.scripts_error = e.message;
 }
+
+// Compare results
+if (result.verifyJsPassed !== result.scriptsPassed) {
+  result.discrepancies.push({
+    verifyJs: result.verifyJsPassed,
+    scripts: result.scriptsPassed,
+    command: 'verification_passed comparison',
+    mismatch: 'Results do not match'
+  });
+}
+
+// PASS only if both match
+result.passed = (result.verifyJsPassed === result.scriptsPassed) && result.discrepancies.length === 0;
+
+result.details = result.passed 
+  ? 'verify.js and scripts produce identical results' 
+  : 'DISCREPANCY: Results do not match';
 
 console.log(JSON.stringify(result, null, 2));
