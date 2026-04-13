@@ -47,8 +47,10 @@ class CognitiveTraceViewer {
       if (agent.__originalLogTrace) {
         agent.logTrace = agent.__originalLogTrace;
       }
-      // Re-override with current viewer's context
-      agent.__originalLogTrace = agent.logTrace.bind(agent);
+      // Re-override with current viewer's context - but only if we haven't already stored the original
+      if (!agent.__originalLogTrace) {
+        agent.__originalLogTrace = agent.logTrace.bind(agent);
+      }
       agent.logTrace = (action, details = {}) => {
         const traceEntry = agent.__originalLogTrace(action, details);
         this.traces.push(traceEntry);
