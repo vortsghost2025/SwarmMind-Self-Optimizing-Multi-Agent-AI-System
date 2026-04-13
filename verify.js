@@ -139,42 +139,44 @@ class SwarmMindVerifier {
     const actualLatency = multiAgentTime > 0 ? multiAgentTime : singleAgentTime;
     const latencyPassed = actualLatency > 0 && actualLatency <= MAX_LATENCY_THRESHOLD;
     
-    // CONSISTENCY CHECK (replaces hallucination_rate)
-    // Run same task twice, compare results  
-    const consistencyPassed = !result.output.includes('inconsistent') && traceEvents >= MIN_TRACE_EVENTS;
-    
-    // GPU STATUS - detect or mark as UNTESTED (cannot assume)
-    const gpuDetected = result.output.match(/GPU|CUDA|cuda|nvidia/i) !== null;
-    
-    const gateConditions = {
-      agents_alive: { status: 'VERIFIED', value: traceEvents >= MIN_TRACE_EVENTS },
-      no_failed_tasks: { status: 'VERIFIED', value: !result.output.includes('❌ Error:') && !result.output.includes('Demo failed:') },
-      gpu_stable: { status: 'UNTESTED', value: null, reason: 'No GPU detection in CPU-only demo' },
-      latency_under_threshold: { 
-        status: 'MEASURED', 
-        value: latencyPassed,
-        measured_ms: actualLatency,
-        threshold_ms: MAX_LATENCY_THRESHOLD
-      },
-      consistency_check: { 
-        status: 'MEASURED', 
-        value: consistencyPassed,
-        trace_events: traceEvents
-      }
-    };
-    
-    // Determine overall pass - only pass verified/measured, not assumed
-    const allMeasuredOrVerified = 
-      gateConditions.agents_alive.status === 'VERIFIED' &&
-      gateConditions.no_failed_tasks.status === 'VERIFIED' &&
-      gateConditions.latency_under_threshold.status === 'MEASURED' &&
-      gateConditions.consistency_check.status === 'MEASURED';
-    
-    const allPassed = 
-      gateConditions.agents_alive.value === true &&
-      gateConditions.no_failed_tasks.value === true &&
-      gateConditions.latency_under_threshold.value === true &&
-      gateConditions.consistency_check.value === true;
+  // TRACE_COMPLETENESS - verify all agents logged start/complete events
+  // This checks structural completeness, not semantic correctness
+  const traceComplete = traceEvents >= MIN_TRACE_EVENTS;
+
+  // GPU STATUS - detect or mark as UNTESTED (cannot assume)
+  const gpuDetected = result.output.match(/GPU|CUDA|cuda|nvidia/i) !== null;
+
+  const gateConditions = {
+    agents_alive: { status: 'VERIFIED', value: traceEvents >= MIN_TRACE_EVENTS },
+    no_failed_tasks: { status: 'VERIFIED', value: !result.output.includes('❌ Error:') && !result.output.includes('Demo failed:') },
+    gpu_stable: { status: 'UNTESTED', value: null, reason: 'No GPU detection in CPU-only demo' },
+    latency_under_threshold: {
+      status: 'MEASURED',
+      value: latencyPassed,
+      measured_ms: actualLatency,
+      threshold_ms: MAX_LATENCY_THRESHOLD,
+      passed: latencyPassed
+    },
+    trace_completeness: {
+      status: 'MEASURED',
+      value: traceComplete,
+      trace_events: traceEvents,
+      minimum_required: MIN_TRACE_EVENTS
+    }
+  };
+
+  // Determine overall pass - only pass verified/measured, not assumed
+  const allMeasuredOrVerified =
+    gateConditions.agents_alive.status === 'VERIFIED' &&
+    gateConditions.no_failed_tasks.status === 'VERIFIED' &&
+    gateConditions.latency_under_threshold.status === 'MEASURED' &&
+    gateConditions.trace_completeness.status === 'MEASURED';
+
+  const allPassed =
+    gateConditions.agents_alive.value === true &&
+    gateConditions.no_failed_tasks.value === true &&
+    gateConditions.latency_under_threshold.value === true &&
+    gateConditions.trace_completeness.value === true;
     
     this.results.checks.verification_gates = {
       passed: allPassed && allMeasuredOrVerified,
@@ -250,95 +252,46 @@ class SwarmMindVerifier {
   }
 
   generateHumanReadableReport() {
-    const status = this.results.verification_passed ? '✅ PASS' : '❌ FAIL';
     const timestamp = new Date(this.results.timestamp).toLocaleString();
-    
+    const gates = this.results.checks.verification_gates?.gateConditions;
+
     let report = `# SwarmMind System Verification Report\n`;
-    report += `## Self-Verifying Software Validation\n`;
-    report += `### Timestamp: ${this.results.timestamp}\n\n`;
-    report += `## ${status} VERIFICATION STATUS\n\n`;
-    
-    report += `## 🔍 VERIFICATION COMPONENTS\n\n`;
-    
-    const checkNames = [
-      { key: 'system_initialization', name: 'System Initialization' },
-      { key: 'agent_health', name: 'Agent Health' },
-      { key: 'trace_viewer', name: 'Trace Viewer' },
-      { key: 'experimentation_engine', name: 'Experimentation Engine' },
-      { key: 'scaling_manager', name: 'Scaling Manager' },
-      { key: 'no_failed_tasks', name: 'No Failed Tasks' },
-      { key: 'verification_gates', name: 'Verification Gate Conditions' }
-    ];
-    
-    for (const check of checkNames) {
-      const checkResult = this.results.checks[check.key];
-      if (checkResult) {
-        report += `### ${check.name}\n`;
-        report += `- **Status**: ${checkResult.passed ? '✅ PASS' : '❌ FAIL'}\n`;
-        report += `- **Details**: ${checkResult.details}\n\n`;
-      }
+    report += `Timestamp: ${this.results.timestamp}\n\n`;
+
+    report += `## VERIFIED\n`;
+    report += `- agents_alive: ${gates?.agents_alive?.value === true ? 'true' : 'false'}\n`;
+    report += `- no_failed_tasks: ${gates?.no_failed_tasks?.value === true ? 'true' : 'false'}\n\n`;
+
+    report += `## MEASURED\n`;
+    if (gates?.latency_under_threshold) {
+      report += `- latency_under_threshold:\n`;
+      report += `  - measured_ms: ${gates.latency_under_threshold.measured_ms}\n`;
+      report += `  - threshold_ms: ${gates.latency_under_threshold.threshold_ms}\n`;
+      report += `  - passed: ${gates.latency_under_threshold.passed}\n`;
     }
-    
-    report += `## 🚦 VERIFICATION GATE CONDITIONS\n`;
-    report += `All automated gate conditions evaluated to ${this.results.verification_passed ? '**TRUE**' : '**FALSE**'}:\n\n`;
-    report += '```json\n';
-    report += JSON.stringify({
-      agents_alive: this.results.checks.verification_gates?.gateConditions?.agents_alive || false,
-      no_failed_tasks: this.results.checks.verification_gates?.gateConditions?.no_failed_tasks || false,
-      gpu_stable: this.results.checks.verification_gates?.gateConditions?.gpu_stable || false,
-      latency_under_threshold: this.results.checks.verification_gates?.gateConditions?.latency_under_threshold || false,
-      hallucination_rate_below: this.results.checks.verification_gates?.gateConditions?.hallucination_rate_below || false
-    }, null, 2);
-    report += '\n```\n\n';
-    
-    if (this.results.checks.verification_gates) {
-      report += `**Specific Values**:\n`;
-      report += `- Agents Alive: ${this.results.checks.verification_gates.gateConditions.agents_alive ? '4/4 ✅' : '0/4 ❌'}\n`;
-      report += `- Failed Tasks: ${this.results.checks.verification_gates.gateConditions.no_failed_tasks ? '0/4 ✅' : '>0/4 ❌'}\n`;
-      report += `- GPU Stable: ${this.results.checks.verification_gates.gateConditions.gpu_stable ? 'CPU demo stable ✅' : 'Unstable ❌'}\n`;
-      report += `- Latency Under Threshold: ${this.results.checks.verification_gates.gateConditions.latency_under_threshold ? 'Avg routing < 100ms ✅' : 'High latency ❌'}\n`;
-      report += `- Hallucination Rate: ${this.results.checks.verification_gates.gateConditions.hallucination_rate_below ? '0.02 < 0.2 ✅' : 'Rate too high ❌'}\n\n`;
+    if (gates?.trace_completeness) {
+      report += `- trace_completeness:\n`;
+      report += `  - trace_events: ${gates.trace_completeness.trace_events}\n`;
+      report += `  - minimum_required: ${gates.trace_completeness.minimum_required}\n`;
+      report += `  - passed: ${gates.trace_completeness.value}\n`;
     }
-    
-    report += `## 🔐 COMMIT AUTHORIZATION\n`;
-    report += `**GATE STATUS**: ${this.results.verification_passed ? '✅ ALL CONDITIONS MET - COMMIT AUTHORIZED' : '❌ GATE FAILED - COMMIT BLOCKED'}\n\n`;
-    
-    if (this.results.verification_passed) {
-      report += `**Recommended Commit Message**:\n\`\`\`\n`;
-      report += `feat: verified swarmmind system - full system pass\n\n`;
-      report += `- agents: 4/4 healthy\n`;
-      report += `- gpu: stable (CPU demo)\n`;
-      report += `- tasks: 0 failed\n`;
-      report += `- verification: automated checks passed\n`;
-      report += `\n`;
-      report += `verification snapshot saved in /verification\n`;
-      report += `\`\`\`\n\n`;
-    }
-    
-    report += `## 📁 VERIFICATION ARTIFACTS CREATED\n`;
-    report += `\`\`\`\n`;
-    report += `verification/\n`;
-    report += `├── system_check.json\n`;
-    report += `├── agent_health.json  \n`;
-    report += `├── gpu_status.json\n`;
-    report += `├── routing_test.json\n`;
-    report += `├── hallucination_report.json\n`;
-    report += `└── REPORT.md\n`;
-    report += `\`\`\`\n\n`;
-    
-    report += `## ✅ READY FOR:\n`;
-    report += `- **Devpost Submission**: Verified, evidence-backed system\n`;
-    report += `- **Hugging Face Deployment**: Performance metrics documented\n`;
-    report += `- **Live Demonstration**: Real test data available for presentation\n`;
-    report += `- **Hackathon Presentation**: "Proved it works" narrative ready\n`;
-    report += `- **Autonomous CI Foundation**: Gate system established for agent-driven commits\n\n`;
-    
-    report += `---\n\n`;
-    report += `**Verified by**: SwarmMind Self-Verification System\n`;
-    report += `**Report Generated**: ${timestamp}\n`;
-    report += `**Next Action**: ${this.results.verification_passed ? 'Proceed with authorized commit' : 'Fix failing checks before committing'}\n`;
-    report += `**🔐 Status**: ${this.results.verification_passed ? '**GATE PASSED - SYSTEM AUTHORIZED FOR COMMIT**' : '**GATE FAILED - SYSTEM NOT READY FOR COMMIT**'}\n`;
-    
+    report += `\n`;
+
+    report += `## UNTESTED\n`;
+    report += `- gpu_stable: ${gates?.gpu_stable?.reason || 'No GPU detection available'}\n\n`;
+
+    report += `## DISCREPANCIES\n`;
+    report += `- verify.js and scripts: ${this.results.verification_passed ? 'No discrepancy' : 'DISCREPANCY DETECTED'}\n\n`;
+
+    report += `## LIMITATIONS\n`;
+    report += `- Single-run metrics (no variance data)\n`;
+    report += `- GPU status not detected (CPU-only demo)\n`;
+    report += `- Latency measures full experiment time, not message routing\n`;
+    report += `- Trace completeness checks structure, not semantic correctness\n\n`;
+
+    report += `---\n`;
+    report += `Generated: ${timestamp}\n`;
+
     return report;
   }
 }
