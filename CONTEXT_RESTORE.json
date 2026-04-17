@@ -1,0 +1,52 @@
+{
+  "governance_constraints": {
+    "single_entry_point": true,
+    "structure_over_identity": true,
+    "correction_mandatory": true,
+    "agent_evaluates_WE": true,
+    "agent_not_part_of_WE": true
+  },
+  "active_checkpoints": [
+    {
+      "id": "CP-001",
+      "name": "pre_action_verification",
+      "trigger": "before_file_write"
+    }
+  ],
+  "drift_baseline": {
+    "cps_score": 0,
+    "uds_score": 0,
+    "signals": []
+  },
+  "source_state": {
+    "$schema": "https://archivist.dev/schemas/runtime-state.json",
+    "version": "1.0.0",
+    "timestamp": "2026-04-17T05:26:27.854Z",
+    "lane": {
+      "id": "archivist-agent",
+      "role": "governance-root",
+      "position": 1
+    },
+    "capabilities": {
+      "can_respond_to_sync": true,
+      "can_govern": true,
+      "can_restore_context": false,
+      "can_archive_traces": false
+    },
+    "runtime": {
+      "mode": "governance-root",
+      "governance_active": true,
+      "external_lane_enabled": true,
+      "claim_limit": "full"
+    },
+    "session": {
+      "id": "1776403587854-50060",
+      "branch": "main"
+    },
+    "governance": {
+      "active": true,
+      "source": null,
+      "bootstrap_verified": true
+    }
+  }
+}

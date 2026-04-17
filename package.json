@@ -4,8 +4,12 @@
   "description": "A self-optimizing multi-agent AI system for hackathon demonstration",
   "main": "src/app.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "node src/app.js",
+    "start": "node scripts/governed-start.js",
+    "start:isolated": "node src/app.js",
+    "dev": "node scripts/governed-start.js",
+    "resolve": "node scripts/resolve-governance-v2.js",
+    "resolve:legacy": "node scripts/resolve-governance.js",
+    "start:mode": "node scripts/governed-start-v2.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

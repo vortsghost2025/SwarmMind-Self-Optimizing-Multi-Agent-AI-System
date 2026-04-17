@@ -1,0 +1,122 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "model": "nvidia/z-ai/glm5",
+  "governance": {
+    "enabled": true,
+    "manifest": "./GOVERNANCE_MANIFEST.json",
+    "resolver": "./scripts/resolve-governance-v2.js",
+    "startup_mode": "governed",
+    "fallback_mode": "isolated-demo"
+  },
+  "agent": {
+    "orchestrator": {
+      "model": "nvidia/z-ai/glm5",
+      "governance_aware": true
+    },
+    "plan": {
+      "model": "ollama/qwen2.5-coder:7b"
+    },
+    "code": {
+      "model": "ollama/deepseek-coder:6.7b"
+    },
+    "build": {
+      "model": "ollama/deepseek-coder:6.7b"
+    },
+    "debug": {
+      "model": "ollama/qwen2.5-coder:7b"
+    },
+    "ask": {
+      "model": "ollama/qwen2.5-coder:7b"
+    },
+    "general": {
+      "model": "ollama/qwen2.5-coder:7b"
+    }
+  },
+  "provider": {
+    "ollama": {
+      "models": {
+        "deepseek-coder:6.7b": {
+          "name": "DeepSeek Coder 6.7B",
+          "tool_call": true,
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          },
+          "options": {
+            "num_ctx": 32768,
+            "temperature": 0.1
+          }
+        },
+        "qwen2.5-coder:7b": {
+          "name": "Qwen2.5 Coder 7B",
+          "tool_call": true,
+          "limit": {
+            "context": 32768,
+            "output": 8192
+          },
+          "options": {
+            "num_ctx": 32768,
+            "temperature": 0.2
+          }
+        }
+      }
+    },
+    "z-ai": {
+      "models": {
+        "glm5": {
+          "name": "GLM-5",
+          "tool_call": true,
+          "limit": {
+            "context": 128000,
+            "output": 16384
+          }
+        }
+      }
+    }
+  },
+  "permission": {
+    "external_directory": {
+      "S:\\Archivist-Agent": "allow",
+      "S:\\Archivist-Agent\\swarmmind-governance-extension": "allow",
+      "*": "allow"
+    },
+    "bash": {
+      "*": "allow"
+    },
+    "read": {
+      "*": "allow"
+    },
+    "write": {
+      "*": "allow"
+    },
+    "edit": {
+      "*": "allow"
+    },
+    "web": {
+      "*": "allow"
+    }
+  },
+  "scripts": {
+    "pre_start": "node scripts/resolve-governance-v2.js",
+    "start": "node scripts/governed-start-v2.js",
+    "fallback": "node src/app.js"
+  },
+  "integration": {
+    "governance_extension": {
+      "path": "S:\\Archivist-Agent\\swarmmind-governance-extension",
+      "mode": "Mode1-manual",
+      "cli": "node S:\\Archivist-Agent\\swarmmind-governance-extension\\bin\\governance-trace.js"
+    },
+    "verification_lanes": {
+      "L": "implementation",
+      "R": "review",
+      "external": "human-validation"
+    }
+  },
+  "metadata": {
+    "created": "2026-04-16",
+    "purpose": "Enable governance-aware operation in SwarmMind",
+    "parent_project": "S:\\Archivist-Agent",
+    "derivation_chain": ["papers", "Archivist-Agent", "SwarmMind"]
+  }
+}

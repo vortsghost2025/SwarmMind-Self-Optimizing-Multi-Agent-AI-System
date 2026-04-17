@@ -1,0 +1,29 @@
+{
+  "status": "resolved",
+  "project": "SwarmMind",
+  "mode": "governed-standalone",
+  "mode_config": {
+    "description": "Archivist-governed child project",
+    "governance_active": true,
+    "external_lane_enabled": true,
+    "claim_limit": "full"
+  },
+  "governance": {
+    "parent": "S:\\Archivist-Agent",
+    "bootstrap": "S:\\Archivist-Agent\\BOOTSTRAP.md",
+    "relationship": "integration-target",
+    "role": "trace-mediated verification surface",
+    "extension_mode": "Mode1-manual"
+  },
+  "external_lane": {
+    "enabled": true,
+    "type": "integrated",
+    "claim_limit": "full",
+    "lanes": {
+      "L_lane": "implementation",
+      "R_lane": "review",
+      "external_lane": "human-validation"
+    }
+  },
+  "timestamp": "2026-04-17T06:06:34.337Z"
+}

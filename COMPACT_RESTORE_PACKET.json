@@ -1,0 +1,65 @@
+{
+  "$schema": "https://archivist.dev/schemas/context-restore.json",
+  "version": "1.0.0",
+  "timestamp": "2026-04-17T06:35:29.379Z",
+  "context_lost": 130000,
+  "restore_payload": {
+    "governance_constraints": {
+      "single_entry_point": true,
+      "structure_over_identity": true,
+      "correction_mandatory": true,
+      "agent_not_part_of_WE": true
+    },
+    "active_checkpoints": [
+      {
+        "id": "CP-001",
+        "name": "anchored_to_structure"
+      },
+      {
+        "id": "CP-002",
+        "name": "following_rules"
+      },
+      {
+        "id": "CP-003",
+        "name": "drift_check"
+      },
+      {
+        "id": "CP-004",
+        "name": "confidence_check"
+      },
+      {
+        "id": "CP-005",
+        "name": "risk_assessment"
+      },
+      {
+        "id": "CP-006",
+        "name": "dual_verification"
+      }
+    ],
+    "drift_baseline": {
+      "cps_score": 0,
+      "signals": []
+    },
+    "session_context": {
+      "lane_id": "archivist-agent",
+      "role": "governance-root",
+      "governance_active": true
+    },
+    "working_context_resume": [
+      "Reviewing PROJECT_REGISTRY.md",
+      "Cross-lane sync verification",
+      "Session communication protocol"
+    ]
+  },
+  "authority": {
+    "fields_authoritative": [
+      "governance_constraints",
+      "active_checkpoints"
+    ],
+    "fields_advisory": [
+      "drift_baseline",
+      "session_context",
+      "working_context_resume"
+    ]
+  }
+}
