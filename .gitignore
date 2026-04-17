@@ -50,4 +50,4 @@ typings/
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+*.sw?nul
