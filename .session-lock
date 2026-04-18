@@ -1,13 +1,7 @@
 {
   "lane_id": "swarmmind",
-  "session_id": "1776399805802-28240",
-  "acquired": "2026-04-17T02:51:30.000-04:00",
+  "session_id": "1776476695493-28240",
+  "acquired": "2026-04-18T04:16:35.493Z",
   "pid": null,
-  "expires": "2026-04-17T10:00:00.000-04:00",
-  "status": "active",
-  "working_on": [
-    "Cross-project governance review complete",
-    "Configuration fixes applied",
-    "Synthesis with Archivist-Agent"
-  ]
+  "expires": "2026-04-18T12:00:00.000Z"
 }
