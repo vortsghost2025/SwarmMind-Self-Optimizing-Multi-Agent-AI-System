@@ -15,7 +15,8 @@ try {
   // Run verify.js
   const verifyOutput = execSync('node verify.js', { 
     encoding: 'utf8', 
-    timeout: 60000 
+    timeout: 60000,
+    env: process.env 
   });
   
   // Parse verify.js output from system_check.json
@@ -30,7 +31,8 @@ try {
   // Run scripts check
   const scriptsOutput = execSync('node scripts/run-all-checks.js', { 
     encoding: 'utf8', 
-    timeout: 30000 
+    timeout: 30000,
+    env: process.env 
   });
   
   const scriptsFile = fs.readFileSync('verification/check_results.json', 'utf8');

@@ -123,7 +123,10 @@ function getLatestCommit(lane) {
   }
 
   try {
-    const sha = execSync(`git -C "${lanePath}" rev-parse HEAD`, { encoding: 'utf8' }).trim();
+    const sha = execSync(`git -C "${lanePath}" rev-parse HEAD`, { 
+      encoding: 'utf8',
+      env: process.env 
+    }).trim();
     return sha.substring(0, 7);
   } catch (e) {
     return 'N/A';

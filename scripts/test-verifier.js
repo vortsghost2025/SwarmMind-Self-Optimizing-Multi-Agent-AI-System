@@ -16,7 +16,8 @@ try {
   execSync('node verify.js', { 
     encoding: 'utf8', 
     cwd: process.cwd(),
-    timeout: 60000 
+    timeout: 60000,
+    env: process.env 
   });
   result.command_executed.push('node verify.js');
   
@@ -35,7 +36,8 @@ try {
   execSync('node scripts/run-all-checks.js', { 
     encoding: 'utf8', 
     cwd: process.cwd(),
-    timeout: 30000 
+    timeout: 30000,
+    env: process.env 
   });
   result.command_executed.push('node scripts/run-all-checks.js');
   

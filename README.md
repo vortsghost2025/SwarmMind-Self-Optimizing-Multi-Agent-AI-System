@@ -429,6 +429,72 @@ node -e "const {LaneContextGate}=require('./src/core/laneContextGate');const g=n
 
 ---
 
+## Phase 3: Transactional Queue Subsystem (In Progress)
+
+Phase 3 introduces a **de‑coupled coordination layer** — a set of append‑only JSON‑line queues that allow lanes to exchange typed artifacts without direct coupling. Each queue item is a **claim** awaiting execution, verification, approval, or rejection. The queue preserves auditability, timing independence, and failure isolation.
+
+### Queue Types
+
+| Queue | Purpose | Item Types |
+|-------|---------|------------|
+| **COMMAND** | Bounded "do this now" actions (rare) | `command_request` |
+| **REVIEW** | Verification & policy review requests | `verification_request`, `policy_review` |
+| **APPROVAL** | Await governance decisions | `policy_update`, `approval_request` |
+| **INCIDENT** | Runtime failures, HOLD states, NFM findings | `incident_report`, `hold_notice` |
+| **IDEA_DEFERRED** | Good ideas saved for later | `idea_proposal` |
+
+### Queue Item Schema (Minimum Fields)
+
+```json
+{
+  "id": "Q-2026-04-18-001",
+  "timestamp": "2026-04-18T16:15:00Z",
+  "origin_lane": "swarmmind",
+  "target_lane": "archivist",
+  "type": "approval_request",
+  "artifact_path": "S:/SwarmMind/.../PHASE3_POLICY.md",
+  "required_action": "approve",
+  "proof_required": ["git log -1", "test output"],
+  "status": "pending",
+  "resolution": null,
+  "payload": { ... }
+}
+```
+
+State transitions: `pending → accepted / rejected / superseded`. Only `pending` items may transition.
+
+### Components Implemented
+
+- **`src/queue/Queue.js`** – File‑based append‑only queue with enqueue, getPending, updateStatus.
+- **`src/permissions/FilePermissionEnforcer.js`** – Lane‑based whitelist enforcement on all `fs` and `fs.promises` methods; integrates with `laneContextGate` (throws `E_PERMISSION_DENIED` on violations).
+- **`src/audit/AuditLogger.js`** – Immutable audit log capturing every enqueue and status change; can generate summaries and export human‑readable reports.
+- **`src/attestation/IdentityAttestation.js`** – Lane identity and signature stub (HMAC‑SHA256); `signQueueItem` and `verifyQueueItem` helpers for future non‑repudiation.
+- **`src/security/SeccompSimulator.js`** – Placeholder documenting the seccomp‑bpf interface; logs syscall checks against a whitelist.
+
+### Test Harnesses
+
+```bash
+node scripts/test-queue.js          # Queue CRUD & state transition
+node scripts/test-permissions.js    # Whitelist enforcement, violation blocking
+node scripts/test-audit.js          # Audit log capture, reporting
+node scripts/test-attestation.js    # Identity signing & verification
+node scripts/test-seccomp.js        # Syscall whitelist simulation
+```
+
+All tests should pass before committing Phase 3 artifacts.
+
+### Integration Points
+
+- **`governed-start.js`** – On startup, read the **APPROVAL** queue and apply any pending policy updates automatically.
+- **`laneContextGate.js`** – On HOLD or violation, emit an **INCIDENT** queue entry for audit.
+- **Library test runner** – Emit a **REVIEW** queue item for each verification request.
+
+### Governance
+
+Phase 3 work is authorized by `DECISION_PHASE3_QUEUE_SUBSYSTEM`. All changes must follow the Git Protocol (scan‑for‑secrets, push immediately). The next step after implementation is Library verification of the new test suite.
+
+---
+
 **SwarmMind operates as a constrained execution lane within a governed multi-agent organism.**
 
 **Structure > Identity. Correction > Agreement.**  

@@ -16,7 +16,8 @@ for (const check of checks) {
     const output = execSync(`node ${check.script}`, { 
       encoding: 'utf8',
       cwd: __dirname,
-      timeout: 30000
+      timeout: 30000,
+      env: process.env 
     });
     
     let parsed = null;

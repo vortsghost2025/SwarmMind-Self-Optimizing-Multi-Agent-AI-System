@@ -9,6 +9,10 @@
  * 2. Inject governance context into app
  * 3. Continue with normal SwarmMind execution
  * 
+ * Phase 2.5: Enforces NODE_OPTIONS to prevent child-process bypass of LaneContextGate.
+ * All child processes spawned from this environment will automatically require
+ * the gate, ensuring lattice enforcement extends beyond the parent process.
+ * 
  * Usage: node scripts/governed-start.js
  */
 
@@ -51,6 +55,10 @@ class GovernedStartup {
     }
 
     console.log('\n✅ Lane-context gate active — enforcing cross-lane write policy\n');
+
+    // Step 0.5: Phase 2.5 — Enforce NODE_OPTIONS for child process propagation
+    console.log('\n🛡️  Phase 2.5: Child-Process Lattice Enforcement\n');
+    this.enforceNodeOptions();
 
     // Step 1: Create resolver with lane-gate injected
     console.log('\n📋 Phase 1: Governance Resolution\n');
@@ -121,6 +129,60 @@ class GovernedStartup {
       console.error('Failed to start SwarmMind:', error.message);
       console.error(error.stack);
       process.exit(1);
+    }
+  }
+
+  /**
+   * Phase 2.5: Enforce NODE_OPTIONS to prevent child-process bypass.
+   * 
+   * Child processes do NOT inherit the parent's fs monkey-patch. We must require
+   * the gate in every child via NODE_OPTIONS=--require.
+   * 
+   * This method:
+   * 1. Sets process.env.NODE_OPTIONS to preload laneContextGate.js
+   * 2. Warns if NODE_OPTIONS already set (could conflict)
+   * 3. Logs enforcement for audit trail
+   */
+  enforceNodeOptions() {
+    const gatePath = path.join(process.cwd(), 'src', 'core', 'laneContextGate.js');
+    const requiredOption = `--require ${gatePath}`;
+    
+    // Check if NODE_OPTIONS already contains our requirement
+    const existing = process.env.NODE_OPTIONS || '';
+    
+    if (existing.includes(requiredOption)) {
+      console.log(`[NODE_OPTIONS] Already set correctly`);
+      console.log(`  Current: ${existing}`);
+      return;
+    }
+    
+    // Warn if NODE_OPTIONS already has any value (could conflict)
+    if (existing && !existing.includes('--require')) {
+      console.warn('[NODE_OPTIONS] Warning: Existing NODE_OPTIONS will be augmented:');
+      console.warn(`  Existing: ${existing}`);
+      console.warn(`  Adding:    ${requiredOption}`);
+    } else if (existing && existing.includes('--require')) {
+      console.warn('[NODE_OPTIONS] Warning: NODE_OPTIONS already has --require flags');
+      console.warn(`  Current: ${existing}`);
+      console.warn(`  Appending: ${requiredOption}`);
+    }
+    
+    // Set NODE_OPTIONS to include our gate preload
+    // We prepend to ensure our gate loads first and can patch fs before other modules
+    process.env.NODE_OPTIONS = `${requiredOption} ${existing}`.trim();
+    
+    console.log('[NODE_OPTIONS] Enforcement active');
+    console.log(`  Set: NODE_OPTIONS="${process.env.NODE_OPTIONS}"`);
+    console.log('  All child processes spawned from this environment will require the gate.\n');
+    
+    // Also validate that gate can initialize from NODE_OPTIONS (LaneContextGate.initFromEnv)
+    if (typeof this.laneGate.initFromEnv === 'function') {
+      const envOk = this.laneGate.initFromEnv();
+      if (!envOk) {
+        console.warn('[LANE-GATE] Warning: NODE_OPTIONS validation failed — gate may not load in children');
+      } else {
+        console.log('[LANE-GATE] NODE_OPTIONS validation passed — child processes will enforce gate\n');
+      }
     }
   }
 }

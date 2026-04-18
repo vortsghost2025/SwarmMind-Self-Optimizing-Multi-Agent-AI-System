@@ -1,6 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
+// Phase 3.2: Load file permission enforcement first (defense in depth)
+// This module patches fs and fs.promises with whitelist checks before our gate runs.
+try {
+  require('../../permissions/FilePermissionEnforcer');
+  console.log('[LANE-GATE] Permission enforcement module loaded');
+} catch (e) {
+  console.error('[LANE-GATE] WARNING: Permission module could not be loaded:', e.message);
+}
+
 /**
  * LANE-CONTEXT RECONCILIATION GATE
  * 

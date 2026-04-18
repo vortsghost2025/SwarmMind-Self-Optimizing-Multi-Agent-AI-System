@@ -15,7 +15,11 @@ class SwarmMindVerifier {
 
   runCommand(command) {
     try {
-      const output = execSync(command, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+      const output = execSync(command, { 
+        encoding: 'utf8', 
+        stdio: ['pipe', 'pipe', 'pipe'],
+        env: process.env 
+      });
       return { success: true, output };
     } catch (error) {
       return { success: false, error: error.message, output: error.stdout };
@@ -39,7 +43,7 @@ class SwarmMindVerifier {
 
   checkAgentHealth() {
     console.log('🔍 Checking agent health...');
-    const result = this.runCommand('node -e "const Agent = require(\'./src/core/agent.js\').Agent; console.log(\'Agent class loaded successfully\');"');
+    const result = this.runCommand("node -e \"const Agent = require('./src/core/agent.js').Agent; console.log('Agent class loaded successfully');\"");
 
     this.results.checks.agent_health = {
       passed: result.success && result.output.includes('Agent class loaded successfully'),
