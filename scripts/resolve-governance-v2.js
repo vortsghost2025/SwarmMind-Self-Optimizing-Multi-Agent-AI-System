@@ -63,6 +63,168 @@ class GovernanceResolver {
         this.activeMode = null;
         this.modeConfig = null;
         this.externalLaneConfig = null;
+        this.quarantineState = null;
+    }
+
+    log(message, level = 'info') {
+        const prefix = process.platform === 'win32' ? ASCII_PREFIX : UNICODE_PREFIX;
+        const icon = prefix[level] || '';
+        const colorStart = level === 'header' ? COLORS.BOLD + COLORS.CYAN :
+            level === 'mode' ? COLORS.BOLD + COLORS.MAGENTA : '';
+        const colorEnd = (level === 'header' || level === 'mode' || level === 'reset') ? '' : COLORS.RESET;
+
+        console.log(`${colorStart}${icon} ${message}${colorEnd}`);
+    }
+
+    /**
+     * QUARANTINE ENTRY - ENFORCED STATE TRANSITION
+     * 
+     * This method is called when verification fails.
+     * It does NOT just log - it transitions runtime state.
+     * 
+     * @param {number} exitCode - Verification exit code (2=untrusted, 4=fingerprint, other=unknown)
+     * @returns {object} - Quarantine result (does NOT continue normal execution)
+     */
+    enterQuarantine(exitCode) {
+        const QUARANTINE_REASON = {
+            2: 'RECONSTRUCTED_UNTRUSTED',
+            4: 'FINGERPRINT_MISMATCH',
+            'default': 'UNKNOWN_FAILURE'
+        };
+
+        const reason = QUARANTINE_REASON[exitCode] || QUARANTINE_REASON.default;
+        const isCritical = exitCode === 4;
+
+        this.log('\n' + '='.repeat(60), 'header');
+        this.log(`QUARANTINE: ${reason}`, isCritical ? 'error' : 'warning');
+        this.log('='.repeat(60), 'header');
+        this.log(`Exit code: ${exitCode}`, 'info');
+        this.log('Authority: RESTRICTED to observer only', isCritical ? 'error' : 'warning');
+        this.log('Governance mode: BLOCKED', 'error');
+        this.log('Resume path: Re-verification required', 'warning');
+
+        // STATE TRANSITION - not just logging
+        this.activeMode = isCritical ? 'quarantine-critical' : 'quarantine-reconstructed';
+        this.modeConfig = {
+            governance_active: false,
+            external_lane_enabled: false,
+            claim_limit: 'NONE',
+            authority_restricted: true,
+            requires_reverification: true,
+            requires_manual_verification: isCritical
+        };
+
+        // Load last valid phenotype
+        const phenotypePath = path.join(this.projectRoot, '..', 'Archivist-Agent', 'PHENOTYPE_REGISTRY.json');
+        let phenotypeLoaded = false;
+
+        if (fs.existsSync(phenotypePath)) {
+            try {
+                const phenotype = JSON.parse(fs.readFileSync(phenotypePath, 'utf8'));
+                this.log(`Last valid phenotype: ${phenotype.generated_at}`, 'success');
+                phenotypeLoaded = true;
+            } catch (e) {
+                this.log('Phenotype parse failed', 'error');
+            }
+        } else {
+            this.log('No phenotype registry found', 'warning');
+        }
+
+        // PERSISTENT STATE - quarantine state file
+        const quarantineState = {
+            status: 'QUARANTINE_ACTIVE',
+            reason: reason,
+            exit_code: exitCode,
+            timestamp: new Date().toISOString(),
+            authority_level: 'observer_only',
+            governance_blocked: true,
+            phenotype_available: phenotypeLoaded,
+            action_required: isCritical ? 'manual_verification' : 're_verification',
+            resumption_blocked: true,
+            resume_command: 'node resolve-governance-v2.js --release-quarantine'
+        };
+
+        const quarantinePath = path.join(this.projectRoot, 'QUARANTINE_STATE.json');
+        fs.writeFileSync(quarantinePath, JSON.stringify(quarantineState, null, 2));
+        this.log(`Quarantine state: ${quarantinePath}`, 'warning');
+
+        this.externalLaneConfig = {
+            type: 'quarantine',
+            claim_limit: 'NONE',
+            phenotype_loaded: phenotypeLoaded,
+            reverification_required: true,
+            manual_verification_required: isCritical
+        };
+
+        this.log('\n' + '='.repeat(60), 'header');
+        this.log('QUARANTINE ACTIVE - NORMAL OPERATION BLOCKED', 'error');
+        this.log('='.repeat(60), 'header');
+
+        return this.emitResult();
+    }
+
+    /**
+     * QUARANTINE RELEASE PROTOCOL
+     * Call this to exit quarantine mode after re-verification
+     */
+    async releaseFromQuarantine() {
+        const quarantinePath = path.join(this.projectRoot, 'QUARANTINE_STATE.json');
+        
+        if (!fs.existsSync(quarantinePath)) {
+            this.log('No quarantine state found - already clear', 'success');
+            return { released: true, reason: 'no_quarantine' };
+        }
+        
+        this.log('\n' + '='.repeat(60), 'header');
+        this.log('QUARANTINE RELEASE PROTOCOL', 'header');
+        this.log('='.repeat(60), 'header');
+        
+        // Load quarantine state
+        try {
+            this.quarantineState = JSON.parse(fs.readFileSync(quarantinePath, 'utf8'));
+            this.log(`Quarantine reason: ${this.quarantineState.reason}`, 'warning');
+            this.log(`Quarantine timestamp: ${this.quarantineState.timestamp}`, 'info');
+        } catch (e) {
+            this.log('Could not parse quarantine state', 'error');
+            return { released: false, reason: 'invalid_quarantine_state' };
+        }
+        
+        // Step 1: Re-run verification
+        this.log('\nStep 1: Re-running recovery verification...', 'info');
+        const verifyScript = path.join(this.projectRoot, 'verify_recovery.sh');
+        
+        if (!fs.existsSync(verifyScript)) {
+            this.log('ERROR: verify_recovery.sh not found', 'error');
+            return { released: false, reason: 'verification_script_missing' };
+        }
+        
+        try {
+            const { execSync } = require('child_process');
+            execSync(`bash "${verifyScript}"`, { stdio: 'pipe', timeout: 30000 });
+            this.log('PASS: Verification succeeded', 'success');
+        } catch (error) {
+            const code = error.status || 1;
+            this.log(`FAIL: Verification still failing (code ${code})`, 'error');
+            this.log('Cannot release from quarantine - manual intervention required', 'error');
+            return { released: false, reason: 'verification_still_failing', code };
+        }
+        
+        // Step 2: Clear quarantine state
+        this.log('\nStep 2: Clearing quarantine state...', 'info');
+        fs.unlinkSync(quarantinePath);
+        this.log('Quarantine state file removed', 'success');
+        
+        // Step 3: Restore normal operation
+        this.log('\nStep 3: Restoring normal operation...', 'info');
+        this.activeMode = null;
+        this.modeConfig = null;
+        this.quarantineState = null;
+        
+        this.log('\n' + '='.repeat(60), 'header');
+        this.log('QUARANTINE RELEASED - NORMAL OPERATION RESUMED', 'success');
+        this.log('='.repeat(60), 'header');
+        
+        return { released: true, reason: 'verification_passed' };
     }
 
     log(message, level = 'info') {
@@ -305,10 +467,10 @@ class GovernanceResolver {
       if (registryContent.includes(projectName)) {
         this.log(`Project "${projectName}" found in registry`, 'success');
         
-        if (registryContent.includes('integration-target') && registryContent.includes(projectName)) {
-          this.log('  Relationship confirmed: integration-target', 'success');
+if (registryContent.includes('integration-target') && registryContent.includes(projectName)) {
+            this.log('Relationship confirmed: integration-target', 'success');
         } else {
-          this.log('  Warning: relationship type not verified in registry', 'warning');
+            this.log('WARNING: relationship type not verified in registry', 'warning');
         }
         
         return true;
@@ -394,10 +556,10 @@ class GovernanceResolver {
     this.log(`External lane type: ${this.externalLaneConfig.type}`, 'success');
     this.log(`Claim limit: ${this.externalLaneConfig.claim_limit}`, 'success');
     
-    if (this.modeConfig.claim_limit === 'annotation-only') {
-      this.log('  Claims will be annotated, not enforced', 'info');
-      this.log('  External verifier responsible for validation', 'info');
-    }
+if (this.modeConfig.claim_limit === 'annotation-only') {
+            this.log('>> Claims will be annotated, not enforced', 'info');
+            this.log('>> External verifier responsible for validation', 'info');
+        }
 
     return true;
   }
@@ -436,32 +598,28 @@ async resolve() {
         // Check if verification script exists
         if (fs.existsSync(verifyScript)) {
             this.log('\nStep 0: Running recovery verification...', 'info');
-            try {
-                execSync(`bash "${verifyScript}"`, { stdio: 'pipe', timeout: 30000 });
-                this.log('  SAME_PHENOTYPE: Verification passed', 'success');
-            } catch (error) {
-                const code = error.status || 1;
-                if (code === 2) {
-                    this.log('  RECONSTRUCTED_UNTRUSTED: Lineage missing or invalid', 'warning');
-                    this.log('  Continuing in untrusted mode - governance authority restricted', 'warning');
-                } else if (code === 4) {
-                    this.log('  ABORT: Fingerprint mismatch - constitutional breach detected', 'error');
-                    this.log('  Refusing to continue - run recovery protocol', 'error');
-                    this.resolutionStatus = 'ABORT_FINGERPRINT_MISMATCH';
-                    return this.emitResult();
-                } else {
-                    this.log(`  ERROR: Verification failed with code ${code}`, 'error');
-                    this.log('  Continuing with caution - verification incomplete', 'warning');
-                }
-            }
-        } else {
-            this.log('  WARNING: verify_recovery.sh not found - skipping verification', 'warning');
-            this.log('  This may indicate a fresh installation or incomplete setup', 'warning');
+try {
+            execSync(`bash "${verifyScript}"`, { stdio: 'pipe', timeout: 30000 });
+            this.log('SAME_PHENOTYPE: Verification passed', 'success');
+        } catch (error) {
+            const code = error.status || 1;
+            
+            // ALL verification failures trigger state transition
+            // No soft warnings - every failure enters quarantine
+            this.resolutionStatus = code === 2 ? 'RECONSTRUCTED_UNTRUSTED' :
+                                    code === 4 ? 'QUARANTINE_FINGERPRINT_MISMATCH' :
+                                    'QUARANTINE_UNKNOWN';
+            
+            return this.enterQuarantine(code);
         }
-        
-        this.log('');
+} else {
+        this.log('WARNING: verify_recovery.sh not found', 'warning');
+        this.log('>> Fresh installation or incomplete setup', 'warning');
+    }
 
-        // Step 1: Detect manifest
+    this.log('');
+
+    // Step 1: Detect manifest
         this.log('Step 1: Detecting governance manifest...', 'info');
     if (!this.detectManifest()) {
       return this.emitResult();
@@ -574,10 +732,66 @@ async resolve() {
 
 // CLI execution
 if (require.main === module) {
-  const resolver = new GovernanceResolver(process.cwd());
-  resolver.resolve().then(result => {
-    process.exit(result.status === 'resolved' || result.status === 'isolated' ? 0 : 1);
-  });
+    const resolver = new GovernanceResolver(process.cwd());
+    
+    // Check for existing quarantine state
+    const quarantinePath = path.join(process.cwd(), 'QUARANTINE_STATE.json');
+    
+    if (fs.existsSync(quarantinePath)) {
+        console.log('\n[!] QUARANTINE STATE DETECTED');
+        console.log('[i] Running re-verification before resumption...\n');
+        
+        try {
+            const quarantineState = JSON.parse(fs.readFileSync(quarantinePath, 'utf8'));
+            console.log(`[i] Quarantine reason: ${quarantineState.reason}`);
+            console.log(`[i] Timestamp: ${quarantineState.timestamp}\n`);
+        } catch (e) {
+            console.log('[!] Could not parse quarantine state\n');
+        }
+        
+        // Run verification
+        const { execSync } = require('child_process');
+        const verifyScript = path.join(process.cwd(), 'verify_recovery.sh');
+        
+        if (!fs.existsSync(verifyScript)) {
+            console.log('[-] ERROR: verify_recovery.sh not found');
+            console.log('[-] Cannot exit quarantine without verification');
+            process.exit(1);
+        }
+        
+        try {
+            execSync(`bash "${verifyScript}"`, { stdio: 'inherit', timeout: 30000 });
+            
+            // Verification passed - clear quarantine
+            console.log('\n[+] VERIFICATION PASSED');
+            console.log('[+] Clearing quarantine state...\n');
+            
+            fs.unlinkSync(quarantinePath);
+            console.log('[+] Quarantine cleared');
+            console.log('[+] Proceeding with normal resolution...\n');
+            
+            // Now run normal resolution
+            resolver.resolve().then(result => {
+                process.exit(result.status === 'resolved' || result.status === 'isolated' ? 0 : 1);
+            });
+            
+        } catch (error) {
+            const code = error.status || 1;
+            
+            // Verification failed - remain quarantined
+            console.log('\n[-] VERIFICATION FAILED');
+            console.log(`[-] Exit code: ${code}`);
+            console.log('[-] System remains quarantined');
+            console.log('[-] No resumption possible until verification passes\n');
+            process.exit(1);
+        }
+        
+    } else {
+        // No quarantine - normal execution
+        resolver.resolve().then(result => {
+            process.exit(result.status === 'resolved' || result.status === 'isolated' ? 0 : 1);
+        });
+    }
 }
 
 module.exports = GovernanceResolver;
