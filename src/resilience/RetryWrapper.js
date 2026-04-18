@@ -17,26 +17,28 @@
 const { AuditLogger, audit } = require('../audit/AuditLogger');
 
 class RetryWrapper {
-  /**
-   * @param {object} config
-   * @param {number} config.maxAttempts - Maximum retry attempts (default 3)
-   * @param {number} config.initialDelayMs - Initial backoff delay in ms (default 100)
-   * @param {number} config.maxDelayMs - Maximum backoff delay (default 30000)
-   * @param {number} config.timeoutMs - Per-attempt timeout in ms (default 5000)
-   * @param {boolean} config.enableJitter - Add random jitter to backoff (default true)
-   * @param {function} config.shouldRetry - Custom predicate (error) => boolean
-   * @param {function} config.onRetry - Callback(attempt, error, delayMs)
-   */
-  constructor(config = {}) {
-    this.maxAttempts = config.maxAttempts || 3;
-    this.initialDelayMs = config.initialDelayMs || 100;
-    this.maxDelayMs = config.maxDelayMs || 30000;
-    this.timeoutMs = config.timeoutMs || 5000;
-    this.enableJitter = config.enableJitter !== false;
-    this.shouldRetry = config.shouldRetry || this._defaultRetryPredicate;
-    this.onRetry = config.onRetry || null;
-    this.auditEnabled = config.audit !== false;
-  }
+   /**
+    * @param {object} config
+    * @param {number} config.maxAttempts - Maximum retry attempts (default 3)
+    * @param {number} config.initialDelayMs - Initial backoff delay in ms (default 100)
+    * @param {number} config.maxDelayMs - Maximum backoff delay (default 30000)
+    * @param {number} config.timeoutMs - Per-attempt timeout in ms (default 5000)
+    * @param {boolean} config.enableJitter - Add random jitter to backoff (default true)
+    * @param {function} config.shouldRetry - Custom predicate (error) => boolean
+    * @param {function} config.onRetry - Callback(attempt, error, delayMs)
+    * @param {RecoveryClassifier} config.recoveryClassifier - Optional classifier to invoke on exhaustion
+    */
+   constructor(config = {}) {
+     this.maxAttempts = config.maxAttempts || 3;
+     this.initialDelayMs = config.initialDelayMs || 100;
+     this.maxDelayMs = config.maxDelayMs || 30000;
+     this.timeoutMs = config.timeoutMs || 5000;
+     this.enableJitter = config.enableJitter !== false;
+     this.shouldRetry = config.shouldRetry || this._defaultRetryPredicate;
+     this.onRetry = config.onRetry || null;
+     this.recoveryClassifier = config.recoveryClassifier || null;
+     this.auditEnabled = config.audit !== false;
+   }
 
   /**
    * Default retry predicate: retry on network/timeout errors, not on programmer errors
@@ -157,6 +159,22 @@ class RetryWrapper {
               }
             });
           }
+
+           // Invoke recovery classifier if configured
+           if (this.recoveryClassifier && typeof this.recoveryClassifier.classify === 'function') {
+             try {
+               this.recoveryClassifier.classify({
+                 operation,
+                 target,
+                 finalError: error,
+                 attempts: attempt,
+                 totalDelayMs: this._calculateDelay(attempt - 1) * (attempt - 1)
+               });
+             } catch (rcErr) {
+               console.error('[RetryWrapper] RecoveryClassifier failed:', rcErr.message);
+             }
+           }
+
           throw error;
         }
 

@@ -1,0 +1,15 @@
+{
+  "last_session": null,
+  "current_session": {
+    "started_at": "2026-04-18T23:52:46.814Z",
+    "fingerprint": "79150d27925b0be3fbe49bf83e65cb489354a2dde0dddbd117c9196174d0e9e7",
+    "recovery_classification": "transient"
+  },
+  "drift_history": [
+    {
+      "timestamp": "2026-04-18T23:52:46.814Z",
+      "fingerprint": "79150d27925b0be3fbe49bf83e65cb489354a2dde0dddbd117c9196174d0e9e7",
+      "classification": "transient"
+    }
+  ]
+}

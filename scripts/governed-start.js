@@ -60,6 +60,30 @@ class GovernedStartup {
     console.log('\n🛡️  Phase 2.5: Child-Process Lattice Enforcement\n');
     this.enforceNodeOptions();
 
+    // Step 0.75: Phase 3.7 — Continuity verification (fingerprint + recovery classifier)
+    console.log('\n🔐 Phase 3.7: Continuity Verification\n');
+    const { ContinuityVerifier } = require('../src/resilience/ContinuityVerifier');
+    const continuity = new ContinuityVerifier({
+      gate: this.laneGate,
+      projectRoot: process.cwd()
+    });
+    const continuityResult = continuity.verify();
+    console.log(`   Action: ${continuityResult.action}`);
+    if (continuityResult.action === 'QUARANTINE' || continuityResult.action === 'LANE_DEGRADATION') {
+      console.error('\n❌ Continuity check failed — system cannot start');
+      console.error(`   Reason: ${continuityResult.details.reason}\n`);
+      process.exit(1);
+    }
+    if (continuityResult.action === 'DRIFT_DETECTED') {
+      console.warn(`   ⚠️  Codebase drift detected: ${continuityResult.details.reason}`);
+      console.warn('   Operator review recommended but startup continuing\n');
+    }
+    if (continuityResult.action === 'REVIEW_NEEDED') {
+      console.warn(`   ⚠️  Recovery review needed: ${continuityResult.details.reason}`);
+      console.warn('   Continue with caution\n');
+    }
+    console.log('✅ Continuity verification complete\n');
+
     // Step 1: Create resolver with lane-gate injected
     console.log('\n📋 Phase 1: Governance Resolution\n');
     this.resolver = new GovernanceResolver(process.cwd(), { laneGate: this.laneGate });

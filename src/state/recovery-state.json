@@ -1,0 +1,11 @@
+{
+  "lane_id": "unknown",
+  "created_at": "2026-04-18T23:51:29.257Z",
+  "last_updated": "2026-04-18T23:51:29.257Z",
+  "current_classification": "transient",
+  "consecutive_failures": 0,
+  "recent_events": [],
+  "quarantine_until": null,
+  "needs_operator": false,
+  "metadata": {}
+}

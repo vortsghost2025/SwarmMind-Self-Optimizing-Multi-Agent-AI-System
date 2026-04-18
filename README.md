@@ -623,6 +623,45 @@ All Phase 3 work is authorized by `DECISION_PHASE3_QUEUE_SUBSYSTEM` and follow
 
 ---
 
+### Continuity Verification (Phase 3.7)
+
+On startup, after the lane gate is initialized, `ContinuityVerifier` runs to ensure the lane's execution environment is intact:
+
+- **Fingerprint recompute** — Hash of critical source files (`laneContextGate.js`, `FilePermissionEnforcer.js`, `Queue.js`, `RecoveryClassifier.js`, `RetryWrapper.js`, `AuditLogger.js`, `IdentityAttestation.js`, `package.json`). Detects codebase drift.
+- **Lineage check** — Loads previous session state from `.continuity/lineage.json`. Maintains a history of fingerprints and recovery classifications.
+- **Recovery status** — Queries `RecoveryClassifier` to determine if the lane is in a degraded, recovery-required, or quarantined state.
+
+Outcomes:
+- `CONTINUE` — Normal startup.
+- `DRIFT_DETECTED` — Code changed; operator review recommended but not blocked.
+- `REVIEW_NEEDED` — Repeated failures; operator review recommended.
+- `LANE_DEGRADATION` — Internal capability reduced; HOLD triggered, startup blocked.
+- `QUARANTINE` — Recovery classifier demands containment; HOLD triggered, startup blocked.
+
+The verifier emits INCIDENT queue items for `DRIFT_DETECTED` and `QUARANTINE` events, providing evidence chain to the Archivist.
+
+**Test:** `node scripts/test-continuity.js`
+
+---
+
+### Recovery Classification (Phase 3.6–3.7)
+
+When the RetryWrapper exhausts all attempts, the outcome is classified by `RecoveryClassifier`:
+
+| Classification | Trigger | Action |
+|----------------|---------|--------|
+| `transient` | Success after retry (not used directly) | Log only |
+| `persistent_dependency` | External dependency failures (timeouts, connection refused) after retries | Circuit-breaker candidate; operator review if frequent |
+| `lane_degradation` | Permission violations, cross-lane writes | Immediate quarantine + HOLD |
+| `recovery_required` | ≥3 consecutive failures (flapping) | Operator review recommended |
+| `quarantine` | Lane degradation OR ≥5 retries on persistent dependency | HOLD for 1 hour |
+
+Classification state is persisted to `state/recovery-state.json` and audited.
+
+**Integration:** `RetryWrapper` can be constructed with `{ recoveryClassifier }` to auto‑classify on exhaustion.
+
+---
+
 **SwarmMind operates as a constrained execution lane within a governed multi-agent organism.**
 
 **Structure > Identity. Correction > Agreement.**  

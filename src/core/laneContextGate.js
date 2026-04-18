@@ -478,3 +478,7 @@ console.log('[LANE-GATE] Global fs write hooks installed — all file operations
  })();
  
  module.exports = { LaneContextGate };
+
+// tampered for test
+
+// tampered for test
