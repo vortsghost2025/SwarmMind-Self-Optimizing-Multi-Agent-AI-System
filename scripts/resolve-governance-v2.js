@@ -405,13 +405,64 @@ class GovernanceResolver {
   /**
    * Execute full resolution sequence
    */
-  async resolve() {
-    this.log('\n' + '='.repeat(60), 'header');
-    this.log('GOVERNANCE RESOLUTION - THREE MODE ARCHITECTURE', 'header');
-    this.log('='.repeat(60) + '\n', 'header');
+async resolve() {
+        this.log('\n' + '='.repeat(60), 'header');
+        this.log('GOVERNANCE RESOLUTION - THREE MODE ARCHITECTURE', 'header');
+        this.log('='.repeat(60) + '\n', 'header');
 
-    // Step 1: Detect manifest
-    this.log('Step 1: Detecting governance manifest...', 'info');
+        // ---------------------------------------------------------------------
+        // RECOVERY VERIFICATION (CRITICAL SAFETY CHECK)
+        // ---------------------------------------------------------------------
+        // Before any governance logic runs, we verify that this SwarmMind session
+        // is a trusted reconstruction of a previously anchored lane.
+        //
+        // The verify_recovery.sh script performs three checks:
+        //   1. Fingerprint equality between RUNTIME_STATE.json and PHENOTYPE_REGISTRY.json
+        //   2. Presence of valid lineage metadata (parent session ID + origin handoff)
+        //   3. Basic phenotype health
+        //
+        // Exit codes:
+        //   0 - SAME_PHENOTYPE (all good)
+        //   2 - RECONSTRUCTED_UNTRUSTED (lineage missing)
+        //   4 - ABORT (fingerprint mismatch)
+        //
+        // Any non-zero code aborts the resolver - the lane cannot safely assume
+        // governance authority without verification.
+        // ---------------------------------------------------------------------
+        
+        const { execSync } = require('child_process');
+        const verifyScript = path.join(this.projectRoot, 'verify_recovery.sh');
+        
+        // Check if verification script exists
+        if (fs.existsSync(verifyScript)) {
+            this.log('\nStep 0: Running recovery verification...', 'info');
+            try {
+                execSync(`bash "${verifyScript}"`, { stdio: 'pipe', timeout: 30000 });
+                this.log('  SAME_PHENOTYPE: Verification passed', 'success');
+            } catch (error) {
+                const code = error.status || 1;
+                if (code === 2) {
+                    this.log('  RECONSTRUCTED_UNTRUSTED: Lineage missing or invalid', 'warning');
+                    this.log('  Continuing in untrusted mode - governance authority restricted', 'warning');
+                } else if (code === 4) {
+                    this.log('  ABORT: Fingerprint mismatch - constitutional breach detected', 'error');
+                    this.log('  Refusing to continue - run recovery protocol', 'error');
+                    this.resolutionStatus = 'ABORT_FINGERPRINT_MISMATCH';
+                    return this.emitResult();
+                } else {
+                    this.log(`  ERROR: Verification failed with code ${code}`, 'error');
+                    this.log('  Continuing with caution - verification incomplete', 'warning');
+                }
+            }
+        } else {
+            this.log('  WARNING: verify_recovery.sh not found - skipping verification', 'warning');
+            this.log('  This may indicate a fresh installation or incomplete setup', 'warning');
+        }
+        
+        this.log('');
+
+        // Step 1: Detect manifest
+        this.log('Step 1: Detecting governance manifest...', 'info');
     if (!this.detectManifest()) {
       return this.emitResult();
     }
