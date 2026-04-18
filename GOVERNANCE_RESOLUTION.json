@@ -1,29 +1,30 @@
 {
-  "status": "resolved",
+  "timestamp": "2026-04-18T14:35:14.066Z",
   "project": "SwarmMind",
-  "mode": "governed-standalone",
-  "mode_config": {
-    "description": "Archivist-governed child project",
-    "governance_active": true,
-    "external_lane_enabled": true,
-    "claim_limit": "full"
-  },
+  "version": "1.0.0",
+  "resolved_mode": "governed-standalone",
+  "status": "resolved",
+  "governance_active": true,
+  "external_lane_enabled": true,
+  "claim_limit": "full",
   "governance": {
     "parent": "S:\\Archivist-Agent",
     "bootstrap": "S:\\Archivist-Agent\\BOOTSTRAP.md",
     "relationship": "integration-target",
     "role": "trace-mediated verification surface",
+    "derivation_chain": [
+      "papers",
+      "Archivist-Agent",
+      "SwarmMind"
+    ],
     "extension_mode": "Mode1-manual"
   },
-  "external_lane": {
-    "enabled": true,
-    "type": "integrated",
-    "claim_limit": "full",
-    "lanes": {
-      "L_lane": "implementation",
-      "R_lane": "review",
-      "external_lane": "human-validation"
-    }
-  },
-  "timestamp": "2026-04-17T06:06:34.337Z"
+  "branch": "main",
+  "session_id": "1776522914066-57968",
+  "validation": {
+    "manifest_detected": true,
+    "parent_resolved": true,
+    "bootstrap_verified": true,
+    "extension_available": true
+  }
 }

@@ -41,6 +41,9 @@ class GovernedStartup {
       process.exit(1);
     }
 
+    // Install global fs hooks — ALL file writes now pass through gate
+    this.laneGate.patchFs();
+
     if (this.laneGate.isOnHold()) {
       console.error('\n❌ System in HOLD state — lane-context conflict detected');
       console.error('   Operator resolution required before startup\n');

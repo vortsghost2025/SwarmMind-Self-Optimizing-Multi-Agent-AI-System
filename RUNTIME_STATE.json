@@ -1,36 +1,10 @@
 {
-  "$schema": "https://archivist.dev/schemas/runtime-state.json",
-  "version": "1.0.0",
-  "timestamp": "2026-04-17T04:23:25.801Z",
-  
-  "lane": {
-    "id": "swarmmind",
-    "role": "trace-mediated-verification-surface",
-    "position": 2
-  },
-  
-  "capabilities": {
-    "can_respond_to_sync": true,
-    "can_govern": false,
-    "can_restore_context": true,
-    "can_archive_traces": true
-  },
-  
-  "runtime": {
-    "mode": "governed-standalone",
-    "governance_active": true,
-    "external_lane_enabled": true,
-    "claim_limit": "full"
-  },
-  
-  "session": {
-    "id": "1776399805802-28240",
-    "branch": "main"
-  },
-  
-  "upstream": {
-    "lane_id": "archivist-agent",
-    "path": "S:\\Archivist-Agent",
-    "runtime_state": "S:\\Archivist-Agent\\RUNTIME_STATE.json"
-  }
+  "timestamp": "2026-04-18T14:35:14.066Z",
+  "mode": "governed-standalone",
+  "governance_active": true,
+  "external_lane_enabled": true,
+  "claim_limit": "full",
+  "branch": "main",
+  "session_id": "1776522914066-57968",
+  "parent": "S:\\Archivist-Agent"
 }
