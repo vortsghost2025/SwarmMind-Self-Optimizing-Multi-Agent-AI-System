@@ -53,9 +53,8 @@
         }
       }
     },
-    "z-ai": {
-      "base_url": "https://integrate.api.nvidia.com/v1",
-      "models": {
+		"z-ai": {
+			"models": {
         "glm5": {
           "name": "GLM-5",
           "tool_call": true,
