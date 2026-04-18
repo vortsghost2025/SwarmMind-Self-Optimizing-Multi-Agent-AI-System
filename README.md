@@ -495,10 +495,139 @@ Phase 3 work is authorized by `DECISION_PHASE3_QUEUE_SUBSYSTEM`. All changes m
 
 ---
 
+## Phase 3: Transactional Coordination + Resilience
+
+Phase 3 introduces a **de‑coupled coordination layer** and **resilience mechanisms** that allow the three lanes to interact without direct coupling while preserving auditability and fault tolerance.
+
+### Queue Subsystem
+
+Append‑only JSON‑line queues (`src/queue/Queue.js`) for typed artifact exchange:
+
+| Queue | Purpose | Item Types |
+|-------|---------|------------|
+| COMMAND | Bounded "do this now" actions (rare) | command_request |
+| REVIEW | Verification & policy review requests | verification_request, policy_review |
+| APPROVAL | Await governance decisions | policy_update, approval_request |
+| INCIDENT | Runtime failures, HOLD states, NFM findings | incident_report, hold_notice |
+| IDEA_DEFERRED | Good ideas saved for later | idea_proposal |
+
+Each item follows the schema:
+
+```json
+{
+  "id": "Q-2026-04-18-001",
+  "timestamp": "2026-04-18T16:15:00Z",
+  "origin_lane": "swarmmind",
+  "target_lane": "archivist",
+  "type": "approval_request",
+  "artifact_path": "S:/SwarmMind/.../PHASE3_POLICY.md",
+  "required_action": "approve",
+  "proof_required": ["git log -1"],
+  "status": "pending",
+  "resolution": null,
+  "payload": { ... }
+}
+```
+
+State transitions: `pending → accepted / rejected / superseded`. Only `pending` items may transition.
+
+**Test:** `node scripts/test-queue.js`
+
+### File‑Permission Enforcement
+
+`src/permissions/FilePermissionEnforcer.js` wraps `fs` and `fs.promises` to enforce lane‑specific whitelists. Violations throw `E_PERMISSION_DENIED` and trigger HOLD via `laneContextGate`.
+
+**Test:** `node scripts/test-permissions.js`
+
+### Audit Layer
+
+Immutable audit log (`src/audit/AuditLogger.js`) records:
+- Every queue enqueue and status change
+- Gate violations and HOLD entries
+- Retry/backoff events from the resilience layer
+
+Can generate summaries (`generateQueueSummary`) and export human‑readable reports (`exportReport`).
+
+**Test:** `node scripts/test-audit.js`
+
+### Identity Attestation
+
+Stub for lane identity and HMAC‑SHA256 signatures (`src/attestation/IdentityAttestation.js`). Future: replace with asymmetric keys and signed JWTs for non‑repudiation.
+
+**Test:** `node scripts/test-attestation.js`
+
+### seccomp‑bpf Simulation
+
+Placeholder (`src/security/SeccompSimulator.js`) documenting the interface for OS‑level syscall filtering. Logs syscall checks against a whitelist; production would require native module or container enforcement.
+
+**Test:** `node scripts/test-seccomp.js`
+
+---
+
+## Phase 3.6: Resilience — Timeout & Retry Wrapper
+
+Transient failures are handled by a generic retry mechanism (`src/resilience/RetryWrapper.js`) with:
+
+- **Per‑attempt timeout** – prevents hanging operations
+- **Exponential backoff** with jitter – avoids thundering herd
+- **Configurable predicate** – choose which errors are retryable
+- **Audit integration** – every backoff and final failure is logged
+- **Lane‑aware** – respects gate (no cross‑lane writes during retries)
+
+Example usage:
+
+```js
+const { RetryWrapper } = require('./src/resilience/RetryWrapper');
+
+const retry = new RetryWrapper({
+  maxAttempts: 3,
+  initialDelayMs: 100,
+  maxDelayMs: 10000,
+  timeoutMs: 5000,
+  enableJitter: true
+});
+
+try {
+  const result = await retry.execute(
+    async () => await fetch('https://api.example.com/data'),
+    { operation: 'http_get', target: 'api.example.com' }
+  );
+  console.log('Got:', result);
+} catch (e) {
+  console.error('All retries exhausted:', e);
+}
+```
+
+**Test:** `node scripts/test-retry.js`
+
+Helper functions for common patterns are in `src/resilience/RetryHelpers.js`:
+- `withRetry(fn, meta, type)`
+- `retryWriteFile(filePath, data, options)` – file writes with transient‑error retry
+- `retryFetch(url, options)` – HTTP fetches with network‑error retry
+- `retryEnqueue(queue, item)` – queue writes with aggressive retry
+
+---
+
+### Integration Points
+
+- **`governed-start.js`** – reads **APPROVAL** queue on startup and applies pending policy updates.
+- **`laneContextGate.js`** – emits **INCIDENT** queue entries on HOLD or violation.
+- **Library test runner** – emits **REVIEW** items for verification requests.
+- **Resilience layer** – logs all retry/backoff events to `audit/audit.log`.
+
+---
+
+### Governance
+
+All Phase 3 work is authorized by `DECISION_PHASE3_QUEUE_SUBSYSTEM` and follows the Git Protocol (scan‑for‑secrets, push immediately). The next step after implementation is Library verification of the full test suite, producing `FORMAL_VERIFICATION_GATE_PHASE3.md`.
+
+---
+
 **SwarmMind operates as a constrained execution lane within a governed multi-agent organism.**
 
 **Structure > Identity. Correction > Agreement.**  
 **The gate enforces boundaries so collaboration can scale without drift.**
+
 
 ---
 
