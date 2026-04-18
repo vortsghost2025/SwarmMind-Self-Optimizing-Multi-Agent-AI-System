@@ -1,5 +1,5 @@
 class ScalingManager {
-  constructor() {
+  constructor(laneGate = null) {
     this.agentPools = {
       planner: [],
       coder: [],
@@ -15,6 +15,7 @@ class ScalingManager {
       reviewer: { min: 1, max: 3, queueThreshold: 2 },
       executor: { min: 1, max: 4, queueThreshold: 2 }
     };
+    this.laneGate = laneGate;
   }
 
   /**
@@ -81,33 +82,33 @@ class ScalingManager {
     return pool.find(agent => agent.status === 'idle' || agent.status === 'completed');
   }
 
-  createAgent(role, idOverride) {
-    let AgentClass;
-    switch (role) {
-      case 'planner':
-        AgentClass = require('../agents/planner').PlannerAgent;
-        break;
-      case 'coder':
-        AgentClass = require('../agents/coder').CoderAgent;
-        break;
-      case 'reviewer':
-        AgentClass = require('../agents/reviewer').ReviewerAgent;
-        break;
-      case 'executor':
-        AgentClass = require('../agents/executor').ExecutorAgent;
-        break;
-      default:
-        throw new Error(`Unknown agent role: ${role}`);
-    }
+   createAgent(role, idOverride) {
+     let AgentClass;
+     switch (role) {
+       case 'planner':
+         AgentClass = require('../agents/planner').PlannerAgent;
+         break;
+       case 'coder':
+         AgentClass = require('../agents/coder').CoderAgent;
+         break;
+       case 'reviewer':
+         AgentClass = require('../agents/reviewer').ReviewerAgent;
+         break;
+       case 'executor':
+         AgentClass = require('../agents/executor').ExecutorAgent;
+         break;
+       default:
+         throw new Error(`Unknown agent role: ${role}`);
+     }
 
-     const agentId = idOverride || `${role}-${Date.now()}-${this.agentPools[role].length}`;
-    const newAgent = new AgentClass(agentId);
-    
-    this.agentPools[role].push(newAgent);
-    this.activeAgents.set(newAgent.id, newAgent);
-    
-    return newAgent;
-  }
+      const agentId = idOverride || `${role}-${Date.now()}-${this.agentPools[role].length}`;
+      const newAgent = new AgentClass(agentId, this.laneGate); // inject laneGate
+      
+      this.agentPools[role].push(newAgent);
+      this.activeAgents.set(newAgent.id, newAgent);
+      
+      return newAgent;
+   }
 
   shouldScaleUp(role) {
     const pool = this.getAgentPool(role);

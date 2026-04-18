@@ -1,8 +1,8 @@
 const { Agent } = require('../core/agent');
 
 class ReviewerAgent extends Agent {
-  constructor(id = 'reviewer-001') {
-    super(id, 'Reviewer', 'reviewer');
+  constructor(id = 'reviewer-001', laneGate = null) {
+    super(id, 'Reviewer', 'reviewer', 1000, laneGate);
   }
 
   async processTask(task) {

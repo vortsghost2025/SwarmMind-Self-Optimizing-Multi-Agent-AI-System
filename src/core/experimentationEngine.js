@@ -2,14 +2,15 @@ const ScalingManager = require('./scalingManager');
 const CognitiveTraceViewer = require('../ui/traceViewer');
 
 class ExperimentationEngine {
-  constructor() {
-    this.scalingManager = new ScalingManager();
+  constructor(laneGate = null) {
+    this.scalingManager = new ScalingManager(laneGate);
     this.traceViewer = new CognitiveTraceViewer();
     this.results = {
       singleAgent: null,
       multiAgent: null,
       comparison: null
     };
+    this.laneGate = laneGate;
   }
 
    async runSingleAgentExperiment(task) {

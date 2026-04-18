@@ -1,5 +1,5 @@
 class Agent {
-  constructor(id, name, role, maxTraceLength = 1000) {
+  constructor(id, name, role, maxTraceLength = 1000, laneGate = null) {
     this.id = id;
     this.name = name;
     this.role = role;
@@ -7,6 +7,7 @@ class Agent {
     this.currentTask = null;
     this.trace = [];
     this.maxTraceLength = maxTraceLength;
+    this.laneGate = laneGate; // Phase 2: lane-context gate
   }
 
   /**

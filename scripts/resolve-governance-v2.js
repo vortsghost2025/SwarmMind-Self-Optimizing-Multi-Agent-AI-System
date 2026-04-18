@@ -55,7 +55,7 @@ const UNICODE_PREFIX = {
 };
 
 class GovernanceResolver {
-    constructor(projectRoot) {
+    constructor(projectRoot, options = {}) {
         this.projectRoot = projectRoot || process.cwd();
         this.manifest = null;
         this.governanceContext = null;
@@ -64,6 +64,7 @@ class GovernanceResolver {
         this.modeConfig = null;
         this.externalLaneConfig = null;
         this.quarantineState = null;
+        this.laneGate = options.laneGate || null; // Phase 2: lane-context gate
     }
 
     log(message, level = 'info') {
@@ -74,6 +75,22 @@ class GovernanceResolver {
         const colorEnd = (level === 'header' || level === 'mode' || level === 'reset') ? '' : COLORS.RESET;
 
         console.log(`${colorStart}${icon} ${message}${colorEnd}`);
+    }
+
+    /**
+     * Phase 2: Pre-write gate wrapper
+     * Checks lane context before writing file
+     */
+    guardedWriteFile(filePath, data, options = {}) {
+        const absPath = path.resolve(filePath);
+        
+        if (this.laneGate) {
+            if (!this.laneGate.preWriteGate(absPath, options)) {
+                throw new Error(`Write blocked by lane-context gate: ${absPath}`);
+            }
+        }
+        
+        fs.writeFileSync(absPath, data, options);
     }
 
     /**
@@ -145,7 +162,7 @@ class GovernanceResolver {
         };
 
         const quarantinePath = path.join(this.projectRoot, 'QUARANTINE_STATE.json');
-        fs.writeFileSync(quarantinePath, JSON.stringify(quarantineState, null, 2));
+        this.guardedWriteFile(quarantinePath, JSON.stringify(quarantineState, null, 2));
         this.log(`Quarantine state: ${quarantinePath}`, 'warning');
 
         this.externalLaneConfig = {
@@ -721,9 +738,9 @@ try {
 
     this.log('\n' + '='.repeat(60) + '\n', 'reset');
 
-    // Write resolution result to JSON
+    // Write resolution result to JSON (guarded by lane-context gate)
     const resultPath = path.join(this.projectRoot, 'GOVERNANCE_RESOLUTION.json');
-    fs.writeFileSync(resultPath, JSON.stringify(result, null, 2));
+    this.guardedWriteFile(resultPath, JSON.stringify(result, null, 2));
     this.log(`Resolution result written to: ${resultPath}`, 'info');
 
     return result;

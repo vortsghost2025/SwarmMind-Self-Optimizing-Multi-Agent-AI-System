@@ -13,6 +13,7 @@
  */
 
 const GovernanceResolver = require('./resolve-governance');
+const { LaneContextGate } = require('../src/core/laneContextGate');
 const path = require('path');
 const fs = require('fs');
 
@@ -20,14 +21,37 @@ class GovernedStartup {
   constructor() {
     this.resolver = new GovernanceResolver(process.cwd());
     this.governanceContext = null;
+    this.laneGate = null;
   }
 
   async start() {
     console.log('\n🚀 SwarmMind Governance-Aware Startup\n');
     console.log('='.repeat(60));
 
-    // Step 1: Resolve governance
+    // Step 0: Initialize Lane-Context Gate (Phase 2: enforce cross-lane write policy)
+    console.log('\n🔒 Phase 2: Lane-Context Gate Initialization\n');
+    this.laneGate = new (require('../src/core/laneContextGate').LaneContextGate)(process.cwd(), {
+      governanceRoot: 'S:\\Archivist-Agent'
+    });
+
+    if (!this.laneGate.initialize()) {
+      console.error('\n❌ Lane-context gate failed to initialize');
+      console.error('   System cannot guarantee lane isolation');
+      console.error('   Aborting startup — operator intervention required\n');
+      process.exit(1);
+    }
+
+    if (this.laneGate.isOnHold()) {
+      console.error('\n❌ System in HOLD state — lane-context conflict detected');
+      console.error('   Operator resolution required before startup\n');
+      process.exit(1);
+    }
+
+    console.log('\n✅ Lane-context gate active — enforcing cross-lane write policy\n');
+
+    // Step 1: Create resolver with lane-gate injected
     console.log('\n📋 Phase 1: Governance Resolution\n');
+    this.resolver = new GovernanceResolver(process.cwd(), { laneGate: this.laneGate });
     const resolution = await this.resolver.resolve();
 
     // Step 2: Handle resolution result
@@ -65,8 +89,8 @@ class GovernedStartup {
           console.log('   (Governance context can be accessed by agents)\n');
         }
 
-        // Run the app
-        const app = new SwarmMindApp();
+        // Run the app (inject lane-gate for cross-lane enforcement)
+        const app = new SwarmMindApp(this.laneGate);
         await app.initialize();
         await app.runDemoTask("Create a simple web application that displays 'Hello, SwarmMind!'");
         await app.demonstrateScaling();

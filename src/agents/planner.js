@@ -1,8 +1,8 @@
 const { Agent } = require('../core/agent');
 
 class PlannerAgent extends Agent {
-  constructor(id = 'planner-001') {
-    super(id, 'Planner', 'planner');
+  constructor(id = 'planner-001', laneGate = null) {
+    super(id, 'Planner', 'planner', 1000, laneGate);
   }
 
   async processTask(task) {

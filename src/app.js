@@ -14,12 +14,13 @@ const log = (...args) => {
 };
 
 class SwarmMindApp {
-  constructor() {
+  constructor(laneGate = null) {
     this.agents = [];
     this.traceViewer = new CognitiveTraceViewer();
-    this.scalingManager = new ScalingManager();
-    this.experimentationEngine = new ExperimentationEngine();
+    this.scalingManager = new ScalingManager(laneGate);
+    this.experimentationEngine = new ExperimentationEngine(laneGate);
     this.isRunning = false;
+    this.laneGate = laneGate;
   }
 
   async initialize() {

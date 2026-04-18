@@ -1,8 +1,8 @@
 const { Agent } = require('../core/agent');
 
 class ExecutorAgent extends Agent {
-  constructor(id = 'executor-001') {
-    super(id, 'Executor', 'executor');
+  constructor(id = 'executor-001', laneGate = null) {
+    super(id, 'Executor', 'executor', 1000, laneGate);
   }
 
   async processTask(task) {
