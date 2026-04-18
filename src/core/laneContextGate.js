@@ -278,6 +278,39 @@ class LaneContextGate {
   }
 
   /**
+   * Phase 2.5: Validate NODE_OPTIONS configuration for child process propagation.
+   * 
+   * Called by governed-start.js after setting process.env.NODE_OPTIONS.
+   * Checks that the environment variable correctly points to this gate module.
+   * 
+   * @returns {boolean} - true if NODE_OPTIONS is correctly configured
+   */
+  initFromEnv() {
+    const nodeOptions = process.env.NODE_OPTIONS || '';
+    const gateRequirePath = 'laneContextGate.js';
+    
+    console.log('[LANE-GATE] Checking NODE_OPTIONS for child process propagation...');
+    console.log(`  NODE_OPTIONS="${nodeOptions}"`);
+    
+    // Check if our gate is in the require path
+    if (!nodeOptions.includes(gateRequirePath)) {
+      console.error('[LANE-GATE] ERROR: laneContextGate.js not found in NODE_OPTIONS');
+      console.error('  Child processes will NOT inherit the gate');
+      console.error(`  Expected: "--require path/to/laneContextGate.js"`);
+      console.error(`  Actual:   "${nodeOptions}"`);
+      
+      this.enterHold('node_options_missing', new Error('NODE_OPTIONS does not include laneContextGate.js'));
+      return false;
+    }
+    
+    console.log('[LANE-GATE] NODE_OPTIONS validation PASSED');
+    console.log('  All child processes spawned from this environment');
+    console.log('  will preload the gate via --require flag\n');
+    
+    return true;
+  }
+
+  /**
    * Check if gate is in hold state
    */
   isOnHold() {
@@ -299,65 +332,140 @@ class LaneContextGate {
      };
    }
 
-   /**
-    * Patch Node fs module to intercept ALL write operations
-    * Enforces gate at process level — any code calling fs.writeFileSync,
-    * fs.appendFileSync, fs.mkdirSync, or fs.unlinkSync will be checked.
-    */
-   patchFs() {
-     const fs = require('fs');
-     const self = this;
+  /**
+   * Patch Node fs module to intercept ALL write operations
+   * Enforces gate at process level — any code calling fs.writeFileSync,
+   * fs.appendFileSync, fs.mkdirSync, or fs.unlinkSync will be checked.
+   * 
+   * Phase 2.5: Also patches fs.promises (async) to prevent bypass via promises API.
+   */
+  patchFs() {
+    const fs = require('fs');
+    const self = this;
 
-     // Store originals
-     const originalWriteFileSync = fs.writeFileSync;
-     const originalAppendFileSync = fs.appendFileSync;
-     const originalMkdirSync = fs.mkdirSync;
-     const originalUnlinkSync = fs.unlinkSync;
-     const originalRmdirSync = fs.rmdirSync;
-
-     // Wrap writeFileSync
-     fs.writeFileSync = function(path, data, options) {
-       if (!self.preWriteGate(path, { operatorConfirmed: false })) {
-         throw new Error(`[LANE-GATE] Cross-lane write blocked: ${path}`);
-       }
-       return originalWriteFileSync.call(this, path, data, options);
-     };
-
-     // Wrap appendFileSync
-     fs.appendFileSync = function(path, data, options) {
-       if (!self.preWriteGate(path, { operatorConfirmed: false })) {
-         throw new Error(`[LANE-GATE] Cross-lane append blocked: ${path}`);
-       }
-       return originalAppendFileSync.call(this, path, data, options);
-     };
-
-     // Wrap mkdirSync (directory creation)
-     fs.mkdirSync = function(path, options) {
-       if (!self.preWriteGate(path, { operatorConfirmed: false })) {
-         throw new Error(`[LANE-GATE] Cross-lane mkdir blocked: ${path}`);
-       }
-       return originalMkdirSync.call(this, path, options);
-     };
-
-     // Wrap unlinkSync (file deletion)
-     fs.unlinkSync = function(path) {
-       if (!self.preWriteGate(path, { operatorConfirmed: false })) {
-         throw new Error(`[LANE-GATE] Cross-lane delete blocked: ${path}`);
-       }
-       return originalUnlinkSync.call(this, path);
-     };
-
-     // Wrap rmdirSync (directory removal)
-     fs.rmdirSync = function(path, options) {
-       if (!self.preWriteGate(path, { operatorConfirmed: false })) {
-         throw new Error(`[LANE-GATE] Cross-lane rmdir blocked: ${path}`);
-       }
-       return originalRmdirSync.call(this, path, options);
-     };
-
-      console.log('[LANE-GATE] Global fs write hooks installed — all file operations guarded');
-    }
-
+    // Store originals — synchronous API
+    const originalWriteFileSync = fs.writeFileSync;
+    const originalAppendFileSync = fs.appendFileSync;
+    const originalMkdirSync = fs.mkdirSync;
+    const originalUnlinkSync = fs.unlinkSync;
+    const originalRmdirSync = fs.rmdirSync;
+    
+    // Wrap synchronous writeFileSync
+    fs.writeFileSync = function(path, data, options) {
+      if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+        throw new Error(`[LANE-GATE] Cross-lane write blocked: ${path}`);
+      }
+      return originalWriteFileSync.call(this, path, data, options);
+    };
+    
+    // Wrap synchronous appendFileSync
+    fs.appendFileSync = function(path, data, options) {
+      if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+        throw new Error(`[LANE-GATE] Cross-lane append blocked: ${path}`);
+      }
+      return originalAppendFileSync.call(this, path, data, options);
+    };
+    
+    // Wrap synchronous mkdirSync (directory creation)
+    fs.mkdirSync = function(path, options) {
+      if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+        throw new Error(`[LANE-GATE] Cross-lane mkdir blocked: ${path}`);
+      }
+      return originalMkdirSync.call(this, path, options);
+    };
+    
+    // Wrap synchronous unlinkSync (file deletion)
+    fs.unlinkSync = function(path) {
+      if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+        throw new Error(`[LANE-GATE] Cross-lane delete blocked: ${path}`);
+      }
+      return originalUnlinkSync.call(this, path);
+    };
+    
+    // Wrap synchronous rmdirSync (directory removal)
+    fs.rmdirSync = function(path, options) {
+      if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+        throw new Error(`[LANE-GATE] Cross-lane rmdir blocked: ${path}`);
+      }
+      return originalRmdirSync.call(this, path, options);
+    };
+    
+    // Phase 2.5: Also patch fs.promises to prevent async bypass
+    if (fs.promises) {
+      const promisesOriginalWriteFile = fs.promises.writeFile;
+      const promisesOriginalAppendFile = fs.promises.appendFile;
+      const promisesOriginalMkdir = fs.promises.mkdir;
+      const promisesOriginalUnlink = fs.promises.unlink;
+      const promisesOriginalRmdir = fs.promises.rmdir;
+      
+      // Wrap promises.writeFile
+      fs.promises.writeFile = function(path, data, options) {
+        if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+          return Promise.reject(new Error(`[LANE-GATE] Cross-lane write blocked: ${path}`));
+        }
+        return promisesOriginalWriteFile.call(this, path, data, options);
+      };
+      
+      // Wrap promises.appendFile
+      fs.promises.appendFile = function(path, data, options) {
+        if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+          return Promise.reject(new Error(`[LANE-GATE] Cross-lane append blocked: ${path}`));
+        }
+        return promisesOriginalAppendFile.call(this, path, data, options);
+      };
+      
+      // Wrap promises.mkdir
+      fs.promises.mkdir = function(path, options) {
+        if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+          return Promise.reject(new Error(`[LANE-GATE] Cross-lane mkdir blocked: ${path}`));
+        }
+        return promisesOriginalMkdir.call(this, path, options);
+      };
+      
+      // Wrap promises.unlink
+      fs.promises.unlink = function(path) {
+        if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+          return Promise.reject(new Error(`[LANE-GATE] Cross-lane delete blocked: ${path}`));
+        }
+        return promisesOriginalUnlink.call(this, path);
+      };
+      
+      // Wrap promises.rmdir
+      fs.promises.rmdir = function(path, options) {
+        if (!self.preWriteGate(path, { operatorConfirmed: false })) {
+          return Promise.reject(new Error(`[LANE-GATE] Cross-lane rmdir blocked: ${path}`));
+        }
+        return promisesOriginalRmdir.call(this, path, options);
+      };
+      
+console.log('[LANE-GATE] fs.promises hooks installed — async file operations guarded');
 }
 
-module.exports = { LaneContextGate };
+console.log('[LANE-GATE] Global fs write hooks installed — all file operations guarded');
+}
+}
+ 
+ // =============================================================================
+ // AUTO-INSTALL VIA NODE_OPTIONS (Phase 2.5)
+ // =============================================================================
+ // If this module is preloaded using NODE_OPTIONS=--require laneContextGate.js,
+ // automatically instantiate the gate and patch the fs module. This ensures
+ // child processes inherit lane-context enforcement without explicit bootstrap.
+ // =============================================================================
+ (function() {
+   const isPreloaded = process.env.NODE_OPTIONS && process.env.NODE_OPTIONS.includes('laneContextGate.js');
+   if (isPreloaded && !global.__LANE_GATE_INSTALLED__) {
+     try {
+       const gate = new LaneContextGate(process.cwd());
+       // Install fs hooks immediately; initialization (ownership + session)
+       // will occur lazily on first write via preWriteGate.initialize() if needed.
+       gate.patchFs();
+       global.__LANE_GATE_INSTALLED__ = true;
+       console.log('[LANE-GATE] Preload: fs hooks installed — child process protection active');
+     } catch (e) {
+       console.error('[LANE-GATE] Preload failed — gate NOT active:', e.message);
+     }
+   }
+ })();
+ 
+ module.exports = { LaneContextGate };

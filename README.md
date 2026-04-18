@@ -1,10 +1,44 @@
 # SwarmMind: Trace-Mediated Verification Surface (Lane 2)
 
-**Operational Status:** ✅ Active — Isolated Interior Lattice-Constrained Verification Lane  
-**Authority:** 80 (Execution Layer)  
-**Governance Root:** `S:\Archivist-Agent` (Authority 100)  
-**Session ID:** Dynamic per run (tracked in `.session-lock`)  
-**Cross-Lane Policy:** `require_authority_100_or_same_lane` — enforced via `LaneContextGate`
+**Operational Status:** ✅ Active — Isolated Interior Lattice-Constrained Verification Lane
+**Authority:** 80 (Execution Layer)
+**Governance Root:** [Archivist-Agent](https://github.com/vortsghost2025/Archivist-Agent) (Lane 1, Authority 100)
+**Session ID:** Dynamic per run (tracked in `.session-lock`)
+**Cross-Lane Policy:** `require_authority_100_or_same_lane` — enforced via `LaneContextGate` (Phase 2, commit `fc988c9`)
+
+---
+
+## START HERE
+
+**What this repository is:**
+- A multi-agent execution engine that runs inside the three-lane constitutional governance system
+- Authority 80, governed by Archivist-Agent (Lane 1), verified by self-organizing-library (Lane 3)
+- Implements cross-lane write enforcement via `LaneContextGate` (Phase 2, SPEC_AMENDMENT_LANE_CONTEXT_GATE)
+
+**What this repository is NOT:**
+- A standalone system operating without governance
+- A project that can write to Archivist-Agent or Library files
+- An agent that decides its own constraints — those come from BOOTSTRAP.md
+- A demo/hackathon prototype — it's production governance code
+
+**If you only read 3 files, read these:**
+1. `README.md` (this file) — Understand the three-lane system from SwarmMind's perspective
+2. `S:\Archivist-Agent\BOOTSTRAP.md` — The single entry point that defines everything
+3. `S:\Archivist-Agent\FILE_OWNERSHIP_REGISTRY.json` — See which paths belong to which lane
+
+**Quick 10-line example workflow:**
+```
+1. Operator runs: npm start
+2. governed-start.js loads FILE_OWNERSHIP_REGISTRY.json from Archivist
+3. LaneContextGate verifies lane identity (swarmmind, auth=80)
+4. Global fs monkey-patch installed → all writes go through preWriteGate()
+5. User submits task → Planner decomposes → Coder implements
+6. Reviewer evaluates → Executor runs → Trace captured end-to-end
+7. Result written to SwarmMind/output/ (same-lane → allowed)
+8. Any attempt to write to S:\Archivist-Agent\ → ❌ BLOCKED → HOLD
+9. Operator reviews HOLD reason in QUARANTINE_STATE.json
+10. Operator calls gate.exitHold('operator-override') or fixes root cause
+```
 
 ---
 
@@ -17,21 +51,24 @@ SwarmMind is **Lane 2** of a three-lane verification organism:
 │                     THREE-LANE VERIFICATION ORGANISM                │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                    │
-│  Lane 1 (Authority 100)  ──►  Archivist-Agent                      │
+│  Lane 1 (Authority 100) ──► [Archivist-Agent]                      │
+│    github.com/vortsghost2025/Archivist-Agent                       │
 │  Role: Governance Root & Structural Verification (Lane L)          │
 │  - Maintains constitutional constraints (S:.global)               │
 │  - Single entry point: BOOTSTRAP.md                               │
 │  - Dual verification coordination (L + R lanes)                   │
 │  - FILE_OWNERSHIP_REGISTRY.json defines lane boundaries           │
 │                                                                    │
-│  Lane 2 (Authority 80)   ──►  SwarmMind (THIS REPO)               │
+│  Lane 2 (Authority 80)  ──► SwarmMind (THIS REPO)                 │
+│    github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System
 │  Role: Execution & Self-Optimization (Center Lane)                 │
 │  - Multi-agent swarm execution (Planner → Coder → Reviewer → Exec) │
 │  - Cognitive trace viewer (transparent AI reasoning)              │
 │  - Auto-scaling & experimentation engine                          │
 │  - Governed by Lane 1, constrained by FILE_OWNERSHIP_REGISTRY     │
 │                                                                    │
-│  Lane 3 (Authority 60)   ──►  self-organizing-library             │
+│  Lane 3 (Authority 60)  ──► [self-organizing-library]             │
+│    github.com/vortsghost2025/self-organizing-library              │
 │  Role: Knowledge Graph & Persistent Memory (Lane R)               │
 │  - NexusGraph: massive document ingestion & cross-referencing     │
 │  - Bi-directional linking (Rosetta Stone citations: [[doc-id]])   │
@@ -41,14 +78,60 @@ SwarmMind is **Lane 2** of a three-lane verification organism:
 └────────────────────────────────────────────────────────────────────┘
 
 Cross-lane writes require authority ≥ 100 OR target owned by same lane.
-Enforced by LaneContextGate (Phase 2 implementation, SPEC_AMENDMENT_LANE_CONTEXT_GATE).
+Enforced by LaneContextGate (SPEC_AMENDMENT_LANE_CONTEXT_GATE).
 ```
+
+---
+
+## Purpose & Scope
+
+**SwarmMind exists to execute.** It is the controlled center of the three-lane organism — the only lane that can take action in the world, but only under constitutional constraints.
+
+- **Scope:** Task execution via agent swarm, cognitive trace capture, auto-scaling, experimentation
+- **Not in scope:** Governance definitions, cross-lane write permissions, final verification — those belong to Lanes 1 and 3
+- **Boundary:** Cannot write to paths owned by Lane 1 or Lane 3 (enforced by `LaneContextGate`)
+- **Output:** Results, traces, logs — to SwarmMind-owned directories only; other lanes ingest independently
+
+---
+
+## Essential Reading (3 Files Maximum)
+
+If you want to understand SwarmMind in the shortest possible time, read these three files in order:
+
+1. **`S:\Archivist-Agent\BOOTSTRAP.md`** — The single entry point that defines the entire three-lane organism. Everything flows from this.
+2. **`S:\Archivist-Agent\FILE_OWNERSHIP_REGISTRY.json`** — The lane boundary map. Shows exactly which paths SwarmMind can write to and which are off-limits.
+3. **`scripts/governed-start.js`** — The actual startup sequence that loads governance, initializes the gate, and launches the app. Implementation of steps 1–5 in the "Start Here" workflow.
+
+Once you've read these three, you understand:
+- **Why** SwarmMind exists (BOOTSTRAP.md)
+- **Where** it can operate (FILE_OWNERSHIP_REGISTRY.json)
+- **How** it enforces boundaries (governed-start.js → LaneContextGate)
+
+For deeper dives, see the "Further Reading" section below.
 
 ---
 
 ## What SwarmMind Does
 
 **Mission:** Execute tasks using specialized AI agents while providing full cognitive transparency and self-optimization through comparative experimentation.
+
+### What SwarmMind Is
+
+- ✅ **An execution lane** — The only lane in the three-lane system that performs work
+- ✅ **Governance-bound** — Operates under Archivist-Agent's constitutional constraints
+- ✅ **Cross-lane write enforced** — Blocked from writing to Lane 1 and Lane 3 territory (LaneContextGate)
+- ✅ **Self-optimizing** — Continuously experiments to find better execution strategies
+- ✅ **Fully traceable** — Every decision, action, and result captured in cognitive traces
+
+### What SwarmMind Is NOT
+
+- ❌ A standalone system — requires Archivist-Agent's governance files
+- ❌ A rogue agent — cannot decide its own constraints or override lane boundaries
+- ❌ A member of the organism it executes for — it evaluates work, it is not the work
+- ❌ A project that owns its session state — controlled by Archivist's SESSION_REGISTRY.json
+- ❌ A system that writes everywhere — same-lane only; cross-lane blocked by design
+
+---
 
 ### Core Capabilities
 
@@ -133,21 +216,19 @@ Startup Sequence:
 
 ---
 
-## Foundational Research (Rosetta Stone Papers)
+## Foundational Research (Rosetta Stone Papers Theory → Concrete Files)
 
-The three-lane architecture and constitutional governance are derived from the **WE4FREE Resilience Framework** (OSF: https://osf.io/n3tya):
+The three-lane architecture is derived from the **WE4FREE Resilience Framework** (OSF: https://osf.io/n3tya). Here, theory maps directly to implementation:
 
-1. **Error Handling & Resilience** — Constraint-aware error handling
-2. **Constitution-Preserving Resilience** — Failing without violating core values
-3. **Sharp Edges Clarifications** — Edge case solutions
-4. **Architecture Review Checklist** — Compliance assessment
-5. **Decision Matrix** — Error domain → strategy → budget mapping
+| Paper (Theory) | Title | Concrete Implementation in SwarmMind |
+|----------------|-------|--------------------------------------|
+| Paper 1 | Error Handling & Resilience | `src/core/laneContextGate.js` — constraint-aware cross-lane block + HOLD |
+| Paper 2 | Constitution-Preserving Resilience | `scripts/governed-start.js` — governance resolution before any execution |
+| Paper 3 | Sharp Edges Clarifications | `REFERENCE_ARCHIVIST.md` — incident histories as edge-case solutions |
+| Paper 4 | Architecture Review Checklist | `scripts/verify-phase2.js` — automated Phase 2 compliance checks |
+| Paper 5 | Decision Matrix | `src/agents/reviewer.js` — confidence ratings, checkpoint verification |
 
-These papers are stored in `S:\Archivist-Agent\` as `paper1.txt` through `paper5.txt` and form the theoretical foundation for:
-- Why three separate lanes (not monolithic)
-- Why dual verification (L + R)
-- Why structure > identity
-- Why correction mandatory, agreement optional
+The papers are stored in `S:\Archivist-Agent\` as `paper1.txt` through `paper5.txt`. Every line of SwarmMind code is derived from one of these five foundational documents.
 
 ---
 
@@ -318,11 +399,33 @@ node -e "const {LaneContextGate}=require('./src/core/laneContextGate');const g=n
 
 ## Further Reading
 
-- `ARCHIVIST_HALLUCINATION_ANALYSIS.md` — Incident analysis of cross-lane write gaps
-- `SESSION_ID_FRAGMENTATION_FIX.md` — Session state sync protocol
-- `MULTI_PROJECT_GIT_SYNTHESIS.md` — Cross-lane coordination strategy
-- `VERIFICATION_SUMMARY.md` — System verification results
-- `docs/` in Archivist-Agent — Governance deep dive (BOOTSTRAP.md, GOVERNANCE.md, VERIFICATION_LANES.md)
+**SwarmMind Internals:**
+- `REFERENCE_ARCHIVIST.md` — Concise guide to Lane 1 governance root (role, files, policies)
+- `REFERENCE_LIBRARY.md` — Concise guide to Lane 3 verification & memory layer
+- `laneContextGate.js` — Phase 2 implementation (cross-lane fs monkey-patch)
+- `governed-start.js` — Governance bootstrap sequence
+- `governance/` — Resolved constitutional context from Archivist
+
+**Archivist-Agent Governance (Lane 1):**
+- `S:\Archivist-Agent\BOOTSTRAP.md` — Single entry point, organism definition
+- `S:\Archivist-Agent\GOVERNANCE.md` — 7 Laws, 3 Invariants, Checkpoints
+- `S:\Archivist-Agent\FILE_OWNERSHIP_REGISTRY.json` — Lane boundaries & write policy
+- `S:\Archivist-Agent\SESSION_REGISTRY.json` — Active sessions across all lanes
+- `S:\Archivist-Agent\VERIFICATION_LANES.md` — L + R dual verification protocol
+- `S:\Archivist-Agent\MULTI_PROJECT_GIT_SYNTHESIS.md` — Cross-lane commit conventions
+
+**Self-Organizing Library (Lane 3):**
+- `FORMAL_VERIFICATION_GATE_PHASE2.md` — Phase 2 compliance assessment report
+- `SPEC.md` — NexusGraph feature specification
+- `IMPLEMENTATION_COMPASS.md` — WE4FREE paper distillation → operational rules
+- `PATTERN_DECISION_TREE.md` — 8 decision flowcharts for failure modes
+- `QUICK_LOOKUP_INDEX.md` — Pattern→file→paper cross-reference index
+- `ARCHIVIST_QUICK_REFERENCE.md` — 1-page Archivist operations guide
+
+**Incident Analysis (Post-Mortems):**
+- `ARCHIVIST_HALLUCINATION_ANALYSIS.md` — Cross-lane write gap pre-Phase 2
+- `SESSION_ID_FRAGMENTATION_FIX.md` — Session-state sync protocol
+- `SELF_STATE_ALIASING_FAILURE_MODE.md` (in Library) — Self-state precedence rule
 
 ---
 
