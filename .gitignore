@@ -51,3 +51,9 @@ typings/
 *.njsproj
 *.sln
 *.sw?nul
+
+# Identity keys (NEVER commit)
+.identity/
+*.key
+*.pem
+keys.json
