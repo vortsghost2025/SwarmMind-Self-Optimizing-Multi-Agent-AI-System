@@ -19,24 +19,23 @@
   "continuity_fingerprint": {
     "identity_hash": "7a769dd69262336888d1df4e3e2826d155a6a6b04977f3d8cddd185a5ddb958e",
     "session_memory_hash": "dfb16f7acf48723882919d5a826a7cc1b1525fc71a562884225d47d820aff6d2",
-    "session_registry_hash": "FILE_NOT_FOUND",
+    "session_registry_hash": "59e424ec2c8e7e38da4a44f878c72d31eec383a92e5ebaeb2d40a42a47fc5ef2",
     "audit_log_hash": "9fe7cdd2bb9ca83df1652c493e1f188bcfb076b5016af89e2fcc14a146b1dca3",
-    "combined_hash": "5c6884b3192d6b210026255cad2e655d1ed74491acc1fe0d542abbbe91698819"
+    "combined_hash": "609046241772138970affa72e6fa83cd11cb9210560250a55e3d409659b95682"
   },
 
-  "recovery_status": "partial",
-  "recovery_timestamp": "2026-04-19T01:05:00Z",
+  "recovery_status": "verified",
+  "recovery_timestamp": "2026-04-19T01:20:00Z",
   "verification_result": {
     "constitutional": "DELEGATED",
-    "continuity": "PARTIAL",
-    "missing_inputs": ["SESSION_REGISTRY.json"],
-    "timestamp": "2026-04-19T01:05:00Z"
+    "continuity": "MATCH",
+    "timestamp": "2026-04-19T01:20:00Z"
   },
 
   "inputs": {
     "identity": ".identity/keys.json",
     "session_memory": ".memory/sessions.json",
-    "session_registry": "SESSION_REGISTRY.json (MISSING)",
+    "session_registry": "SESSION_REGISTRY.json",
     "audit_log": "logs/audit.log"
   },
 
