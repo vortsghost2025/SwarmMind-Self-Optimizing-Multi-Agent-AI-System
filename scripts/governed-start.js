@@ -46,43 +46,51 @@ class GovernedStartup {
        process.exit(1);
      }
 
-     // Step -0.5: Phase 4.3 — Asymmetric Attestation initialization
-     console.log('\n🔑 Phase 4.3: Asymmetric Attestation Initialization\n');
-     let signer, verifier, keyManager;
-     try {
-       const { KeyManager } = require('../src/attestation/KeyManager');
-       const { Signer } = require('../src/attestation/Signer');
-       const { Verifier } = require('../src/attestation/Verifier');
-       const { TrustStoreManager } = require('../src/attestation/TrustStoreManager');
-       const QueueStatic = require('../src/queue/Queue');
-       const { audit: auditInstance } = require('../src/audit/AuditLogger');
+  // Step -0.5: Phase 4.3 — Asymmetric Attestation initialization
+  console.log('\n🔑 Phase 4.3: Asymmetric Attestation Initialization\n');
+  let signer, verifierWrapper, keyManager;
+  try {
+    const { KeyManager } = require('../src/attestation/KeyManager');
+    const { Signer } = require('../src/attestation/Signer');
+    const { Verifier } = require('../src/attestation/Verifier');
+    const { VerifierWrapper } = require('../src/attestation/VerifierWrapper');
+    const { TrustStoreManager } = require('../src/attestation/TrustStoreManager');
+    const { RecoveryClient } = require('../src/attestation/RecoveryClient');
+    const QueueStatic = require('../src/queue/Queue');
+    const { audit: auditInstance } = require('../src/audit/AuditLogger');
 
-       // Ensure passphrase is set
-       if (!process.env.LANE_KEY_PASSPHRASE) {
-         throw new Error('LANE_KEY_PASSPHRASE environment variable not set');
-       }
-       keyManager = new KeyManager({ laneId: process.env.LANE_NAME });
-       const initResult = keyManager.initialize(process.env.LANE_KEY_PASSPHRASE);
-       if (initResult.generated) {
-         console.log('   ✓ Generated new RSA-2048 key pair');
-       } else {
-         console.log('   ✓ Loaded existing RSA-2048 key pair');
-       }
+    if (!process.env.LANE_KEY_PASSPHRASE) {
+      throw new Error('LANE_KEY_PASSPHRASE environment variable not set');
+    }
+    keyManager = new KeyManager({ laneId: process.env.LANE_NAME });
+    const initResult = keyManager.initialize(process.env.LANE_KEY_PASSPHRASE);
+    if (initResult.generated) {
+      console.log(' ✓ Generated new RSA-2048 key pair');
+    } else {
+      console.log(' ✓ Loaded existing RSA-2048 key pair');
+    }
 
-       signer = new Signer();
-       // Default migration cutoff is 2026-05-19; allowLegacy behavior is via isHMACAccepted()
-       verifier = new Verifier(); 
-       // Trust our own key immediately for self-verification (runtime addition)
-       verifier.addTrustedKey(process.env.LANE_NAME, keyManager.loadPublicKey(), initResult.keyId);
+    signer = new Signer();
+    const verifier = new Verifier();
+    verifier.addTrustedKey(process.env.LANE_NAME, keyManager.loadPublicKey(), initResult.keyId);
 
-       // Configure global attestation for Queue (now includes keyManager)
-       QueueStatic.setAttestation(signer, verifier, keyManager);
-       
-       // Configure AuditLogger with both signer and keyManager
-       auditInstance.setSigner(signer);
-       auditInstance.setKeyManager(keyManager);
+    const recoveryClient = new RecoveryClient({
+      orchestratorUrl: process.env.ARCHIVIST_URL || 'http://localhost:3000',
+      laneId: process.env.LANE_NAME
+    });
 
-       console.log('   ✓ Signer and Verifier initialized (dual-mode until 2026-05-19)');
+    verifierWrapper = new VerifierWrapper({
+      verifier,
+      recoveryClient,
+      submitToRecovery: true
+    });
+
+    QueueStatic.setAttestation(signer, verifierWrapper, keyManager);
+
+    auditInstance.setSigner(signer);
+    auditInstance.setKeyManager(keyManager);
+
+    console.log(' ✓ Signer and VerifierWrapper initialized (deterministic verification active)');
 
        // Export public key to Archivist trust pending (for trust store registration)
        const pubInfo = keyManager.exportForTrustStore();
@@ -128,14 +136,14 @@ class GovernedStartup {
      // Step 0.75: Phase 3.7 — Continuity verification (fingerprint + recovery classifier)
      console.log('\n🔐 Phase 3.7: Continuity Verification\n');
      const { ContinuityVerifier } = require('../src/resilience/ContinuityVerifier');
-     const continuity = new ContinuityVerifier({
-       gate: this.laneGate,
-       projectRoot: process.cwd(),
-       stateDir: laneResolver.getContinuityDirectory(),
-       signer: signer,
-       verifier: verifier,
-       keyManager: keyManager
-     });
+  const continuity = new ContinuityVerifier({
+    gate: this.laneGate,
+    projectRoot: process.cwd(),
+    stateDir: laneResolver.getContinuityDirectory(),
+    signer: signer,
+    verifierWrapper: verifierWrapper,
+    keyManager: keyManager
+  });
     const continuityResult = continuity.verify();
     console.log(`   Action: ${continuityResult.action}`);
     if (continuityResult.action === 'QUARANTINE' || continuityResult.action === 'LANE_DEGRADATION') {

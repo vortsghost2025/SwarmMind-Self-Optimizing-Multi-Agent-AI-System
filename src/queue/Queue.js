@@ -8,24 +8,24 @@ const fs = require('fs');
 const path = require('path');
 
 class Queue {
-	/**
-	 * Static attestation dependencies (set during startup)
-	 */
-	static _signer = null;
-	static _verifier = null;
-	static _keyManager = null; // KeyManager instance for obtaining key material
+  /**
+   * Static attestation dependencies (set during startup)
+   */
+  static _signer = null;
+  static _verifierWrapper = null;
+  static _keyManager = null;
 
-	/**
-	 * Configure attestation for all Queue instances
-	 * @param {Signer} signer
-	 * @param {Verifier} verifier
-	 * @param {KeyManager} keyManager - for loading signing key on each enqueue
-	 */
-	static setAttestation(signer, verifier, keyManager) {
-		Queue._signer = signer;
-		Queue._verifier = verifier;
-		Queue._keyManager = keyManager;
-	}
+  /**
+   * Configure attestation for all Queue instances
+   * @param {Signer} signer
+   * @param {VerifierWrapper} verifierWrapper - unified verification entry point
+   * @param {KeyManager} keyManager - for loading signing key on each enqueue
+   */
+  static setAttestation(signer, verifierWrapper, keyManager) {
+    Queue._signer = signer;
+    Queue._verifierWrapper = verifierWrapper;
+    Queue._keyManager = keyManager;
+  }
 
 	/**
 	 * @param {string} type - Queue type (e.g., 'COMMAND', 'REVIEW').
@@ -122,76 +122,74 @@ class Queue {
 		return all.filter(i => i.status === 'pending');
 	}
 
-	updateStatus(id, newStatus, resolution = null) {
-		const allowed = ['pending', 'accepted', 'rejected', 'superseded'];
-		if (!allowed.includes(newStatus)) {
-			throw new Error(`Invalid status ${newStatus}`);
-		}
-		const all = this._loadAll();
-		const idx = all.findIndex(i => i.id === id);
-		if (idx === -1) {
-			throw new Error(`Queue item ${id} not found`);
-		}
-		const current = all[idx];
+  updateStatus(id, newStatus, resolution = null) {
+    const allowed = ['pending', 'accepted', 'rejected', 'superseded'];
+    if (!allowed.includes(newStatus)) {
+      throw new Error(`Invalid status ${newStatus}`);
+    }
+    const all = this._loadAll();
+    const idx = all.findIndex(i => i.id === id);
+    if (idx === -1) {
+      throw new Error(`Queue item ${id} not found`);
+    }
+    const current = all[idx];
 
-		// Attestation: verify signature of current item before allowing transition
-		if (Queue._verifier) {
-			let isValid = false;
-			if (current.signature) {
-				const v = Queue._verifier.verifyQueueItem(current);
-				if (!v.valid) {
-					throw new Error(`Signature verification failed for item ${id}: ${v.error || v.errors?.join(', ')}`);
-				}
-				isValid = true;
-			}
-			if (!isValid && current.hmac) {
-				const v = Queue._verifier.verifyHMAC ? Queue._verifier.verifyHMAC(current) : { valid: false };
-				if (!v.valid) {
-					throw new Error(`HMAC verification failed for item ${id}: ${v.error || v.reason}`);
-				}
-				isValid = true;
-			}
-			if (!isValid && !Queue._verifier.isHMACAccepted()) {
-				throw new Error(`Queue item ${id} missing required signature`);
-			}
-			// Legacy allowed but no signature? We'll still allow if HMAC accepted and present; otherwise block.
-		}
+    // Attestation: verify signature via VerifierWrapper (deterministic path)
+    if (Queue._verifierWrapper) {
+      if (current.signature) {
+        const v = Queue._verifierWrapper.verify(current);
+        if (!v.valid) {
+          throw new Error(`Signature verification failed for item ${id}: ${v.reason || v.error || 'unknown'}`);
+        }
+      } else if (current.hmac) {
+        const verifier = Queue._verifierWrapper.verifier;
+        if (verifier && verifier.isHMACAccepted && verifier.isHMACAccepted()) {
+          const v = verifier.verifyHMAC ? verifier.verifyHMAC(current) : { valid: false };
+          if (!v.valid) {
+            throw new Error(`HMAC verification failed for item ${id}: ${v.error || v.reason}`);
+          }
+        } else {
+          throw new Error(`Queue item ${id} missing required signature (HMAC not accepted)`);
+        }
+      } else {
+        throw new Error(`Queue item ${id} missing required signature or HMAC`);
+      }
+    }
 
-		if (current.status !== 'pending') {
-			throw new Error(`Only pending items can be transitioned (current: ${current.status})`);
-		}
-		all[idx].status = newStatus;
-		if (resolution) all[idx].resolution = resolution;
+    if (current.status !== 'pending') {
+      throw new Error(`Only pending items can be transitioned (current: ${current.status})`);
+    }
+    all[idx].status = newStatus;
+    if (resolution) all[idx].resolution = resolution;
 
-		// Re-sign the updated item to reflect new status (attest the state change)
-		if (Queue._signer && Queue._keyManager) {
-			try {
-				const passphrase = process.env.LANE_KEY_PASSPHRASE;
-				if (!passphrase) throw new Error('LANE_KEY_PASSPHRASE not set');
-				const privateKey = Queue._keyManager.loadPrivateKey(passphrase);
-				const publicKeyInfo = Queue._keyManager.getPublicKeyInfo();
-				if (!publicKeyInfo) throw new Error('Public key info not available');
-				const keyId = publicKeyInfo.key_id;
+    // Re-sign the updated item to reflect new status (attest the state change)
+    if (Queue._signer && Queue._keyManager) {
+      try {
+        const passphrase = process.env.LANE_KEY_PASSPHRASE;
+        if (!passphrase) throw new Error('LANE_KEY_PASSPHRASE not set');
+        const privateKey = Queue._keyManager.loadPrivateKey(passphrase);
+        const publicKeyInfo = Queue._keyManager.getPublicKeyInfo();
+        if (!publicKeyInfo) throw new Error('Public key info not available');
+        const keyId = publicKeyInfo.key_id;
 
-				const resigned = Queue._signer.signQueueItem(all[idx], privateKey, keyId);
-				all[idx] = resigned; // replace with signed version
-			} catch (e) {
-				console.error('[Queue] Failed to re-sign item after status change:', e.message);
-				throw e;
-			}
-		} else if (process.env.LANE_HMAC_SECRET && Queue._verifier && Queue._verifier.isHMACAccepted()) {
-			// Re-generate HMAC
-			const crypto = require('crypto');
-			const canonical = JSON.stringify(all[idx]);
-			all[idx].hmac = crypto.createHmac('sha256', process.env.LANE_HMAC_SECRET).update(canonical).digest('hex');
-		}
+        const resigned = Queue._signer.signQueueItem(all[idx], privateKey, keyId);
+        all[idx] = resigned;
+      } catch (e) {
+        console.error('[Queue] Failed to re-sign item after status change:', e.message);
+        throw e;
+      }
+    } else if (process.env.LANE_HMAC_SECRET && Queue._verifierWrapper?.verifier?.isHMACAccepted?.()) {
+      const crypto = require('crypto');
+      const canonical = JSON.stringify(all[idx]);
+      all[idx].hmac = crypto.createHmac('sha256', process.env.LANE_HMAC_SECRET).update(canonical).digest('hex');
+    }
 
-		const tempPath = this.filePath + '.tmp';
-		const data = all.map(o => JSON.stringify(o)).join('\n') + '\n';
-		fs.writeFileSync(tempPath, data, { encoding: 'utf8' });
-		fs.renameSync(tempPath, this.filePath);
-		return all[idx];
-	}
+    const tempPath = this.filePath + '.tmp';
+    const data = all.map(o => JSON.stringify(o)).join('\n') + '\n';
+    fs.writeFileSync(tempPath, data, { encoding: 'utf8' });
+    fs.renameSync(tempPath, this.filePath);
+    return all[idx];
+  }
 }
 
 module.exports = Queue;
