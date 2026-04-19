@@ -92,13 +92,7 @@ class Queue {
 				throw e;
 			}
 		} else {
-			// Legacy HMAC fallback (if env secret present and verifier allows legacy)
-			if (process.env.LANE_HMAC_SECRET && Queue._verifier && Queue._verifier.isHMACAccepted()) {
-				const crypto = require('crypto');
-				const canonical = JSON.stringify(entry);
-				const hmac = crypto.createHmac('sha256', process.env.LANE_HMAC_SECRET).update(canonical).digest('hex');
-				entry.hmac = hmac;
-			}
+			throw new Error('SIGNER_REQUIRED: JWS signing required - HMAC fallback removed');
 		}
 		this._appendLine(entry);
 		return entry;
@@ -141,18 +135,8 @@ class Queue {
         if (!v.valid) {
           throw new Error(`Signature verification failed for item ${id}: ${v.reason || v.error || 'unknown'}`);
         }
-      } else if (current.hmac) {
-        const verifier = Queue._verifierWrapper.verifier;
-        if (verifier && verifier.isHMACAccepted && verifier.isHMACAccepted()) {
-          const v = verifier.verifyHMAC ? verifier.verifyHMAC(current) : { valid: false };
-          if (!v.valid) {
-            throw new Error(`HMAC verification failed for item ${id}: ${v.error || v.reason}`);
-          }
-        } else {
-          throw new Error(`Queue item ${id} missing required signature (HMAC not accepted)`);
-        }
       } else {
-        throw new Error(`Queue item ${id} missing required signature or HMAC`);
+        throw new Error(`Queue item ${id} missing required signature - HMAC fallback removed`);
       }
     }
 
@@ -178,11 +162,6 @@ class Queue {
         console.error('[Queue] Failed to re-sign item after status change:', e.message);
         throw e;
       }
-    } else if (process.env.LANE_HMAC_SECRET && Queue._verifierWrapper?.verifier?.isHMACAccepted?.()) {
-      const crypto = require('crypto');
-      const canonical = JSON.stringify(all[idx]);
-      all[idx].hmac = crypto.createHmac('sha256', process.env.LANE_HMAC_SECRET).update(canonical).digest('hex');
-    }
 
     const tempPath = this.filePath + '.tmp';
     const data = all.map(o => JSON.stringify(o)).join('\n') + '\n';
