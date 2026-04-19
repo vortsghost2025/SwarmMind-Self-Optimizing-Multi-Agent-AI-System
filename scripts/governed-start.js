@@ -33,20 +33,71 @@ class GovernedStartup {
     console.log('\n🚀 SwarmMind Governance-Aware Startup\n');
     console.log('='.repeat(60));
 
-    // Step -1: Phase 4.0 — Lane Registry identification (canonical map)
-    console.log('\n🗺️  Phase 4.0: Lane Registry Resolution\n');
-    let laneResolver;
-    try {
-      laneResolver = new LaneResolver();
-      laneResolver.dumpSummary();
-      console.log('✅ Lane registry resolved — cross‑lane pointers validated\n');
-    } catch (e) {
-      console.error('\n❌ Lane registry resolution failed:', e.message);
-      console.error('   This process cannot determine its lane identity.\n');
-      process.exit(1);
-    }
+     // Step -1: Phase 4.0 — Lane Registry identification (canonical map)
+     console.log('\n🗺️  Phase 4.0: Lane Registry Resolution\n');
+     let laneResolver;
+     try {
+       laneResolver = new LaneResolver();
+       laneResolver.dumpSummary();
+       console.log('✅ Lane registry resolved — cross‑lane pointers validated\n');
+     } catch (e) {
+       console.error('\n❌ Lane registry resolution failed:', e.message);
+       console.error('   This process cannot determine its lane identity.\n');
+       process.exit(1);
+     }
 
-    // Step 0: Initialize Lane-Context Gate (Phase 2: enforce cross-lane write policy)
+     // Step -0.5: Phase 4.3 — Asymmetric Attestation initialization
+     console.log('\n🔑 Phase 4.3: Asymmetric Attestation Initialization\n');
+     let signer, verifier, keyManager;
+     try {
+       const { KeyManager } = require('../src/attestation/KeyManager');
+       const { Signer } = require('../src/attestation/Signer');
+       const { Verifier } = require('../src/attestation/Verifier');
+       const { TrustStoreManager } = require('../src/attestation/TrustStoreManager');
+       const QueueStatic = require('../src/queue/Queue');
+       const { audit: auditInstance } = require('../src/audit/AuditLogger');
+
+       // Ensure passphrase is set
+       if (!process.env.LANE_KEY_PASSPHRASE) {
+         throw new Error('LANE_KEY_PASSPHRASE environment variable not set');
+       }
+       keyManager = new KeyManager({ laneId: process.env.LANE_NAME });
+       const initResult = keyManager.initialize(process.env.LANE_KEY_PASSPHRASE);
+       if (initResult.generated) {
+         console.log('   ✓ Generated new RSA-2048 key pair');
+       } else {
+         console.log('   ✓ Loaded existing RSA-2048 key pair');
+       }
+
+       signer = new Signer();
+       // Default migration cutoff is 2026-05-19; allowLegacy behavior is via isHMACAccepted()
+       verifier = new Verifier(); 
+       // Trust our own key immediately for self-verification (runtime addition)
+       verifier.addTrustedKey(process.env.LANE_NAME, keyManager.loadPublicKey(), initResult.keyId);
+
+       // Configure global attestation for Queue (now includes keyManager)
+       QueueStatic.setAttestation(signer, verifier, keyManager);
+       
+       // Configure AuditLogger with both signer and keyManager
+       auditInstance.setSigner(signer);
+       auditInstance.setKeyManager(keyManager);
+
+       console.log('   ✓ Signer and Verifier initialized (dual-mode until 2026-05-19)');
+
+       // Export public key to Archivist trust pending (for trust store registration)
+       const pubInfo = keyManager.exportForTrustStore();
+       const trustPendingDir = path.join('S:', 'Archivist-Agent', '.trust', 'pending');
+       if (!fs.existsSync(trustPendingDir)) { fs.mkdirSync(trustPendingDir, { recursive: true }); }
+       fs.writeFileSync(path.join(trustPendingDir, `${pubInfo.lane_id}.json`),
+         JSON.stringify(pubInfo, null, 2));
+       console.log(`   ✓ Public key exported to ${trustPendingDir}`);
+     } catch (e) {
+       console.error('\n❌ Attestation initialization failed:', e.message);
+       console.error('   Aborting startup — operator intervention required\n');
+       process.exit(1);
+     }
+
+     // Step 0: Initialize Lane-Context Gate (Phase 2: enforce cross-lane write policy)
     console.log('\n🔒 Phase 2: Lane-Context Gate Initialization\n');
     this.laneGate = new (require('../src/core/laneContextGate').LaneContextGate)(process.cwd(), {
       governanceRoot: 'S:\\Archivist-Agent'
@@ -74,14 +125,17 @@ class GovernedStartup {
     console.log('\n🛡️  Phase 2.5: Child-Process Lattice Enforcement\n');
     this.enforceNodeOptions();
 
-    // Step 0.75: Phase 3.7 — Continuity verification (fingerprint + recovery classifier)
-    console.log('\n🔐 Phase 3.7: Continuity Verification\n');
-    const { ContinuityVerifier } = require('../src/resilience/ContinuityVerifier');
-    const continuity = new ContinuityVerifier({
-      gate: this.laneGate,
-      projectRoot: process.cwd(),
-      stateDir: laneResolver.getContinuityDirectory()
-    });
+     // Step 0.75: Phase 3.7 — Continuity verification (fingerprint + recovery classifier)
+     console.log('\n🔐 Phase 3.7: Continuity Verification\n');
+     const { ContinuityVerifier } = require('../src/resilience/ContinuityVerifier');
+     const continuity = new ContinuityVerifier({
+       gate: this.laneGate,
+       projectRoot: process.cwd(),
+       stateDir: laneResolver.getContinuityDirectory(),
+       signer: signer,
+       verifier: verifier,
+       keyManager: keyManager
+     });
     const continuityResult = continuity.verify();
     console.log(`   Action: ${continuityResult.action}`);
     if (continuityResult.action === 'QUARANTINE' || continuityResult.action === 'LANE_DEGRADATION') {
