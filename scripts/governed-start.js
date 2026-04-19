@@ -18,6 +18,7 @@
 
 const GovernanceResolver = require('./resolve-governance');
 const { LaneContextGate } = require('../src/core/laneContextGate');
+const { LaneResolver } = require('../src/coordination/LaneResolver');
 const path = require('path');
 const fs = require('fs');
 
@@ -31,6 +32,19 @@ class GovernedStartup {
   async start() {
     console.log('\n🚀 SwarmMind Governance-Aware Startup\n');
     console.log('='.repeat(60));
+
+    // Step -1: Phase 4.0 — Lane Registry identification (canonical map)
+    console.log('\n🗺️  Phase 4.0: Lane Registry Resolution\n');
+    let laneResolver;
+    try {
+      laneResolver = new LaneResolver();
+      laneResolver.dumpSummary();
+      console.log('✅ Lane registry resolved — cross‑lane pointers validated\n');
+    } catch (e) {
+      console.error('\n❌ Lane registry resolution failed:', e.message);
+      console.error('   This process cannot determine its lane identity.\n');
+      process.exit(1);
+    }
 
     // Step 0: Initialize Lane-Context Gate (Phase 2: enforce cross-lane write policy)
     console.log('\n🔒 Phase 2: Lane-Context Gate Initialization\n');
@@ -65,7 +79,8 @@ class GovernedStartup {
     const { ContinuityVerifier } = require('../src/resilience/ContinuityVerifier');
     const continuity = new ContinuityVerifier({
       gate: this.laneGate,
-      projectRoot: process.cwd()
+      projectRoot: process.cwd(),
+      stateDir: laneResolver.getContinuityDirectory()
     });
     const continuityResult = continuity.verify();
     console.log(`   Action: ${continuityResult.action}`);

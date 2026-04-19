@@ -662,10 +662,81 @@ Classification state is persisted to `state/recovery-state.json` and audited.
 
 ---
 
+## Phase 4.0: Canonical Lane Registry & Coordination (In Progress)
+
+A single, authoritative map now binds each lane to its repository location, commit, and state files. This eliminates guesswork and narrative references.
+
+### LANE_REGISTRY.json
+
+**Location:** `S:\Archivist-Agent\LANE_REGISTRY.json` (authoritative)
+
+**Schema (excerpt):**
+
+```json
+{
+  "version": "1.0",
+  "authoritative": true,
+  "lanes": {
+    "archivist": {
+      "lane_id": "archivist",
+      "authority": 100,
+      "repo_path": "S:\\Archivist-Agent",
+      "branch": "main",
+      "commit_sha": "0f127f5",
+      "state_files": ["SESSION_REGISTRY.json", "FILE_OWNERSHIP_REGISTRY.json", ...],
+      "queue_types": ["APPROVAL", "INCIDENT"]
+    },
+    "swarmmind": {
+      "lane_id": "swarmmind",
+      "authority": 80,
+      "repo_path": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System",
+      "branch": "master",
+      "commit_sha": "e574346",
+      "state_files": [".session-lock", "RUNTIME_STATE.json", ...],
+      "queue_types": ["REVIEW", "INCIDENT"]
+    },
+    "library": {
+      "lane_id": "library",
+      "authority": 60,
+      "repo_path": "S:\\self-organizing-library",
+      "branch": "master",
+      "commit_sha": "c08ab0f",
+      "state_files": ["SESSION_REGISTRY.json", "FORMAL_VERIFICATION_GATE_PHASE*.md"],
+      "queue_types": ["REVIEW"]
+    }
+  },
+  "global_state": {
+    "queue_directory": "S:\\queue",
+    "audit_directory": "S:\\audit",
+    "continuity_directory": "S:\\continuity"
+  }
+}
+```
+
+### LaneResolver Module
+
+`src/coordination/LaneResolver.js` loads the registry at startup and:
+
+- Identifies the current lane by matching `process.cwd()` to a `repo_path`
+- Sets `process.env.LANE_NAME`, `LANE_AUTHORITY`, `LANE_REPO_PATH`, `GOVERNANCE_ROOT`
+- Validates that sibling lanes' repositories exist and (optionally) match expected commits
+- Provides helper methods:
+  - `getMyLane()`, `getMyEntry()`
+  - `getSiblingLanes()`, `getSiblingEntry(laneId)`
+  - `getStateFilePath(stateFileName)` — absolute path for a current‑lane state file
+  - `getQueueDirectory()`, `getAuditDirectory()`, `getContinuityDirectory()`
+
+**Integration:** `governed-start.js` constructs a `LaneResolver` immediately on startup (before gate initialization). If resolution fails, startup aborts — ensuring only authorized locations can run the lane.
+
+**Test:** `node scripts/test-lane-resolver.js`
+
+---
+
 **SwarmMind operates as a constrained execution lane within a governed multi-agent organism.**
 
 **Structure > Identity. Correction > Agreement.**  
 **The gate enforces boundaries so collaboration can scale without drift.**
+
 
 
 ---
