@@ -73,13 +73,21 @@ class VerifierWrapper {
 				'Signed payload missing lane field', outerLane);
 		}
 
-		// Step 5: Compare lanes (A = B enforcement, before crypto)
-		if (payloadLane !== outerLane) {
-			return this._handleFailure(item, VERIFY_REASON.LANE_MISMATCH,
-				`Signed payload lane (${payloadLane}) differs from outer lane (${outerLane})`, outerLane);
-		}
+    // Step 5: Compare lanes (A = B enforcement, before crypto)
+    if (payloadLane !== outerLane) {
+      return this._handleFailure(item, VERIFY_REASON.LANE_MISMATCH,
+        `Signed payload lane (${payloadLane}) differs from outer lane (${outerLane})`, outerLane);
+    }
 
-		// Step 6: Only NOW fetch the key for the agreed lane (C = A = B)
+    // Step 5.5: Enforce header.kid === payload.key_id (Gap 2 fix)
+    const headerKid = parsed.header?.kid;
+    const payloadKeyId = item.key_id || parsed.payload?.key_id;
+    if (headerKid && payloadKeyId && headerKid !== payloadKeyId) {
+      return this._handleFailure(item, VERIFY_REASON.KEY_ID_MISMATCH,
+        `Header key_id (${headerKid}) differs from payload key_id (${payloadKeyId})`, outerLane);
+    }
+
+    // Step 6: Only NOW fetch the key for the agreed lane (C = A = B)
 		const publicKey = this.verifier.getPublicKey(payloadLane);
 		if (!publicKey) {
 			return this._handleFailure(item, VERIFY_REASON.KEY_NOT_FOUND,
