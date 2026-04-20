@@ -3,16 +3,16 @@
   "model": "ollama/qwen2.5-coder:7b",
 	"agent": {
 		"orchestrator": {
-			"model": "kilo/z-ai/glm5"
+			"model": "nvidia/z-ai/glm5"
 		},
 		"plan": {
 			"model": "ollama/qwen2.5-coder:7b"
 		},
 		"code": {
-			"model": "kilo/z-ai/glm5"
+			"model": "nvidia/z-ai/glm5"
 		},
     "build": {
-      "model": "ollama/deepseek-coder:6.7b"
+      "model": "ollama/qwen2.5-coder:7b"
     },
     "debug": {
       "model": "ollama/qwen2.5-coder:7b"
@@ -26,6 +26,9 @@
   },
 	"provider": {
 		"ollama": {
+      "options": {
+        "baseURL": "http://127.0.0.1:11434/v1"
+      },
 			"models": {
         "deepseek-coder:6.7b": {
           "name": "DeepSeek Coder 6.7B",
