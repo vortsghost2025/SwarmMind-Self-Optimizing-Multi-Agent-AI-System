@@ -77,7 +77,17 @@ class Heartbeat {
   }
 
   /**
-   * Write current heartbeat.json to the lane's inbox directory.
+   * Build canonical heartbeat filename for a lane.
+   * @param {string} laneName
+   * @returns {string}
+   * @private
+   */
+  _heartbeatFilename(laneName) {
+    return `heartbeat-${laneName}.json`;
+  }
+
+  /**
+   * Write current heartbeat file to the lane's inbox directory.
    * @returns {void}
    */
   writeHeartbeat() {
@@ -103,7 +113,7 @@ class Heartbeat {
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      const filePath = path.join(dir, 'heartbeat.json');
+      const filePath = path.join(dir, this._heartbeatFilename(this.config.laneName));
       fs.writeFileSync(filePath, JSON.stringify(payload, null, 2) + '\n', 'utf8');
     } catch (err) {
       console.error('Failed to write heartbeat:', err.message);
@@ -131,9 +141,11 @@ class Heartbeat {
     for (let i = 0; i < laneNames.length; i++) {
       const laneName = laneNames[i];
       const inboxPath = this.config.canonicalPaths[laneName];
-      const heartbeatPath = path.join(inboxPath, 'heartbeat.json');
+      const laneSpecificPath = path.join(inboxPath, this._heartbeatFilename(laneName));
+      const legacyPath = path.join(inboxPath, 'heartbeat.json');
 
       try {
+        const heartbeatPath = fs.existsSync(laneSpecificPath) ? laneSpecificPath : legacyPath;
         if (!fs.existsSync(heartbeatPath)) {
           lanes[laneName] = {
             status: 'unknown',

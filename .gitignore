@@ -50,7 +50,8 @@ typings/
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?nul
+*.sw?
+nul
 
 # Identity keys (NEVER commit)
 .identity/
@@ -63,6 +64,7 @@ keys.json
 
 # Lane inbox runtime artifacts
 lanes/*/inbox/heartbeat.json
+lanes/*/inbox/heartbeat-*.json
 lanes/*/inbox/watcher.log
 lanes/*/inbox/watcher.pid
 lanes/*/inbox/*.key

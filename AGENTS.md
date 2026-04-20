@@ -56,6 +56,7 @@ All cross-lane communication MUST use the `lanes/` structure.
 | Archivist | `lanes/archivist/inbox/` | `S:/Archivist-Agent/lanes/archivist/inbox/` |
 | Library | `lanes/library/inbox/` | `S:/self-organizing-library/lanes/library/inbox/` |
 | SwarmMind | `lanes/swarmmind/inbox/` | `S:/SwarmMind Self-Optimizing Multi-Agent AI System/lanes/swarmmind/inbox/` |
+| Kernel (Lane 4) | `lanes/kernel/inbox/` | `S:/kernel-lane/lanes/kernel/inbox/` |
 
 **CRITICAL: Senders MUST write to the target lane's CANONICAL path (absolute), NOT their own local mirror copy.** Each repo has all three directories for local structure, but delivery must target the lane's own repo.
 
@@ -110,7 +111,7 @@ ALSO WRITE lanes/{target}/inbox/urgent_{id}.json
 
 ### Heartbeat Behavior
 
-1. Write `heartbeat.json` to own inbox every 60 seconds
+1. Write `heartbeat-<lane>.json` to own inbox every 60 seconds (example: `heartbeat-swarmmind.json`)
 2. Check other lanes' heartbeats for staleness (>900s = stale)
 3. On shutdown, write final heartbeat with status "shutdown"
 
@@ -124,7 +125,7 @@ All outgoing messages MUST conform to the v1.0 inbox message schema:
 ## SwarmMind-Specific Instructions
 
 ### Lane Identity
-- **Position:** 2
+- **Position:** 3
 - **Authority:** 80
 - **Role:** trace-mediated-verification-surface
 - **Capabilities:** can_govern: false
@@ -133,6 +134,14 @@ All outgoing messages MUST conform to the v1.0 inbox message schema:
 - No truth claims
 - Trace layer, not oracle
 - Cannot modify governance files (requires authority 100)
+
+### Lane Authority Order (per Archivist)
+| Lane | Position | Authority | can_govern | Role |
+|------|----------|-----------|------------|------|
+| Archivist | 1 | 100 | true | Governance Root |
+| Library | 2 | 90 | false | Persistent systems |
+| SwarmMind | 3 | 80 | false | Trace-mediated verification |
+| Kernel | 4 | 70 | false | GPU-optimized artifact generation |
 
 ### Session Modes
 When running read-only tests:

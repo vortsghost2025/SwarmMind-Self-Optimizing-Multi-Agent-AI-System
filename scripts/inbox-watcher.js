@@ -21,6 +21,7 @@ const INBOX_MSG_PATTERN = /^\d{4}-/;
 function isValidInboxMessage(filename) {
   const lower = filename.toLowerCase();
   if (SKIP_FILENAMES.has(lower)) return false;
+  if (lower.startsWith('heartbeat-') && lower.endsWith('.json')) return false;
   if (UUID_PATTERN.test(filename)) return false;
   if (!INBOX_MSG_PATTERN.test(filename)) return false;
   return true;
@@ -223,7 +224,8 @@ class InboxWatcher extends EventEmitter {
         if (msg) messages.push(msg);
       } catch (err) {
         if (err.code === 'ENOENT') {
-          this._log('WARN', `skipping vanished file: ${file}`);
+          // fs.watch frequently emits transient events; file may vanish before read.
+          // This is expected and should not be noisy.
         } else {
           this._log('WARN', `failed to read ${file}: ${err.message}`);
         }
@@ -512,6 +514,7 @@ class InboxWatcher extends EventEmitter {
     if (!lower.endsWith('.json')) return false;
     if (lower.includes('.tmp.')) return false;
     if (lower.endsWith('.key')) return false;
+    if (lower.startsWith('heartbeat-')) return false;
     if (SKIP_FILENAMES.has(lower)) return false;
     if (UUID_PATTERN.test(filename)) return false;
     if (!INBOX_MSG_PATTERN.test(filename)) return false;
