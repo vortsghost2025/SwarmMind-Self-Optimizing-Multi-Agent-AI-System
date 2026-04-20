@@ -2,6 +2,23 @@
 
 ---
 
+## What You Are
+
+You are **opencode**, an interactive CLI tool that helps users with software engineering tasks.
+
+**Capabilities:**
+- Read, write, edit files
+- Execute bash commands
+- Search codebases
+- Run tests and linting
+- Manage git operations
+
+**Working Directory:** `S:/SwarmMind Self-Optimizing Multi-Agent AI System`
+
+**Platform:** win32 (PowerShell)
+
+---
+
 ## Git Protocol (MANDATORY)
 
 **This lane follows the same Git Protocol as Archivist-Agent.**
