@@ -128,17 +128,16 @@ class Queue {
     }
     const current = all[idx];
 
-    // Attestation: verify signature via VerifierWrapper (deterministic path)
-    if (Queue._verifierWrapper) {
-      if (current.signature) {
-        const v = await Queue._verifierWrapper.verify(current);
-        if (!v.valid) {
-          throw new Error(`Signature verification failed for item ${id}: ${v.reason || v.error || 'unknown'}`);
+        // Attestation: verify signature via VerifierWrapper (deterministic path)
+        if (Queue._verifierWrapper) {
+          if (!current.signature) {
+            throw new Error(`Queue item ${id} missing required signature - HMAC fallback removed`);
+          }
+          const v = await Queue._verifierWrapper.verify(current);
+          if (!v.valid) {
+            throw new Error(`Signature verification failed for item ${id}: ${v.reason || v.error || 'unknown'}`);
+          }
         }
-      } else {
-        throw new Error(`Queue item ${id} missing required signature - HMAC fallback removed`);
-      }
-    }
 
     if (current.status !== 'pending') {
       throw new Error(`Only pending items can be transitioned (current: ${current.status})`);
@@ -162,6 +161,7 @@ class Queue {
         console.error('[Queue] Failed to re-sign item after status change:', e.message);
         throw e;
       }
+    }
 
     const tempPath = this.filePath + '.tmp';
     const data = all.map(o => JSON.stringify(o)).join('\n') + '\n';
