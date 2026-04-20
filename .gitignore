@@ -60,3 +60,12 @@ keys.json
 
 # Session memory (persists locally)
 .memory/
+
+# Lane inbox runtime artifacts
+lanes/*/inbox/heartbeat.json
+lanes/*/inbox/watcher.log
+lanes/*/inbox/watcher.pid
+lanes/*/inbox/*.key
+
+# UUID temp files (Codex file-writing artifacts)
+lanes/*/inbox/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-*.json

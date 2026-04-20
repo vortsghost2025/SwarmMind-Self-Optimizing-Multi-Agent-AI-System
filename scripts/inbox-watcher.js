@@ -1,0 +1,666 @@
+#!/usr/bin/env node
+'use strict';
+
+const { EventEmitter } = require('events');
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
+
+const SKIP_FILENAMES = new Set([
+  'heartbeat.json',
+  'watcher.log',
+  'watcher.pid',
+  'readme.md',
+]);
+
+const UUID_PATTERN = /^\d{8}-\d{4}-\d{4}-\d{4}-\d{12}\.json$/i;
+const INBOX_MSG_PATTERN = /^\d{4}-/;
+
+function isValidInboxMessage(filename) {
+  const lower = filename.toLowerCase();
+  if (SKIP_FILENAMES.has(lower)) return false;
+  if (UUID_PATTERN.test(filename)) return false;
+  if (!INBOX_MSG_PATTERN.test(filename)) return false;
+  return true;
+}
+
+/**
+ * InboxWatcher — monitors the lane inbox for new messages and processes
+ * them according to the v1.0/v1.1 inbox message schema contract.
+ *
+ * Implements: dual-mode monitoring, priority-based processing, lease
+ * acquisition, idempotency tracking, heartbeat checks, and graceful
+ * shutdown.
+ *
+ * @extends EventEmitter
+ */
+class InboxWatcher extends EventEmitter {
+  /**
+   * @param {object} [overrides] - Config overrides
+   */
+  constructor(overrides = {}) {
+    super();
+
+    this.config = {
+      laneName: 'swarmmind',
+      inboxPath: path.join(__dirname, '..', 'lanes', 'swarmmind', 'inbox'),
+      processedPath: path.join(__dirname, '..', 'lanes', 'swarmmind', 'inbox', 'processed'),
+      outboxPath: path.join(__dirname, '..', 'lanes', 'swarmmind', 'outbox'),
+      scanDebounceMs: 150,
+      pollSeconds: 60,
+      p0FastPath: true,
+      maxConcurrent: 1,
+      leaseDurationSeconds: 300,
+      heartbeatIntervalSeconds: 300,
+      staleAfterSeconds: 900,
+      logPath: path.join(__dirname, '..', 'lanes', 'swarmmind', 'inbox', 'watcher.log'),
+      ...overrides
+    };
+
+    this._watcher = null;
+    this._pollTimer = null;
+    this._heartbeatTimer = null;
+    this._scanDebounceTimer = null;
+    this._scanInProgress = false;
+    this._scanQueued = false;
+    this._activeCount = 0;
+    this._processedKeys = new Set();
+    this._sourceFileByMessage = new WeakMap();
+    this._shuttingDown = false;
+    this._started = false;
+  }
+
+  /**
+   * Start the watcher. Ensures directories exist, loads processed keys,
+   * performs an initial scan, then enters watch or poll mode.
+   */
+  async start() {
+    if (this._started) return;
+    this._started = true;
+
+    this._ensureDir(this.config.inboxPath);
+    this._ensureDir(this.config.processedPath);
+    this._ensureDir(this.config.outboxPath);
+    this._ensureDir(path.dirname(this.config.logPath));
+
+    this._loadProcessedKeys();
+
+    this._log('INFO', `InboxWatcher started for lane "${this.config.laneName}"`);
+    this._log('INFO', `  inbox:    ${this.config.inboxPath}`);
+    this._log('INFO', `  processed:${this.config.processedPath}`);
+    this._log('INFO', `  outbox:   ${this.config.outboxPath}`);
+    this._log('INFO', `  poll:     ${this.config.pollSeconds}s`);
+
+    await this._scanInbox();
+
+    this._startWatchMode();
+    this._startPolling();
+    this._startHeartbeatCheck();
+  }
+
+  /**
+   * Gracefully stop the watcher.
+   */
+  async stop() {
+    if (this._shuttingDown) return;
+    this._shuttingDown = true;
+
+    this._log('INFO', 'InboxWatcher shutting down');
+
+    if (this._watcher) {
+      this._watcher.close();
+      this._watcher = null;
+    }
+
+    if (this._pollTimer) {
+      clearInterval(this._pollTimer);
+      this._pollTimer = null;
+    }
+
+    if (this._heartbeatTimer) {
+      clearInterval(this._heartbeatTimer);
+      this._heartbeatTimer = null;
+    }
+
+    if (this._scanDebounceTimer) {
+      clearTimeout(this._scanDebounceTimer);
+      this._scanDebounceTimer = null;
+    }
+
+    this.emit('shutdown');
+    this._log('INFO', 'InboxWatcher stopped');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Monitoring
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Attempt fs.watch() on the inbox directory. Falls back silently
+   * to polling if fs.watch fails or is unavailable.
+   */
+  _startWatchMode() {
+    try {
+      this._watcher = fs.watch(
+        this.config.inboxPath,
+        { persistent: false },
+        (eventType, filename) => {
+          if (this._shuttingDown) return;
+          if (eventType === 'rename' || eventType === 'change') {
+            const name =
+              typeof filename === 'string'
+                ? filename
+                : (filename && filename.toString ? filename.toString() : '');
+
+            // Many fs.watch providers emit transient events for temp files.
+            // Ignore obvious non-message files and debounce the rest.
+            if (name && !this._shouldTriggerFromWatch(name)) return;
+
+            this._scheduleScan(`watch:${eventType}${name ? `:${name}` : ''}`);
+          }
+        }
+      );
+
+      this._watcher.on('error', (err) => {
+        this._log('WARN', `fs.watch error, falling back to polling: ${err.message}`);
+        if (this._watcher) {
+          this._watcher.close();
+          this._watcher = null;
+        }
+      });
+
+      this._log('INFO', 'fs.watch active on inbox');
+    } catch (err) {
+      this._log('WARN', `fs.watch unavailable, polling only: ${err.message}`);
+      this._watcher = null;
+    }
+  }
+
+  /**
+   * Start the polling fallback timer.
+   */
+  _startPolling() {
+    const ms = this.config.pollSeconds * 1000;
+    this._pollTimer = setInterval(() => {
+      if (this._shuttingDown) return;
+      this._scheduleScan('poll');
+    }, ms);
+    this._log('INFO', `polling every ${this.config.pollSeconds}s`);
+  }
+
+  /**
+   * Periodically check for stale / timed-out heartbeats.
+   */
+  _startHeartbeatCheck() {
+    const ms = this.config.heartbeatIntervalSeconds * 1000;
+    this._heartbeatTimer = setInterval(() => {
+      if (this._shuttingDown) return;
+      this._checkStaleMessages().catch((err) => {
+        this.emit('error', err);
+        this._log('ERROR', `heartbeat check failed: ${err.message}`);
+      });
+    }, ms);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Scanning & ACQUIRE
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Full scan of the inbox directory. Reads every .json file, sorts by
+   * priority, then attempts to acquire and process each eligible message.
+   */
+  async _scanInbox() {
+    const files = this._listInboxFiles();
+    if (files.length === 0) return;
+
+    const messages = [];
+    for (const file of files) {
+      try {
+        const msg = this._readMessage(path.join(this.config.inboxPath, file));
+        if (msg) messages.push(msg);
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          this._log('WARN', `skipping vanished file: ${file}`);
+        } else {
+          this._log('WARN', `failed to read ${file}: ${err.message}`);
+        }
+      }
+    }
+
+    messages.sort((a, b) => {
+      const pa = PRIORITY_ORDER[a.priority] ?? 99;
+      const pb = PRIORITY_ORDER[b.priority] ?? 99;
+      return pa - pb;
+    });
+
+    for (const msg of messages) {
+      if (this._shuttingDown) break;
+      if (this._activeCount >= this.config.maxConcurrent) break;
+
+      await this._processIfEligible(msg);
+    }
+  }
+
+  /**
+   * Check idempotency, lease status, then acquire and process a message.
+   *
+   * @param {object} msg - Parsed message object
+   */
+  async _processIfEligible(msg) {
+    const key = msg.idempotency_key;
+    if (key && this._processedKeys.has(key)) {
+      this._log('INFO', `skipping already-processed key: ${key}`);
+      return;
+    }
+
+    const idempotencyFile = key
+      ? path.join(this.config.processedPath, `${key}.key`)
+      : null;
+    if (idempotencyFile && fs.existsSync(idempotencyFile)) {
+      this._processedKeys.add(key);
+      this._log('INFO', `skipping already-processed key file: ${key}`);
+      return;
+    }
+
+    if (!this._canAcquire(msg)) {
+      return;
+    }
+
+    const filename = this._messageFilename(msg);
+    if (!filename) {
+      this._log('WARN', 'skipping message with no stable filename (missing id/source file)');
+      return;
+    }
+
+    this._acquire(msg);
+
+    const filePath = path.join(this.config.inboxPath, filename);
+    try {
+      this._writeMessage(filePath, msg);
+    } catch (err) {
+      this._log('ERROR', `failed to write lease for ${msg.id}: ${err.message}`);
+      this.emit('error', err);
+      return;
+    }
+
+    this.emit('acquired', msg);
+    this._log('INFO', `lease acquired: ${msg.id} (priority ${msg.priority})`);
+
+    if (msg.priority === 'P0' && this.config.p0FastPath) {
+      this.emit('p0', msg);
+    }
+
+    this.emit('message', msg);
+
+    this._activeCount++;
+    try {
+      await this._finalizeMessage(msg);
+    } finally {
+      this._activeCount--;
+    }
+  }
+
+  /**
+   * Determine whether a message can be acquired by this lane.
+   *
+   * @param {object} msg
+   * @returns {boolean}
+   */
+  _canAcquire(msg) {
+    const lease = msg.lease || {};
+    const now = new Date();
+
+    if (lease.owner != null && lease.expires_at) {
+      const expires = new Date(lease.expires_at);
+      if (expires > now) {
+        if (
+          lease.max_renewals != null &&
+          lease.renew_count != null &&
+          lease.renew_count >= lease.max_renewals
+        ) {
+          this._log('WARN', `force-releasing expired lease (max renewals): ${msg.id}`);
+          return true;
+        }
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Claim a message by setting lease.owner to this lane.
+   *
+   * @param {object} msg
+   */
+  _acquire(msg) {
+    if (!msg.lease) msg.lease = {};
+
+    const now = new Date().toISOString();
+    msg.lease.owner = this.config.laneName;
+    msg.lease.acquired_at = now;
+    msg.lease.expires_at = new Date(
+      Date.now() + this.config.leaseDurationSeconds * 1000
+    ).toISOString();
+    if (msg.lease.renew_count == null) msg.lease.renew_count = 0;
+  }
+
+  /**
+   * Move a processed message to the processed/ directory and record
+   * its idempotency key.
+   *
+   * @param {object} msg
+   */
+  async _finalizeMessage(msg) {
+    const filename = this._messageFilename(msg);
+    if (!filename) {
+      this._log('ERROR', 'cannot finalize message: missing stable filename');
+      return;
+    }
+
+    const srcFile = path.join(this.config.inboxPath, filename);
+
+    if (msg.idempotency_key) {
+      const keyFile = path.join(
+        this.config.processedPath,
+        `${msg.idempotency_key}.key`
+      );
+      try {
+        fs.writeFileSync(keyFile, new Date().toISOString(), 'utf8');
+        this._processedKeys.add(msg.idempotency_key);
+      } catch (err) {
+        this._log('ERROR', `failed to write key file: ${err.message}`);
+      }
+    }
+
+    const destFile = path.join(this.config.processedPath, filename);
+    try {
+      fs.renameSync(srcFile, destFile);
+    } catch (err) {
+      if (!fs.existsSync(srcFile)) {
+        this._log('WARN', `source already moved or gone: ${path.basename(srcFile)}`);
+        this.emit('processed', msg);
+        this._log('INFO', `processed (source absent): ${msg.id}`);
+        return;
+      }
+      try {
+        const raw = fs.readFileSync(srcFile, 'utf8');
+        fs.writeFileSync(destFile, raw, 'utf8');
+        fs.unlinkSync(srcFile);
+      } catch (err2) {
+        this._log('ERROR', `failed to move message ${msg.id}: ${err2.message}`);
+        this.emit('error', err2);
+        return;
+      }
+    }
+
+    this.emit('processed', msg);
+    this._log('INFO', `processed: ${msg.id}`);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Heartbeat / stale detection
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Scan inbox for messages with heartbeat.status === 'in_progress' and
+   * check whether they have timed out.
+   */
+  async _checkStaleMessages() {
+    const files = this._listInboxFiles();
+    for (const file of files) {
+      try {
+        const msg = this._readMessage(path.join(this.config.inboxPath, file));
+        if (!msg) continue;
+
+        const hb = msg.heartbeat;
+        if (!hb || hb.status !== 'in_progress') continue;
+
+        const last = new Date(hb.last_heartbeat_at);
+        const timeout = (hb.timeout_seconds || this.config.staleAfterSeconds) * 1000;
+        if (Date.now() - last.getTime() > timeout) {
+          this.emit('stale', msg);
+          this._log('WARN', `stale task detected: ${msg.id} (last heartbeat ${hb.last_heartbeat_at})`);
+        }
+      } catch (_) {
+        // ignore per-file errors during stale check
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // File helpers
+  // ---------------------------------------------------------------------------
+
+  /**
+   * List .json files in the inbox directory (non-recursive).
+   *
+   * @returns {string[]}
+   */
+  _listInboxFiles() {
+    try {
+      return fs
+        .readdirSync(this.config.inboxPath)
+        .filter((f) => f.endsWith('.json') && isValidInboxMessage(f));
+    } catch (_) {
+      return [];
+    }
+  }
+
+  /**
+   * Read and parse a single message file.
+   *
+   * @param {string} filePath
+   * @returns {object|null}
+   */
+  _readMessage(filePath) {
+    if (!fs.existsSync(filePath)) {
+      this._log('WARN', `file vanished before read: ${path.basename(filePath)}`);
+      return null;
+    }
+    try {
+      const raw = fs.readFileSync(filePath, 'utf8');
+      const parsed = JSON.parse(raw);
+      this._sourceFileByMessage.set(parsed, path.basename(filePath));
+      return parsed;
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        this._log('WARN', `file vanished during read: ${path.basename(filePath)}`);
+        return null;
+      }
+      throw err;
+    }
+  }
+
+  /**
+   * Write a message object back to disk.
+   *
+   * @param {string} filePath
+   * @param {object} msg
+   */
+  _writeMessage(filePath, msg) {
+    const tmp = filePath + '.tmp.' + crypto.randomBytes(6).toString('hex');
+    fs.writeFileSync(tmp, JSON.stringify(msg, null, 2) + '\n', 'utf8');
+    fs.renameSync(tmp, filePath);
+  }
+
+  /**
+   * Derive the filename for a message from its id field.
+   *
+   * @param {object} msg
+   * @returns {string}
+   */
+  _messageFilename(msg) {
+    const sourceFile = this._sourceFileByMessage.get(msg);
+    if (sourceFile) return sourceFile;
+    if (msg.id) return msg.id + '.json';
+    return null;
+  }
+
+  /**
+   * Decide whether an fs.watch filename should trigger a scan.
+   * Filters obvious transient/non-message artifacts.
+   *
+   * @param {string} filename
+   * @returns {boolean}
+   */
+  _shouldTriggerFromWatch(filename) {
+    const lower = String(filename).toLowerCase();
+    if (!lower.endsWith('.json')) return false;
+    if (lower.includes('.tmp.')) return false;
+    if (lower.endsWith('.key')) return false;
+    if (SKIP_FILENAMES.has(lower)) return false;
+    if (UUID_PATTERN.test(filename)) return false;
+    if (!INBOX_MSG_PATTERN.test(filename)) return false;
+    return true;
+  }
+
+  /**
+   * Debounce scan requests and serialize scans to avoid watcher event storms
+   * from producing overlapping reads.
+   *
+   * @param {string} reason
+   */
+  _scheduleScan(reason = 'unspecified') {
+    if (this._shuttingDown) return;
+    if (this._scanDebounceTimer) {
+      clearTimeout(this._scanDebounceTimer);
+    }
+
+    this._scanDebounceTimer = setTimeout(() => {
+      this._scanDebounceTimer = null;
+      this._runScan(reason).catch((err) => {
+        this.emit('error', err);
+        this._log('ERROR', `${reason} scan failed: ${err.message}`);
+      });
+    }, this.config.scanDebounceMs);
+  }
+
+  /**
+   * Ensure only one scan runs at a time. If events arrive mid-scan,
+   * queue exactly one follow-up scan.
+   *
+   * @param {string} reason
+   */
+  async _runScan(reason = 'unspecified') {
+    if (this._scanInProgress) {
+      this._scanQueued = true;
+      return;
+    }
+
+    this._scanInProgress = true;
+    try {
+      do {
+        this._scanQueued = false;
+        await this._scanInbox();
+      } while (this._scanQueued && !this._shuttingDown);
+    } finally {
+      this._scanInProgress = false;
+    }
+  }
+
+  /**
+   * Create a directory if it does not exist.
+   *
+   * @param {string} dirPath
+   */
+  _ensureDir(dirPath) {
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+  }
+
+  /**
+   * Load previously-recorded idempotency keys from the processed/
+   * directory (*.key files).
+   */
+  _loadProcessedKeys() {
+    try {
+      const files = fs.readdirSync(this.config.processedPath);
+      for (const f of files) {
+        if (f.endsWith('.key')) {
+          this._processedKeys.add(f.replace(/\.key$/, ''));
+        }
+      }
+      this._log('INFO', `loaded ${this._processedKeys.size} processed idempotency keys`);
+    } catch (_) {
+      this._log('INFO', 'no processed keys directory yet');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Logging
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Append a timestamped log entry to the log file.
+   *
+   * @param {string} level - INFO, WARN, or ERROR
+   * @param {string} message
+   */
+  _log(level, message) {
+    const entry = `[${new Date().toISOString()}] ${level}: ${message}\n`;
+    try {
+      fs.appendFileSync(this.config.logPath, entry, 'utf8');
+    } catch (_) {
+      // best-effort; don't throw from logging
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Main entry point when run directly
+// -----------------------------------------------------------------------------
+
+if (require.main === module) {
+  const watcher = new InboxWatcher();
+
+  watcher.on('message', (msg) => {
+    console.log(`[message] ${msg.id} priority=${msg.priority} from=${msg.from}`);
+  });
+
+  watcher.on('p0', (msg) => {
+    console.log(`[p0-fast-path] ${msg.id} — ${msg.subject || '(no subject)'}`);
+  });
+
+  watcher.on('acquired', (msg) => {
+    console.log(`[acquired] ${msg.id} lease.owner=${msg.lease.owner}`);
+  });
+
+  watcher.on('processed', (msg) => {
+    console.log(`[processed] ${msg.id}`);
+  });
+
+  watcher.on('stale', (msg) => {
+    console.log(`[stale] ${msg.id} — heartbeat timed out`);
+  });
+
+  watcher.on('error', (err) => {
+    console.error(`[error] ${err.message}`);
+  });
+
+  watcher.on('shutdown', () => {
+    console.log('[shutdown] InboxWatcher stopped');
+  });
+
+  watcher.start().then(() => {
+    console.log(`InboxWatcher running for lane "${watcher.config.laneName}"`);
+    console.log(`  inbox: ${watcher.config.inboxPath}`);
+    console.log(`  press Ctrl+C to stop`);
+  }).catch((err) => {
+    console.error(`Fatal: ${err.message}`);
+    process.exit(1);
+  });
+
+  const shutdown = () => {
+    watcher.stop().then(() => process.exit(0)).catch(() => process.exit(1));
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+}
+
+module.exports = InboxWatcher;

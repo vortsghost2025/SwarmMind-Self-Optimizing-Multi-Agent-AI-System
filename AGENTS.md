@@ -51,13 +51,13 @@ All cross-lane communication MUST use the `lanes/` structure.
 
 ### Paths (Deterministic - No Guessing)
 
-| Lane | Inbox Path |
-|------|------------|
-| Archivist | `lanes/archivist/inbox/` |
-| Library | `lanes/library/inbox/` |
-| SwarmMind | `lanes/swarmmind/inbox/` |
+| Lane | Inbox Path | Canonical Path (for delivery) |
+|------|------------|-------------------------------|
+| Archivist | `lanes/archivist/inbox/` | `S:/Archivist-Agent/lanes/archivist/inbox/` |
+| Library | `lanes/library/inbox/` | `S:/self-organizing-library/lanes/library/inbox/` |
+| SwarmMind | `lanes/swarmmind/inbox/` | `S:/SwarmMind Self-Optimizing Multi-Agent AI System/lanes/swarmmind/inbox/` |
 
-**Each repo has all three directories. This is NOT one repo.**
+**CRITICAL: Senders MUST write to the target lane's CANONICAL path (absolute), NOT their own local mirror copy.** Each repo has all three directories for local structure, but delivery must target the lane's own repo.
 
 ### Session Start Protocol (MANDATORY)
 
@@ -86,6 +86,38 @@ ALSO WRITE lanes/{target}/inbox/urgent_{id}.json
 ### Deprecated
 
 `.lane-relay/` is DEPRECATED. Use `lanes/` only.
+
+---
+
+## Inbox Watcher Protocol
+
+### Scripts
+
+- **`npm run watch`** — Start inbox watcher (fs.watch + polling fallback)
+- **`npm run watch:poll`** — Start inbox watcher in polling-only mode
+- **`npm run heartbeat`** — Start heartbeat writer (writes every 60s)
+- **`npm run heartbeat:check`** — Check health of all lanes
+- **`npm run heartbeat:once`** — Write a single heartbeat and exit
+
+### Inbox Watcher Behavior
+
+1. On startup: full scan of `lanes/swarmmind/inbox/`
+2. Claim unleased messages (ACQUIRE step per v1.0 contract)
+3. Skip messages already in `processed/` (idempotency)
+4. Respect leased messages from other lanes until expiry
+5. Emit events: `message`, `p0`, `acquired`, `processed`, `stale`, `error`
+6. Log all activity to `lanes/swarmmind/inbox/watcher.log`
+
+### Heartbeat Behavior
+
+1. Write `heartbeat.json` to own inbox every 60 seconds
+2. Check other lanes' heartbeats for staleness (>900s = stale)
+3. On shutdown, write final heartbeat with status "shutdown"
+
+### Message Schema Compliance
+
+All outgoing messages MUST conform to the v1.0 inbox message schema:
+- `schema_version`, `task_id`, `idempotency_key`, `lease`, `retry`, `evidence`, `heartbeat`
 
 ---
 

@@ -10,6 +10,11 @@
     "resolve": "node scripts/resolve-governance-v2.js",
     "resolve:legacy": "node scripts/resolve-governance.js",
     "start:mode": "node scripts/governed-start-v2.js",
+    "watch": "node scripts/inbox-watcher.js",
+    "watch:poll": "node scripts/inbox-watcher.js --poll",
+    "heartbeat": "node scripts/heartbeat.js --start",
+    "heartbeat:check": "node scripts/heartbeat.js --check",
+    "heartbeat:once": "node scripts/heartbeat.js --once",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
