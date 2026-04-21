@@ -122,23 +122,54 @@ class Signer {
 		};
 	}
 
-	signApprovalRequest(request, privateKey, keyId) {
-		const signablePayload = {
-			id: request.id,
-			lane_id: request.lane_id,
-			action: request.action,
-			artifact_path: request.artifact_path,
-			timestamp: request.timestamp || new Date().toISOString()
-		};
+  signApprovalRequest(request, privateKey, keyId) {
+    const signablePayload = {
+      id: request.id,
+      lane_id: request.lane_id,
+      action: request.action,
+      artifact_path: request.artifact_path,
+      timestamp: request.timestamp || new Date().toISOString()
+    };
 
-		const result = this.sign(signablePayload, privateKey, keyId);
-		return {
-			...request,
-			signature: result.jws,
-			signature_alg: this.algorithm,
-			key_id: keyId
-		};
-	}
+    const result = this.sign(signablePayload, privateKey, keyId);
+    return {
+      ...request,
+      signature: result.jws,
+      signature_alg: this.algorithm,
+      key_id: keyId
+    };
+  }
+
+  signInboxMessage(msg, privateKey, keyId) {
+    const contentHash = 'sha256:' + crypto.createHash('sha256')
+      .update(stableStringify({ body: msg.body || '', payload: msg.payload || {} }))
+      .digest('hex');
+
+    const signablePayload = {
+      id: msg.id,
+      task_id: msg.task_id,
+      from: msg.from,
+      to: msg.to,
+      lane: msg.from,
+      priority: msg.priority,
+      content_hash: contentHash
+    };
+
+    const result = this.sign(signablePayload, privateKey, keyId);
+    return {
+      ...msg,
+      content_hash: contentHash,
+      signature: result.jws,
+      signature_alg: this.algorithm,
+      key_id: keyId
+    };
+  }
+
+  static computeContentHash(msg) {
+    return 'sha256:' + crypto.createHash('sha256')
+      .update(stableStringify({ body: msg.body || '', payload: msg.payload || {} }))
+      .digest('hex');
+  }
 }
 
 module.exports = { Signer };

@@ -14,6 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { TRUST_STORE_PATH, TRUST_STORE_VERSION } = require('./constants');
+const { stableStringify } = require('./stableStringify');
 
 class PhenotypeStore {
 	constructor(options = {}) {
@@ -50,10 +51,11 @@ class PhenotypeStore {
 		}
 	}
 
-	computeHash(state) {
-		const normalized = JSON.stringify(state, Object.keys(state).sort());
-		return 'sha256:' + crypto.createHash('sha256').update(normalized).digest('hex').slice(0, 16);
-	}
+  computeHash(state) {
+    return 'sha256:' + crypto.createHash('sha256')
+      .update(stableStringify(state))
+      .digest('hex').slice(0, 16);
+  }
 
 	getLastSync(laneId) {
 		return this.phenotypes[laneId] || null;

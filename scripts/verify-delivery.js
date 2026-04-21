@@ -34,14 +34,25 @@ class DeliveryVerifier {
   /**
    * Run the full delivery verification.
    *
-   * @returns {{ total_outbox: number, delivered: number, mirror_only: number, missing: number, details: Array<object> }}
+   * @param {object} [options]
+   * @param {boolean} [options.deepVerify=false] - Enable deep structural verification
+   * @returns {Promise<{ total_outbox: number, delivered: number, mirror_only: number, missing: number, details: Array<object>, deep_summary?: object }>}
    */
-  verify() {
+  async verify(options = {}) {
+    const { deepVerify = false } = options;
     const outboxFiles = this._listJsonFiles(this.outboxPath);
     const details = [];
     let delivered = 0;
     let mirrorOnly = 0;
     let missing = 0;
+    let deepSchemaValid = 0;
+    let deepSchemaTotal = 0;
+    let deepSigValid = 0;
+    let deepSigTotal = 0;
+    let deepHashValid = 0;
+    let deepHashTotal = 0;
+    let deepUnsigned = 0;
+    let maxDepth = 0;
 
     for (const file of outboxFiles) {
       const filePath = path.join(this.outboxPath, file);
@@ -67,13 +78,77 @@ class DeliveryVerifier {
       const canonicalFound = this._findMessageId(canonicalPath, messageId);
 
       if (canonicalFound) {
-        details.push({
+        const detail = {
           message_id: messageId,
           to_lane: toLane,
           status: 'DELIVERED',
           canonical_path: canonicalPath,
           found_at: canonicalFound,
-        });
+        };
+
+        if (deepVerify && fs.existsSync(canonicalFound)) {
+          try {
+            const deliveredMsg = JSON.parse(fs.readFileSync(canonicalFound, 'utf8'));
+            deepSchemaTotal++;
+
+            const { InboxMessageSchema } = require('../src/attestation/InboxMessageSchema');
+            const schema = new InboxMessageSchema();
+            const schemaResult = schema.validate(deliveredMsg);
+            if (!schemaResult.valid) {
+              detail.status = 'SCHEMA_INVALID';
+              detail.schema_errors = schemaResult.errors;
+              detail.depth = schemaResult.depth;
+            } else {
+              deepSchemaValid++;
+
+              if (deliveredMsg.content_hash) {
+                deepHashTotal++;
+                const { Signer } = require('../src/attestation/Signer');
+                const computedHash = Signer.computeContentHash(deliveredMsg);
+                if (computedHash !== deliveredMsg.content_hash) {
+                  detail.status = 'CONTENT_HASH_MISMATCH';
+                  detail.expected_hash = deliveredMsg.content_hash;
+                  detail.computed_hash = computedHash;
+                } else {
+                  deepHashValid++;
+                }
+              }
+
+              if (deliveredMsg.signature) {
+                deepSigTotal++;
+                try {
+                  const { VerifierWrapper } = require('../src/attestation/VerifierWrapper');
+                  const { Verifier } = require('../src/attestation/Verifier');
+                  const verifier = new Verifier();
+                  const wrapper = new VerifierWrapper(verifier);
+                  const sigResult = await wrapper.verifyInboxMessage(deliveredMsg);
+                  if (!sigResult.valid) {
+                    detail.status = 'SIGNATURE_INVALID';
+                    detail.verify_reason = sigResult.reason || sigResult.error;
+                  } else {
+                    deepSigValid++;
+                    detail.depth = sigResult.depth;
+                    if (sigResult.depth > maxDepth) maxDepth = sigResult.depth;
+                  }
+                } catch (e) {
+                  detail.status = 'SIGNATURE_CHECK_FAILED';
+                  detail.verify_error = e.message;
+                }
+              } else {
+                detail.unsigned = true;
+                detail.depth = deliveredMsg.content_hash ? 5 : 2;
+                deepUnsigned++;
+              }
+
+              if (detail.depth && detail.depth > maxDepth) maxDepth = detail.depth;
+            }
+          } catch (e) {
+            detail.status = 'PARSE_ERROR';
+            detail.parse_error = e.message;
+          }
+        }
+
+        details.push(detail);
         delivered++;
       } else {
         const mirrorPath = path.join(this.localBase, toLane, 'inbox');
@@ -101,13 +176,28 @@ class DeliveryVerifier {
       }
     }
 
-    return {
+    const result = {
       total_outbox: outboxFiles.length,
       delivered,
       mirror_only: mirrorOnly,
       missing,
       details,
     };
+
+    if (deepVerify) {
+      result.deep_summary = {
+        schema_valid: deepSchemaValid,
+        schema_total: deepSchemaTotal,
+        signature_valid: deepSigValid,
+        signature_total: deepSigTotal,
+        hash_valid: deepHashValid,
+        hash_total: deepHashTotal,
+        unsigned: deepUnsigned,
+        max_depth: maxDepth,
+      };
+    }
+
+    return result;
   }
 
   /**
@@ -231,64 +321,97 @@ if (require.main === module) {
   const args = process.argv.slice(2);
   const jsonMode = args.includes('--json');
   const quietMode = args.includes('--quiet');
+  const deepMode = args.includes('--deep');
 
-  const verifier = new DeliveryVerifier();
-  const report = verifier.verify();
-  const mirrorLeaks = verifier.scanMirrorLeaks();
+  (async () => {
+    const verifier = new DeliveryVerifier();
+    const report = await verifier.verify({ deepVerify: deepMode });
+    const mirrorLeaks = verifier.scanMirrorLeaks();
 
-  const exitCode = (report.mirror_only > 0 || report.missing > 0) ? 1 : 0;
+    const exitCode = (report.mirror_only > 0 || report.missing > 0) ? 1 : 0;
 
-  if (jsonMode) {
-    const full = {
-      ...report,
-      mirror_leaks: mirrorLeaks,
-    };
-    console.log(JSON.stringify(full, null, 2));
+    if (jsonMode) {
+      const full = {
+        ...report,
+        mirror_leaks: mirrorLeaks,
+      };
+      console.log(JSON.stringify(full, null, 2));
+      process.exit(exitCode);
+    }
+
+    if (!quietMode) {
+      console.log('=== Cross-Lane Delivery Verification ===');
+      console.log(`Outbox path: ${verifier.outboxPath}`);
+      console.log(`Total outbox: ${report.total_outbox}`);
+      console.log(`Delivered: ${report.delivered}`);
+      console.log(`Mirror-only: ${report.mirror_only}`);
+      console.log(`Missing: ${report.missing}`);
+      console.log('');
+
+      if (report.details.length > 0) {
+        console.log('--- Outbox Delivery Details ---');
+        for (const d of report.details) {
+          const tag = d.status === 'DELIVERED' ? 'OK' : d.status;
+          console.log(` [${tag}] ${d.message_id} → ${d.to_lane}`);
+          if (d.status !== 'DELIVERED' && d.found_at) {
+            console.log(` found at: ${d.found_at}`);
+          }
+          if (d.status !== 'DELIVERED') {
+            console.log(` canonical: ${d.canonical_path}`);
+          }
+          if (deepMode && d.depth !== undefined) {
+            console.log(` depth: ${d.depth}`);
+          }
+          if (deepMode && d.schema_errors) {
+            console.log(` schema_errors: ${JSON.stringify(d.schema_errors)}`);
+          }
+          if (deepMode && d.verify_error) {
+            console.log(` verify_error: ${d.verify_error}`);
+          }
+          if (deepMode && d.verify_reason) {
+            console.log(` verify_reason: ${d.verify_reason}`);
+          }
+          if (deepMode && d.computed_hash) {
+            console.log(` computed_hash: ${d.computed_hash}`);
+            console.log(` expected_hash: ${d.expected_hash}`);
+          }
+          if (deepMode && d.unsigned) {
+            console.log(` unsigned: true`);
+          }
+        }
+        console.log('');
+      }
+
+      if (mirrorLeaks.length > 0) {
+        console.log('--- Mirror-Only Leaks (messages in local mirror but NOT canonical) ---');
+        for (const leak of mirrorLeaks) {
+          console.log(` [LEAK] ${leak.message_id} → ${leak.to_lane}`);
+          console.log(` mirror: ${leak.mirror_path}`);
+          console.log(` canonical: ${leak.canonical_path}`);
+        }
+        console.log('');
+      }
+
+      if (deepMode && report.deep_summary) {
+        const ds = report.deep_summary;
+        console.log('=== Deep Verification (optional) ===');
+        console.log(`Schema valid: ${ds.schema_valid}/${ds.schema_total}`);
+        console.log(`Signature valid: ${ds.signature_valid}/${ds.signature_total}`);
+        console.log(`Content hash valid: ${ds.hash_valid}/${ds.hash_total}`);
+        console.log(`Unsigned: ${ds.unsigned}`);
+        console.log(`Max depth achieved: ${ds.max_depth}`);
+        console.log('');
+      }
+
+      if (exitCode === 0) {
+        console.log('Result: ALL DELIVERED');
+      } else {
+        console.log('Result: INTEGRITY ISSUES DETECTED');
+      }
+    }
+
     process.exit(exitCode);
-  }
-
-  if (!quietMode) {
-    console.log('=== Cross-Lane Delivery Verification ===');
-    console.log(`Outbox path:  ${verifier.outboxPath}`);
-    console.log(`Total outbox: ${report.total_outbox}`);
-    console.log(`Delivered:    ${report.delivered}`);
-    console.log(`Mirror-only:  ${report.mirror_only}`);
-    console.log(`Missing:      ${report.missing}`);
-    console.log('');
-
-    if (report.details.length > 0) {
-      console.log('--- Outbox Delivery Details ---');
-      for (const d of report.details) {
-        const tag = d.status === 'DELIVERED' ? 'OK' : d.status;
-        console.log(`  [${tag}] ${d.message_id} → ${d.to_lane}`);
-        if (d.status !== 'DELIVERED' && d.found_at) {
-          console.log(`         found at: ${d.found_at}`);
-        }
-        if (d.status !== 'DELIVERED') {
-          console.log(`         canonical: ${d.canonical_path}`);
-        }
-      }
-      console.log('');
-    }
-
-    if (mirrorLeaks.length > 0) {
-      console.log('--- Mirror-Only Leaks (messages in local mirror but NOT canonical) ---');
-      for (const leak of mirrorLeaks) {
-        console.log(`  [LEAK] ${leak.message_id} → ${leak.to_lane}`);
-        console.log(`         mirror:    ${leak.mirror_path}`);
-        console.log(`         canonical: ${leak.canonical_path}`);
-      }
-      console.log('');
-    }
-
-    if (exitCode === 0) {
-      console.log('Result: ALL DELIVERED');
-    } else {
-      console.log('Result: INTEGRITY ISSUES DETECTED');
-    }
-  }
-
-  process.exit(exitCode);
+  })();
 }
 
 module.exports = DeliveryVerifier;

@@ -52,16 +52,24 @@ class ContinuityVerifier {
 	 */
 	computeFingerprint() {
 		const hasher = crypto.createHash('sha256');
-		const criticalFiles = [
-			'src/core/laneContextGate.js',
-			'src/permissions/FilePermissionEnforcer.js',
-			'src/queue/Queue.js',
-			'src/resilience/RecoveryClassifier.js',
-			'src/resilience/RetryWrapper.js',
-			'src/audit/AuditLogger.js',
-			'src/attestation/IdentityAttestation.js',
-			'package.json'
-		];
+  const criticalFiles = [
+      'src/core/laneContextGate.js',
+      'src/permissions/FilePermissionEnforcer.js',
+      'src/queue/Queue.js',
+      'src/resilience/RecoveryClassifier.js',
+      'src/resilience/RetryWrapper.js',
+      'src/audit/AuditLogger.js',
+      'src/attestation/IdentityAttestation.js',
+      'src/attestation/Verifier.js',
+      'src/attestation/VerifierWrapper.js',
+      'src/attestation/Signer.js',
+      'src/attestation/KeyManager.js',
+      'src/attestation/TrustStoreManager.js',
+      'src/attestation/constants.js',
+      'src/attestation/stableStringify.js',
+      'src/attestation/InboxMessageSchema.js',
+      'package.json'
+  ];
 		for (const relPath of criticalFiles) {
 			const abs = path.join(this.projectRoot, relPath);
 			if (fs.existsSync(abs)) {
@@ -88,15 +96,18 @@ class ContinuityVerifier {
 			// Use deterministic verification (identity before crypto)
 			const laneId = process.env.LANE_NAME || 'unknown';
 			const v = this._verifier.verifyAgainstTrustStore ? this._verifier.verifyAgainstTrustStore(raw.jws, laneId) : null;
-			if (!v || !v.valid) {
-				const err = v ? (v.error || v.errors?.join(', ')) : 'verification failed';
-				console.error('[Continuity] Previous fingerprint signature invalid:', err);
-			} else {
-				prevFp = v.payload.fingerprint;
-			}
-		} else if (raw.fingerprint) {
-			prevFp = raw.fingerprint;
-		}
+            if (!v || !v.valid) {
+              const err = v ? (v.error || v.errors?.join(', ')) : 'verification failed';
+              console.error('[Continuity] Previous fingerprint signature invalid:', err);
+              this._recordIncident('fingerprint_signature_invalid', { error: err });
+            } else {
+              prevFp = v.payload.fingerprint;
+            }
+          } else if (raw.fingerprint) {
+            console.error('[CONTINUITY-INCIDENT] Falling back to unsigned fingerprint data — JWS missing or no verifier configured');
+            this._recordIncident('fingerprint_unsigned_fallback', { reason: 'no_jws_or_verifier' });
+            prevFp = raw.fingerprint;
+          }
 	} catch (e) {
 		console.error('[Continuity] Failed to load fingerprint:', e.message);
 	}
@@ -109,16 +120,19 @@ if (fs.existsSync(this.lineageFile)) {
 		if (raw.jws && this._verifier) {
 			const laneId = process.env.LANE_NAME || 'unknown';
 			const v = this._verifier.verifyAgainstTrustStore ? this._verifier.verifyAgainstTrustStore(raw.jws, laneId) : null;
-			if (!v || !v.valid) {
-				const err = v ? (v.error || v.errors?.join(', ')) : 'verification failed';
-				console.error('[Continuity] Previous lineage signature invalid:', err);
-					} else {
-						lineage = v.payload;
-						lineage.jws = raw.jws; // preserve for audit
-					}
-				} else {
-					lineage = raw;
-				}
+            if (!v || !v.valid) {
+              const err = v ? (v.error || v.errors?.join(', ')) : 'verification failed';
+              console.error('[Continuity] Previous lineage signature invalid:', err);
+              this._recordIncident('lineage_signature_invalid', { error: err });
+            } else {
+              lineage = v.payload;
+              lineage.jws = raw.jws; // preserve for audit
+            }
+          } else {
+            console.error('[CONTINUITY-INCIDENT] Falling back to unsigned lineage data — JWS missing or no verifier configured');
+            this._recordIncident('lineage_unsigned_fallback', { reason: 'no_jws_or_verifier' });
+            lineage = raw;
+          }
 			} catch (e) {
 				console.error('[Continuity] Failed to load lineage:', e.message);
 			}

@@ -133,10 +133,10 @@ class Queue {
           if (!current.signature) {
             throw new Error(`Queue item ${id} missing required signature - HMAC fallback removed`);
           }
-          const v = Queue._verifierWrapper.verifyQueueItem(current);
-          if (!v.valid) {
-            throw new Error(`Signature verification failed for item ${id}: ${v.reason || v.error || 'unknown'}`);
-          }
+                const v = Queue._verifierWrapper.verifyQueueItem(current);
+                if (!v.valid) {
+                    throw new Error(`Signature verification failed for item ${id}: ${v.reason || v.error || 'unknown'}`);
+                }
         }
 
     if (current.status !== 'pending') {

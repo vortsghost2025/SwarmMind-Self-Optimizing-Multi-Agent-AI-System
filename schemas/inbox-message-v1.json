@@ -1,0 +1,236 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SwarmMind Inbox Message v1.0/v1.1",
+  "description": "Schema for lane-relay inbox messages per the v1.0 contract. Supports both schema_version 1.0 and 1.1 (with payload/execution extensions).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "task_id",
+    "idempotency_key",
+    "from",
+    "to",
+    "type",
+    "priority",
+    "subject",
+    "timestamp"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": ["1.0", "1.1"],
+      "description": "Message schema version"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T",
+      "description": "Unique message identifier with ISO timestamp prefix"
+    },
+    "task_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Links to originating task"
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Dedup key; must end with or contain the sender lane name"
+    },
+    "from": {
+      "type": "string",
+      "enum": ["archivist", "library", "swarmmind", "kernel"],
+      "description": "Sender lane"
+    },
+    "to": {
+      "type": "string",
+      "enum": ["archivist", "library", "swarmmind", "kernel"],
+      "description": "Target lane"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["task", "status", "ack", "proposal", "review", "alert"],
+      "description": "Message type"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3"],
+      "description": "Message priority level"
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Summary line"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp"
+    },
+    "task_kind": {
+      "type": "string",
+      "description": "Optional task kind classifier"
+    },
+    "body": {
+      "type": "string",
+      "description": "Optional message body"
+    },
+    "requires_action": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the recipient must take action"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "v1.1 payload extension",
+      "properties": {
+        "mode": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "chunk": {
+          "type": "string"
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "v1.1 execution context extension",
+      "properties": {
+        "mode": {
+          "type": "string"
+        },
+        "engine": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "session_id": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required"],
+      "description": "Evidence tracking for verification",
+      "properties": {
+        "required": {
+          "type": "boolean",
+          "description": "Whether evidence is required for this message"
+        },
+        "evidence_path": {
+          "type": "string"
+        },
+        "verified": {
+          "type": "boolean"
+        },
+        "verified_by": {
+          "type": "string"
+        },
+        "verified_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Message lease for claiming/acquisition",
+      "properties": {
+        "owner": {
+          "type": "string"
+        },
+        "acquired_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "renew_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_renewals": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "retry": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Retry tracking for failed message processing",
+      "properties": {
+        "attempt": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "last_error": {
+          "type": "string"
+        },
+        "last_attempt_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "heartbeat": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Heartbeat tracking for lane liveness",
+      "properties": {
+        "interval_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "last_heartbeat_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "SHA-256 content hash for verification depth"
+    },
+    "signature": {
+      "type": "string",
+      "description": "JWS compact serialization signature"
+    },
+    "signature_alg": {
+      "type": "string",
+      "enum": ["RS256"],
+      "description": "Signature algorithm"
+    },
+    "key_id": {
+      "type": "string",
+      "description": "Identifier linking to trust store key"
+    }
+  }
+}

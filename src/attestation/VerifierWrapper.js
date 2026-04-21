@@ -20,16 +20,18 @@ const { VERIFY_REASON } = require('./constants');
 const { RecoveryClient, submitToRecoveryEngine } = require('./RecoveryClient');
 
 class VerifierWrapper {
-	constructor(options = {}) {
-		this.verifier = options.verifier || new Verifier(options);
-		this.quarantineManager = options.quarantineManager || new QuarantineManager(options);
-		this.phenotypeStore = options.phenotypeStore || new PhenotypeStore(options);
-		this.onQuarantineRetry = options.onQuarantineRetry || null;
+  constructor(options = {}) {
+    this.verifier = options.verifier || new Verifier(options);
+    this.quarantineManager = options.quarantineManager || new QuarantineManager(options);
+    this.phenotypeStore = options.phenotypeStore || new PhenotypeStore(options);
+    this.onQuarantineRetry = options.onQuarantineRetry || null;
+    this.config = options.config || {};
+    this._emitWarning = options.emitWarning || null;
 
     // RecoveryEngine integration (optional), but never policy-toggleable.
     // If a client is provided, submission is always attempted.
     this.recoveryClient = options.recoveryClient || null;
-	}
+  }
 
 	async verify(item) {
 		if (!item.signature) {
@@ -232,7 +234,79 @@ class VerifierWrapper {
 		};
 	}
 
-	async compareAndSync(laneId, currentState) {
+  async verifyInboxMessage(msg) {
+    const { InboxMessageSchema } = require('./InboxMessageSchema');
+    const { VALID_LANES, VERIFY_REASON } = require('./constants');
+    const { Signer } = require('./Signer');
+
+    // Step 1: Schema validation (Depth 2)
+    const schemaValidator = new InboxMessageSchema();
+    const schemaResult = schemaValidator.validate(msg);
+    if (!schemaResult.valid) {
+      return this._handleFailure(msg, VERIFY_REASON.SCHEMA_VALIDATION_FAILED, schemaResult.errors.join('; '), msg.from);
+    }
+
+    // Step 2: Sender lane identity (Depth 4)
+    if (!VALID_LANES.has(msg.from)) {
+      return this._handleFailure(msg, VERIFY_REASON.UNKNOWN_SENDER_LANE, `Unknown sender lane: ${msg.from}`, msg.from);
+    }
+
+    // Step 3: Routing verification — msg.to must be this lane
+    if (this.config && this.config.laneName && msg.to !== this.config.laneName) {
+      return this._handleFailure(msg, VERIFY_REASON.ROUTING_MISMATCH, `Message addressed to ${msg.to}, not ${this.config.laneName}`, msg.from);
+    }
+    if (!VALID_LANES.has(msg.to)) {
+      return this._handleFailure(msg, VERIFY_REASON.ROUTING_MISMATCH, `Invalid target lane: ${msg.to}`, msg.from);
+    }
+
+    // Step 4: Content hash verification (Depth 5)
+    if (msg.content_hash) {
+      const computedHash = Signer.computeContentHash(msg);
+      if (computedHash !== msg.content_hash) {
+        return this._handleFailure(msg, VERIFY_REASON.CONTENT_HASH_MISMATCH, `Content hash mismatch: expected ${msg.content_hash}, got ${computedHash}`, msg.from);
+      }
+    }
+
+    // Step 5: JWS signature verification (Depth 3 + 4)
+    if (msg.signature) {
+      // The message has a JWS — verify it through the existing verify() path
+      // which handles A=B=C lane consistency, key_id binding, revocation, expiry
+      try {
+        const sigResult = await this.verify(msg);
+        if (!sigResult.valid) {
+          return sigResult; // Already has proper failure format
+        }
+
+        // Step 6: Verify that signed 'from' lane matches msg.from
+        if (sigResult.payload && sigResult.payload.from && sigResult.payload.from !== msg.from) {
+          return this._handleFailure(msg, VERIFY_REASON.ROUTING_MISMATCH, `Signed from=${sigResult.payload.from} doesn't match envelope from=${msg.from}`, msg.from);
+        }
+      } catch (err) {
+        return this._handleFailure(msg, VERIFY_REASON.SIGNATURE_MISMATCH, `Signature verification error: ${err.message}`, msg.from);
+      }
+    } else {
+      // Unsigned message — record as warning, don't reject (backward compat)
+      // Future: make this configurable — reject unsigned in production
+      if (this._emitWarning) {
+        this._emitWarning('UNSIGNED_MESSAGE', { id: msg.id, from: msg.from });
+      }
+    }
+
+    // All checks passed
+    return {
+      valid: true,
+      depth: 6,
+      mode: 'INBOX_VERIFIED',
+      schema_depth: schemaResult.depth,
+      has_signature: !!msg.signature,
+      has_content_hash: !!msg.content_hash,
+      from: msg.from,
+      to: msg.to,
+      priority: msg.priority
+    };
+  }
+
+  async compareAndSync(laneId, currentState) {
 		const comparison = this.phenotypeStore.compareWithLast(laneId, currentState);
 
 		if (!comparison.match) {

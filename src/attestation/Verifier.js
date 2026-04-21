@@ -171,14 +171,21 @@ class Verifier {
 			};
 		}
 
-		// Step 4: Fetch public key
-		const publicKey = this.getPublicKey(laneId);
-		if (!publicKey) {
-			return { valid: false, error: VERIFY_REASON.KEY_NOT_FOUND };
-		}
+        // Step 4: Enforce header.kid === payload.key_id (Gap 2 fix)
+        const headerKid = parsed.header?.kid;
+        const payloadKeyId = parsed.payload?.key_id;
+        if (headerKid && payloadKeyId && headerKid !== payloadKeyId) {
+            return { valid: false, error: VERIFY_REASON.KEY_ID_MISMATCH, note: `Header key_id (${headerKid}) differs from payload key_id (${payloadKeyId})` };
+        }
 
-		// Step 5: Crypto verification
-		return this.verify(jws, publicKey);
+        // Step 5: Fetch public key
+        const publicKey = this.getPublicKey(laneId);
+        if (!publicKey) {
+            return { valid: false, error: VERIFY_REASON.KEY_NOT_FOUND };
+        }
+
+        // Step 6: Crypto verification
+        return this.verify(jws, publicKey);
 	}
 
 	/**
