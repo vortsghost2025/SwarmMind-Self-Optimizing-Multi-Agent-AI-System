@@ -103,11 +103,13 @@ class ContinuityVerifier {
             } else {
               prevFp = v.payload.fingerprint;
             }
-          } else if (raw.fingerprint) {
-            console.error('[CONTINUITY-INCIDENT] Falling back to unsigned fingerprint data — JWS missing or no verifier configured');
-            this._recordIncident('fingerprint_unsigned_fallback', { reason: 'no_jws_or_verifier' });
-            prevFp = raw.fingerprint;
-          }
+        } else if (raw.fingerprint) {
+          // HARD ENFORCEMENT: Unsigned fingerprint data is rejected, not used for drift detection
+          console.error('[CONTINUITY-HOLD] Unsigned fingerprint data rejected — JWS missing or no verifier configured');
+          this._recordIncident('fingerprint_unsigned_rejected', { reason: 'no_jws_or_verifier' });
+          this._triggerHold('fingerprint_unsigned', 'Previous fingerprint has no JWS — cannot verify codebase continuity');
+          // prevFp stays null — unsigned data is not trusted
+        }
 	} catch (e) {
 		console.error('[Continuity] Failed to load fingerprint:', e.message);
 	}
@@ -128,11 +130,13 @@ if (fs.existsSync(this.lineageFile)) {
               lineage = v.payload;
               lineage.jws = raw.jws; // preserve for audit
             }
-          } else {
-            console.error('[CONTINUITY-INCIDENT] Falling back to unsigned lineage data — JWS missing or no verifier configured');
-            this._recordIncident('lineage_unsigned_fallback', { reason: 'no_jws_or_verifier' });
-            lineage = raw;
-          }
+        } else {
+          // HARD ENFORCEMENT: Unsigned lineage data is rejected, not used
+          console.error('[CONTINUITY-HOLD] Unsigned lineage data rejected — JWS missing or no verifier configured');
+          this._recordIncident('lineage_unsigned_rejected', { reason: 'no_jws_or_verifier' });
+          this._triggerHold('lineage_unsigned', 'Previous lineage has no JWS — cannot verify session continuity');
+          // lineage stays null — unsigned data is not trusted
+        }
 			} catch (e) {
 				console.error('[Continuity] Failed to load lineage:', e.message);
 			}

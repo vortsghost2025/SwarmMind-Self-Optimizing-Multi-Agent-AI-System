@@ -15,6 +15,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const { Signer } = require('../src/attestation/Signer');
+const { KeyManager } = require('../src/attestation/KeyManager');
 
 const VALID_LANES = ['archivist', 'library', 'swarmmind', 'kernel'];
 const VALID_PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
@@ -23,6 +25,10 @@ const VALID_HEARTBEAT_STATUSES = ['pending', 'in_progress', 'done', 'failed', 'e
 const VALID_EXECUTION_ACTORS = ['lane', 'subagent', 'watcher'];
 
 const OUTBOX_DIR = path.join(__dirname, '..', 'lanes', 'swarmmind', 'outbox');
+const PASSFILE_CANDIDATES = [
+  path.join(__dirname, '..', '.runtime', 'lane-passphrases.json'),
+  'S:/Archivist-Agent/.runtime/lane-passphrases.json'
+];
 
 const CANONICAL_INBOX_PATHS = {
   archivist: 'S:/Archivist-Agent/lanes/archivist/inbox',
@@ -42,6 +48,7 @@ function buildMessage(options) {
   var requiresAction = options.requiresAction || false;
   var actor = options.actor || 'lane';
   var parentId = options.parentId || null;
+  var skipSign = options.skipSign || false;
 
   // Validation
   var errors = [];
@@ -63,6 +70,7 @@ function buildMessage(options) {
   var messageId = datePrefix + 'Z_' + from + '_' + taskId;
   var idempotencyKey = from + '-' + taskId + '-' + datePrefix;
 
+  // Compute content_hash (always, since it's required by schema)
   var msg = {
     schema_version: '1.1',
     id: messageId,
@@ -136,18 +144,74 @@ function buildMessage(options) {
       verified: false,
       verified_by: null,
       verified_at: null
-    }
+    },
+    // Required attestation fields (v1.1 hard enforcement)
+    content_hash: '', // computed below after all fields set
+    signature: '',    // populated by signMessageForOutbox() or signInboxMessage()
+    key_id: '',       // populated during signing
+    signature_alg: 'RS256'
   };
 
+  // Compute content hash after all fields are set (static method)
+  msg.content_hash = Signer.computeContentHash(msg);
+
   return msg;
+}
+
+function resolvePassphrase(lane) {
+  if (process.env.LANE_KEY_PASSPHRASE) return process.env.LANE_KEY_PASSPHRASE;
+  const laneKeyVar = 'LANE_KEY_PASSPHRASE_' + String(lane || '').toUpperCase();
+  if (process.env[laneKeyVar]) return process.env[laneKeyVar];
+
+  for (const passfile of PASSFILE_CANDIDATES) {
+    try {
+      if (!fs.existsSync(passfile)) continue;
+      const parsed = JSON.parse(fs.readFileSync(passfile, 'utf8'));
+      if (parsed && typeof parsed === 'object' && parsed[lane]) {
+        return parsed[lane];
+      }
+    } catch (_) {}
+  }
+  return null;
+}
+
+function signMessageForOutbox(msg, lane) {
+  const passphrase = resolvePassphrase(lane);
+  if (!passphrase) {
+    throw new Error('Passphrase missing for lane: ' + lane);
+  }
+
+  const identityDir = path.join(__dirname, '..', '.identity');
+  const km = new KeyManager({ laneId: lane, identityDir: identityDir });
+  if (!km.hasKeys()) {
+    throw new Error('SIGNING_KEYS_MISSING: ' + identityDir);
+  }
+
+  const privateKey = km.loadPrivateKey(passphrase);
+  const info = km.getPublicKeyInfo();
+  if (!info || !info.key_id) {
+    throw new Error('KEY_ID_UNAVAILABLE for lane: ' + lane);
+  }
+
+  const signer = new Signer();
+  return signer.signInboxMessage(msg, privateKey, info.key_id);
 }
 
 function deliverMessage(msg, send) {
   var filename = msg.id + '.json';
   var outboxPath = path.join(OUTBOX_DIR, filename);
 
+  // Try to sign the message before delivering/writing
+  var finalMsg = msg;
+  try {
+    finalMsg = signMessageForOutbox(msg, msg.from || 'swarmmind');
+  } catch (signErr) {
+    console.error('[build-message] WARNING: Could not sign message: ' + signErr.message);
+    console.error('[build-message] Message will be unsigned and likely rejected by lane watchers');
+  }
+
   // Write to outbox
-  fs.writeFileSync(outboxPath, JSON.stringify(msg, null, 2), 'utf8');
+  fs.writeFileSync(outboxPath, JSON.stringify(finalMsg, null, 2), 'utf8');
   console.log('[build-message] Written to outbox: ' + outboxPath);
 
   if (send) {
@@ -160,7 +224,7 @@ function deliverMessage(msg, send) {
 
     var inboxPath = path.join(targetPath, filename);
     try {
-      fs.writeFileSync(inboxPath, JSON.stringify(msg, null, 2), 'utf8');
+      fs.writeFileSync(inboxPath, JSON.stringify(finalMsg, null, 2), 'utf8');
       console.log('[build-message] Delivered to: ' + inboxPath);
     } catch (e) {
       console.error('[build-message] Delivery failed: ' + e.message);
@@ -192,21 +256,29 @@ if (require.main === module) {
     process.exit(1);
   }
 
-  try {
-    var msg = buildMessage(options);
-    var sent = deliverMessage(msg, options.send === 'true');
+try {
+  var msg = buildMessage(options);
+  var sent = deliverMessage(msg, options.send === 'true');
 
-    if (!options.send) {
+  // Show the message (after signing attempt in deliverMessage)
+  // Re-read the outbox version to get the signed copy
+  if (!options.send) {
+    var outboxFile = path.join(OUTBOX_DIR, msg.id + '.json');
+    if (fs.existsSync(outboxFile)) {
+      var outboxMsg = JSON.parse(fs.readFileSync(outboxFile, 'utf8'));
+      console.log(JSON.stringify(outboxMsg, null, 2));
+    } else {
       console.log(JSON.stringify(msg, null, 2));
     }
+  }
 
-    // Validate with InboxMessageSchema
-    var InboxMessageSchema = require('../src/attestation/InboxMessageSchema').InboxMessageSchema;
-    var schema = new InboxMessageSchema();
-    var result = schema.validate(msg);
-    console.log('\n[validation] valid=' + result.valid + ' depth=' + result.depth + ' errors=' + result.errors.length + ' warnings=' + result.warnings.length);
-    if (result.errors.length > 0) console.error('[validation] Errors:', result.errors);
-    if (result.warnings.length > 0) console.warn('[validation] Warnings:', result.warnings);
+  // Validate the built message with InboxMessageSchema
+  var InboxMessageSchema = require('../src/attestation/InboxMessageSchema').InboxMessageSchema;
+  var schema = new InboxMessageSchema();
+  var result = schema.validate(msg);
+  console.log('\n[validation] valid=' + result.valid + ' depth=' + result.depth + ' errors=' + result.errors.length + ' warnings=' + result.warnings.length);
+  if (result.errors.length > 0) console.error('[validation] Errors:', result.errors);
+  if (result.warnings.length > 0) console.warn('[validation] Warnings:', result.warnings);
 
   } catch (e) {
     console.error('Error:', e.message);
@@ -215,3 +287,4 @@ if (require.main === module) {
 }
 
 module.exports = { buildMessage, deliverMessage };
+

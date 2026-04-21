@@ -201,7 +201,7 @@ if (args.includes('--status')) {
 if (args.includes('--verify')) {
   const blocker = readBlocker();
   if (!blocker || blocker.status !== 'active') {
-    console.log(JSON.stringify({ status: 'no_active_blocker', verified: true }));
+    console.log(JSON.stringify({ status: 'no_active_blocker', verified: null }));
     process.exit(0);
   }
   const result = verify(blocker);

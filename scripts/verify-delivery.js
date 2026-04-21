@@ -86,7 +86,8 @@ class DeliveryVerifier {
           found_at: canonicalFound,
         };
 
-        if (deepVerify && fs.existsSync(canonicalFound)) {
+        // HARD ENFORCEMENT: Schema validation is ALWAYS performed (not gated by --deep)
+        if (fs.existsSync(canonicalFound)) {
           try {
             const deliveredMsg = JSON.parse(fs.readFileSync(canonicalFound, 'utf8'));
             deepSchemaTotal++;
@@ -101,6 +102,7 @@ class DeliveryVerifier {
             } else {
               deepSchemaValid++;
 
+              // Content hash verification (always, not just --deep)
               if (deliveredMsg.content_hash) {
                 deepHashTotal++;
                 const { Signer } = require('../src/attestation/Signer');
@@ -114,7 +116,13 @@ class DeliveryVerifier {
                 }
               }
 
-              if (deliveredMsg.signature) {
+              // HARD ENFORCEMENT: Unsigned messages get UNSIGNED status, not DELIVERED
+              if (!deliveredMsg.signature) {
+                detail.status = 'UNSIGNED';
+                detail.depth = deliveredMsg.content_hash ? 5 : 2;
+                deepUnsigned++;
+              } else if (deepVerify) {
+                // Signature verification only under --deep (requires key material)
                 deepSigTotal++;
                 try {
                   const { VerifierWrapper } = require('../src/attestation/VerifierWrapper');
@@ -134,10 +142,6 @@ class DeliveryVerifier {
                   detail.status = 'SIGNATURE_CHECK_FAILED';
                   detail.verify_error = e.message;
                 }
-              } else {
-                detail.unsigned = true;
-                detail.depth = deliveredMsg.content_hash ? 5 : 2;
-                deepUnsigned++;
               }
 
               if (detail.depth && detail.depth > maxDepth) maxDepth = detail.depth;
@@ -184,18 +188,17 @@ class DeliveryVerifier {
       details,
     };
 
-    if (deepVerify) {
-      result.deep_summary = {
-        schema_valid: deepSchemaValid,
-        schema_total: deepSchemaTotal,
-        signature_valid: deepSigValid,
-        signature_total: deepSigTotal,
-        hash_valid: deepHashValid,
-        hash_total: deepHashTotal,
-        unsigned: deepUnsigned,
-        max_depth: maxDepth,
-      };
-    }
+  // HARD ENFORCEMENT: deep_summary is always included (schema/hash checks are unconditional)
+  result.deep_summary = {
+    schema_valid: deepSchemaValid,
+    schema_total: deepSchemaTotal,
+    signature_valid: deepSigValid,
+    signature_total: deepSigTotal,
+    hash_valid: deepHashValid,
+    hash_total: deepHashTotal,
+    unsigned: deepUnsigned,
+    max_depth: maxDepth,
+  };
 
     return result;
   }
@@ -328,7 +331,7 @@ if (require.main === module) {
     const report = await verifier.verify({ deepVerify: deepMode });
     const mirrorLeaks = verifier.scanMirrorLeaks();
 
-    const exitCode = (report.mirror_only > 0 || report.missing > 0) ? 1 : 0;
+    const exitCode = (report.mirror_only > 0 || report.missing > 0 || deepUnsigned > 0) ? 1 : 0;
 
     if (jsonMode) {
       const full = {
@@ -375,9 +378,12 @@ if (require.main === module) {
             console.log(` computed_hash: ${d.computed_hash}`);
             console.log(` expected_hash: ${d.expected_hash}`);
           }
-          if (deepMode && d.unsigned) {
-            console.log(` unsigned: true`);
-          }
+    if (deepMode && d.unsigned) {
+              console.log(` unsigned: true`);
+            }
+            if (d.status === 'UNSIGNED') {
+              console.log(` UNSIGNED: message lacks required signature`);
+            }
         }
         console.log('');
       }
@@ -392,16 +398,16 @@ if (require.main === module) {
         console.log('');
       }
 
-      if (deepMode && report.deep_summary) {
-        const ds = report.deep_summary;
-        console.log('=== Deep Verification (optional) ===');
-        console.log(`Schema valid: ${ds.schema_valid}/${ds.schema_total}`);
-        console.log(`Signature valid: ${ds.signature_valid}/${ds.signature_total}`);
-        console.log(`Content hash valid: ${ds.hash_valid}/${ds.hash_total}`);
-        console.log(`Unsigned: ${ds.unsigned}`);
-        console.log(`Max depth achieved: ${ds.max_depth}`);
-        console.log('');
-      }
+    if (report.deep_summary) {
+      const ds = report.deep_summary;
+      console.log('=== Delivery Verification Summary ===');
+      console.log(`Schema valid: ${ds.schema_valid}/${ds.schema_total}`);
+      console.log(`Signature valid: ${ds.signature_valid}/${ds.signature_total}`);
+      console.log(`Content hash valid: ${ds.hash_valid}/${ds.hash_total}`);
+      console.log(`Unsigned: ${ds.unsigned}`);
+      console.log(`Max depth achieved: ${ds.max_depth}`);
+      console.log('');
+    }
 
       if (exitCode === 0) {
         console.log('Result: ALL DELIVERED');

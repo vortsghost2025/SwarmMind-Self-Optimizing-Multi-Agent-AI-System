@@ -10,7 +10,8 @@ const VALID_EXECUTION_ACTORS = ['lane', 'subagent', 'watcher'];
 const VALID_PAYLOAD_COMPRESSIONS = ['none', 'gzip', 'zstd'];
 const REQUIRED_FIELDS = [
   'schema_version', 'id', 'task_id', 'idempotency_key',
-  'from', 'to', 'type', 'priority', 'subject', 'timestamp'
+  'from', 'to', 'type', 'priority', 'subject', 'timestamp',
+  'signature', 'key_id', 'content_hash'
 ];
 const CONTENT_HASH_RE = /^sha256:[a-f0-9]{64}$/;
 const ISO8601_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/;
@@ -97,9 +98,9 @@ class InboxMessageSchema {
       }
     }
 
-    if (Object.prototype.hasOwnProperty.call(msg, 'key_id') && !Object.prototype.hasOwnProperty.call(msg, 'signature')) {
-      warnings.push('key_id present without signature; key_id is only meaningful with signature');
-    }
+  if (Object.prototype.hasOwnProperty.call(msg, 'key_id') && !Object.prototype.hasOwnProperty.call(msg, 'signature')) {
+    errors.push('key_id present without signature — signature is required');
+  }
 
   if (msg.schema_version === '1.0') {
     if (Object.prototype.hasOwnProperty.call(msg, 'payload')) {

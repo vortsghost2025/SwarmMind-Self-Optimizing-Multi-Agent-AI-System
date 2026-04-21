@@ -285,20 +285,20 @@ class VerifierWrapper {
         return this._handleFailure(msg, VERIFY_REASON.SIGNATURE_MISMATCH, `Signature verification error: ${err.message}`, msg.from);
       }
     } else {
-      // Unsigned message — record as warning, don't reject (backward compat)
-      // Future: make this configurable — reject unsigned in production
-      if (this._emitWarning) {
-        this._emitWarning('UNSIGNED_MESSAGE', { id: msg.id, from: msg.from });
-      }
+      // HARD ENFORCEMENT: Unsigned messages are structurally rejected.
+      // They never enter processing, never get verified:false as consolation.
+      // Unsigned = invalid. "verified" starts meaning something.
+      return this._handleFailure(msg, VERIFY_REASON.UNSIGNED_MESSAGE,
+        'Message has no JWS signature — structurally rejected at inbox boundary', msg.from);
     }
 
-    // All checks passed
+    // All checks passed (including signature verification)
     return {
       valid: true,
       depth: 6,
       mode: 'INBOX_VERIFIED',
       schema_depth: schemaResult.depth,
-      has_signature: !!msg.signature,
+      has_signature: true,
       has_content_hash: !!msg.content_hash,
       from: msg.from,
       to: msg.to,

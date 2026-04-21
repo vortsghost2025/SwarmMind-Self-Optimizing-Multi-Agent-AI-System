@@ -14,7 +14,10 @@
     "type",
     "priority",
     "subject",
-    "timestamp"
+    "timestamp",
+    "signature",
+    "key_id",
+    "content_hash"
   ],
   "properties": {
     "schema_version": {

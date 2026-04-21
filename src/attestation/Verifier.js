@@ -236,10 +236,11 @@ class Verifier {
 		return result;
 	}
 
-	verifyAuditEvent(event) {
-		if (!event.signature) {
-			return { valid: true, mode: 'UNSIGNED', warning: 'Legacy audit event' };
-		}
+  verifyAuditEvent(event) {
+    if (!event.signature) {
+      // HARD ENFORCEMENT: Unsigned audit events are invalid, not "valid with warning"
+      return { valid: false, error: VERIFY_REASON.MISSING_SIGNATURE, note: 'UNSIGNED_AUDIT_EVENT' };
+    }
 
 		const laneId = event.lane;
 		if (!laneId) {
