@@ -38,7 +38,7 @@ async function run() {
 	const km = new KeyManager({ laneId: 'swarmmind' });
 	km.initialize(process.env.LANE_KEY_PASSPHRASE);
 	const signer = new Signer();
-	const verifier = new Verifier({ allowLegacy: false });
+	const verifier = new Verifier();
 	// Add our public key to verifier's trust store via direct injection
 	verifier.trustStore.keys['swarmmind'] = { public_key_pem: km.loadPublicKey() };
 

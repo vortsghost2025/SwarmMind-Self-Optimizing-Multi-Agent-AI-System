@@ -3,11 +3,16 @@ const path = require('path');
 
 // Phase 3.2: Load file permission enforcement first (defense in depth)
 // This module patches fs and fs.promises with whitelist checks before our gate runs.
+// CRITICAL: Missing permission enforcement is a hard failure, not a soft warning.
+// Without it, file operations bypass lane-based write whitelists entirely.
 try {
   require('../../permissions/FilePermissionEnforcer');
   console.log('[LANE-GATE] Permission enforcement module loaded');
 } catch (e) {
-  console.error('[LANE-GATE] WARNING: Permission module could not be loaded:', e.message);
+  console.error('[LANE-GATE] FATAL: Permission enforcement module could not be loaded:', e.message);
+  console.error('[LANE-GATE] Without FilePermissionEnforcer, fs operations bypass lane whitelists.');
+  console.error('[LANE-GATE] This is a fail-closed system — cannot continue without permission enforcement.');
+  process.exit(1);
 }
 
 /**

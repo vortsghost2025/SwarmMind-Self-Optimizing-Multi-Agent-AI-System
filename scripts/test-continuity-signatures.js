@@ -35,7 +35,7 @@ async function run() {
 	const km = new KeyManager({ laneId: 'swarmmind' });
 	km.initialize(process.env.LANE_KEY_PASSPHRASE);
 	const signer = new Signer();
-	const verifier = new Verifier({ allowLegacy: false });
+	const verifier = new Verifier();
 	verifier.addTrustedKey('swarmmind', km.loadPublicKey(), km.getPublicKeyInfo().key_id);
 
 	// Create a dummy ContinuityVerifier (no gate needed for test)
