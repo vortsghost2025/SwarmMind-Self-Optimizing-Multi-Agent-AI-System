@@ -83,3 +83,7 @@ safe_test.txt
 
 # Recovery test state
 state/test_*/
+
+# Passphrase files (NEVER commit)
+*passphrase*
+*134679*
