@@ -71,3 +71,15 @@ lanes/*/inbox/*.key
 
 # UUID temp files (Codex file-writing artifacts)
 lanes/*/inbox/[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]-*.json
+
+# Test artifacts
+safe_test.txt
+.runtime/
+.test-memory/
+.test-trust/
+
+# Continuity test directories
+.continuity_test*/
+
+# Recovery test state
+state/test_*/

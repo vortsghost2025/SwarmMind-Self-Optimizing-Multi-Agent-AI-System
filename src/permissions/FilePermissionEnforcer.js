@@ -33,24 +33,24 @@ const PERMISSION_WHITELIST = {
   swarmmind: {
     // SwarmMind can write only to its own workspace and queue
     read: ['*'],  // Can read any file for verification
-    write: [
-      'S:/SwarmMind/**',
-      'S:/self-organizing-library/**',
-      'queue/**'
-    ],
-    append: [
-      'S:/SwarmMind/**',
-      'S:/self-organizing-library/**',
-      'queue/**'
-    ],
-    mkdir: [
-      'S:/SwarmMind/**',
-      'S:/self-organizing-library/**',
-      'queue/**'
-    ],
-    delete: [
-      'S:/SwarmMind/**',
-      'queue/**'
+        write: [
+                'S:/SwarmMind Self-Optimizing Multi-Agent AI System/**',
+                'S:/self-organizing-library/**',
+                'queue/**'
+            ],
+            append: [
+                'S:/SwarmMind Self-Optimizing Multi-Agent AI System/**',
+                'S:/self-organizing-library/**',
+                'queue/**'
+            ],
+            mkdir: [
+                'S:/SwarmMind Self-Optimizing Multi-Agent AI System/**',
+                'S:/self-organizing-library/**',
+                'queue/**'
+            ],
+            delete: [
+                'S:/SwarmMind Self-Optimizing Multi-Agent AI System/**',
+                'queue/**'
     ]
   },
   library: {

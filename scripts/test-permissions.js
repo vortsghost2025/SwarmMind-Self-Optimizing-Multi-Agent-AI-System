@@ -16,10 +16,10 @@ function assert(condition, message) {
 // Set lane for test (simulate different lanes)
 process.env.LANE_NAME = 'swarmmind';
 
-// Test 1: SwarmMind can write to its own workspace
-const swarmmindWritePath = 'S:/SwarmMind/test.txt';
-assert(FilePermissionEnforcer.isAllowed('swarmmind', 'write', swarmmindWritePath), 
-  'SwarmMind should be allowed to write to SwarmMind directory');
+// Test 1: SwarmMind can write to its own workspace (actual path with spaces)
+const swarmmindWritePath = 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/test.txt';
+assert(FilePermissionEnforcer.isAllowed('swarmmind', 'write', swarmmindWritePath),
+    'SwarmMind should be allowed to write to SwarmMind directory');
 
 // Test 2: SwarmMind cannot write to arbitrary location
 const arbitraryPath = 'C:/Windows/system32/config/system.ini';
@@ -38,8 +38,8 @@ assert(FilePermissionEnforcer.isAllowed('archivist', 'write', arbitraryPath),
 // Test 5: Permission violation is thrown when attempting disallowed write
 process.env.LANE_NAME = 'swarmmind';
 const fsWrap = require('fs');
-// Create a safe test file in allowed location
-const testDir = 'S:/SwarmMind';
+// Create a safe test file in allowed location (actual path with spaces)
+const testDir = 'S:/SwarmMind Self-Optimizing Multi-Agent AI System';
 if (!fs.existsSync(testDir)) fs.mkdirSync(testDir, { recursive: true });
 const safePath = path.join(testDir, 'safe_test.txt');
 
