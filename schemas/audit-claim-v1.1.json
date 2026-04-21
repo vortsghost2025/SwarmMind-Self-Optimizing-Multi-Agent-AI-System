@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SwarmMind Audit Claim Report v1.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_type",
+    "repo",
+    "commit",
+    "timestamp",
+    "status",
+    "claim",
+    "evidence_commands",
+    "evidence_results",
+    "snapshot_scope"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.1"
+    },
+    "report_type": {
+      "type": "string",
+      "const": "audit_claim"
+    },
+    "repo": {
+      "type": "string",
+      "minLength": 1
+    },
+    "commit": {
+      "type": "string",
+      "minLength": 7
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["proven", "conflicted", "blocked"]
+    },
+    "claim": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "evidence_results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["git_show_stat", "tests"],
+      "properties": {
+        "git_show_stat": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["command", "exit_code", "summary", "output_excerpt"],
+          "properties": {
+            "command": {
+              "type": ["string", "null"]
+            },
+            "exit_code": {
+              "type": ["integer", "null"]
+            },
+            "summary": {
+              "type": ["object", "null"],
+              "additionalProperties": false,
+              "required": ["passed", "failed", "total"],
+              "properties": {
+                "passed": { "type": "integer", "minimum": 0 },
+                "failed": { "type": "integer", "minimum": 0 },
+                "total": { "type": "integer", "minimum": 0 }
+              }
+            },
+            "output_excerpt": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "snapshot_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["swarm_local_status", "cross_repo_status", "rule"],
+      "properties": {
+        "swarm_local_status": { "type": "string" },
+        "cross_repo_status": { "type": "string" },
+        "rule": { "type": "string" }
+      }
+    }
+  }
+}

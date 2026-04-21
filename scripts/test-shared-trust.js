@@ -1,6 +1,6 @@
 /**
- * Shared-trust integration test: SwarmMind signs, Archivist trust store resolves
- * Uses the canonical trust store path: S:\Archivist-Agent\.trust\keys.json
+ * Shared-trust integration test: SwarmMind signs, verifier resolves via explicit trust-store path.
+ * Uses a deterministic local fixture path (no cross-repo mutation).
  *
  * Run: node scripts/test-shared-trust.js
  */
@@ -8,7 +8,6 @@
 const { KeyManager } = require('../src/attestation/KeyManager');
 const { Signer } = require('../src/attestation/Signer');
 const { Verifier } = require('../src/attestation/Verifier');
-const { TrustStoreManager } = require('../src/attestation/TrustStoreManager');
 const Queue = require('../src/queue/Queue');
 const fs = require('fs');
 const path = require('path');
@@ -31,14 +30,14 @@ function cleanup(trustStorePath, queueDir, identityDir) {
 }
 
 async function run() {
-	console.log('Testing Shared Trust Flow (canonical path)...\n');
+	console.log('Testing Shared Trust Flow (fixture path)...\n');
 
-	// Define canonical paths
-	const trustStorePath = path.join('S:', 'Archivist-Agent', '.trust', 'keys.json');
+	// Define deterministic local fixture path
+	const trustStorePath = path.join(process.cwd(), '.test-shared-trust', 'keys.json');
 	const queueDir = path.join(process.cwd(), 'queue');
 	const identityDir = path.join(process.cwd(), '.identity');
 
-	// Ensure .trust directory exists
+	// Ensure fixture directory exists
 	const trustDir = path.dirname(trustStorePath);
 	if (!fs.existsSync(trustDir)) fs.mkdirSync(trustDir, { recursive: true });
 
@@ -65,17 +64,17 @@ async function run() {
 		updated_at: new Date().toISOString()
 	};
 	fs.writeFileSync(trustStorePath, JSON.stringify(trustStoreData, null, 2));
-	console.log(`✓ Trust store written to ${trustStorePath}`);
+	console.log(`✓ Trust store fixture written to ${trustStorePath}`);
 
-	// Now create Signer and Verifier (Verifier will load trust store from default path)
+	// Now create Signer and Verifier (Verifier loads explicit fixture path)
 	const signer = new Signer();
-	const verifier = new Verifier(); // loads from default path
+	const verifier = new Verifier({ trustStorePath });
 	// Verify that verifier actually loaded the key
 	if (!verifier.trustStore.keys?.[pubInfo.lane_id]) {
 		console.error('❌ Verifier did not load key from trust store. Keys:', Object.keys(verifier.trustStore.keys || {}));
 		process.exit(1);
 	}
-	console.log('✓ Verifier loaded trust store from canonical location');
+	console.log('✓ Verifier loaded trust store from explicit fixture path');
 
 	// Configure Queue (includes keyManager)
 	Queue.setAttestation(signer, verifier, km);
@@ -91,11 +90,11 @@ async function run() {
 	});
 	assert(item.signature, 'Item should have signature');
 
-	// Verify via verifier that reads from trust store (already loaded)
+	// Verify via verifier that reads from fixture trust store (already loaded)
 	// Use verifyAgainstTrustStore to verify signature against stored public key
 	const verifyResult = verifier.verifyAgainstTrustStore(item.signature, 'swarmmind');
 	assert(verifyResult.valid, 'Signature should verify against canonical trust store');
-	console.log('✓ Signature verified using canonical trust store');
+	console.log('✓ Signature verified using fixture trust store');
 
 	// Status transition also verifies and re-signs
   const updated = await q.updateStatus(item.id, 'accepted', 'processed');

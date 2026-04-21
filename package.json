@@ -15,7 +15,8 @@
     "heartbeat": "node scripts/heartbeat.js --start",
     "heartbeat:check": "node scripts/heartbeat.js --check",
     "heartbeat:once": "node scripts/heartbeat.js --once",
-    "test": "node scripts/run-tests.js"
+    "test": "node scripts/run-tests.js",
+    "audit:claim": "node scripts/generate-audit-claim.js --run-tests"
   },
   "keywords": [
     "multi-agent",

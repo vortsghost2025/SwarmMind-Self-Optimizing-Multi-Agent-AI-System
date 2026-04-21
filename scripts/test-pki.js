@@ -12,6 +12,7 @@ const fs = require('fs');
 const { KeyManager, KEY_SIZE } = require('../src/attestation/KeyManager');
 const { Signer } = require('../src/attestation/Signer');
 const { Verifier } = require('../src/attestation/Verifier');
+const { ensureTestTrustStore } = require('./test-support/trustStoreFixture');
 
 const TEST_DIR = path.join(__dirname, '.test-pki');
 const TEST_PASSPHRASE = 'test-passphrase-12345';
@@ -60,8 +61,12 @@ try {
 	console.log('  ✓ JWS signature created\n');
 
 	console.log('Test 4: Verify JWS signature');
-	const verifier = new Verifier({ trustStorePath: path.join(TEST_DIR, '..', '..', '.trust', 'keys.json') });
-	verifier.trustStore = { keys: { 'test-lane': { public_key_pem: publicKey } }, migration: {} };
+	const trustStorePath = ensureTestTrustStore({
+		trustStorePath: path.join(TEST_DIR, 'trust-store.json'),
+		reset: true
+	});
+	const verifier = new Verifier({ trustStorePath });
+	verifier.addTrustedKey('test-lane', publicKey, keyId);
 	const verified = verifier.verify(signed.jws, publicKey);
 	assert(verified.valid, 'Signature should verify');
 	assert.deepStrictEqual(verified.payload.id, 'TEST-123', 'Payload should match');
@@ -90,7 +95,6 @@ try {
 	console.log('  ✓ Queue item signed\n');
 
 	console.log('Test 7: Verify queue item');
-	verifier.trustStore.keys['test-lane'] = { public_key_pem: publicKey };
 	const itemResult = verifier.verifyQueueItem(signedItem);
 	assert(itemResult.valid, 'Queue item should verify');
 	assert.strictEqual(itemResult.mode, 'JWS_VERIFIED', 'Should indicate JWS mode');

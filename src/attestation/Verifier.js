@@ -19,6 +19,14 @@ class Verifier {
     if (Object.prototype.hasOwnProperty.call(options, 'hmacCutoffDate')) {
       throw new Error('hmacCutoffDate is removed: HMAC fallback is disabled');
     }
+    const testMode =
+      options.testMode === true ||
+      process.env.SWARM_TEST_MODE === '1' ||
+      process.env.NODE_ENV === 'test';
+    this.allowMissingTrustStoreForTests =
+      testMode &&
+      (options.allowMissingTrustStoreForTests === true ||
+        process.env.ALLOW_MISSING_TRUST_STORE_FOR_TESTS === '1');
     this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
     this.trustStore = null;
     this._loadTrustStore();
@@ -30,8 +38,13 @@ class Verifier {
 
 	_loadTrustStore() {
 		if (!fs.existsSync(this.trustStorePath)) {
-			this.trustStore = { keys: {}, migration: {} };
-			return;
+      if (this.allowMissingTrustStoreForTests) {
+        this.trustStore = { version: TRUST_STORE_VERSION, keys: {}, migration: {} };
+        return;
+      }
+      const missing = new Error(`Trust store missing at path: ${this.trustStorePath}`);
+      missing.code = VERIFY_REASON.TRUST_STORE_MISSING;
+      throw missing;
 		}
 		try {
 			const raw = fs.readFileSync(this.trustStorePath, 'utf8');
@@ -51,10 +64,13 @@ class Verifier {
 				this.trustStore.migration = {};
 			}
 		} catch (e) {
-			if (e.message.includes('version') || e.message.includes('missing')) {
-				throw e;
-			}
-			this.trustStore = { keys: {}, migration: {} };
+      if (this.allowMissingTrustStoreForTests) {
+        this.trustStore = { version: TRUST_STORE_VERSION, keys: {}, migration: {} };
+        return;
+      }
+      const loadError = new Error(`Trust store load failed at ${this.trustStorePath}: ${e.message}`);
+      loadError.code = VERIFY_REASON.TRUST_STORE_MISSING;
+      throw loadError;
 		}
 	}
 

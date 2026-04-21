@@ -15,12 +15,16 @@ const path = require('path');
 const crypto = require('crypto');
 
 // Configuration
-const LIBRARY_KEY_PASSPHRASE = process.env.LANE_KEY_PASSPHRASE || 'test-passphrase';
 const ARCHIVIST_TRUST_STORE = 'S:/Archivist-Agent/.trust/keys.json';
 const ARCHIVIST_SNAPSHOT = 'S:/Archivist-Agent/.identity/snapshot.json';
 const ARCHIVIST_SNAPSHOT_JWS = 'S:/Archivist-Agent/.identity/snapshot.jws';
 const SWARMMIND_QUEUE = 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/queue/library.log';
 const SWARMMIND_APP = 'S:/SwarmMind Self-Optimizing Multi-Agent AI System';
+
+function skip(message) {
+  console.log(`SKIP: ${message}`);
+  process.exit(0);
+}
 
 console.log('\n========================================');
 console.log('Three-Lane Integration Test');
@@ -29,10 +33,18 @@ console.log('========================================\n');
 // Step 1: Verify Archivist identity (SwarmMind perspective simulation)
 console.log('[Step 1] Verifying Archivist identity snapshot...');
 if (!fs.existsSync(ARCHIVIST_TRUST_STORE)) {
-  console.log(`SKIP: Trust store not found at ${ARCHIVIST_TRUST_STORE} — this test requires the Archivist lane to be present`);
-  process.exit(0);
+  skip(`Trust store not found at ${ARCHIVIST_TRUST_STORE} — this test requires the Archivist lane to be present`);
 }
 const trustStore = JSON.parse(fs.readFileSync(ARCHIVIST_TRUST_STORE, 'utf8'));
+if (!trustStore?.keys?.archivist?.public_key_pem || !trustStore?.keys?.archivist?.key_id) {
+  skip('Trust store missing archivist key entry');
+}
+if (!trustStore?.keys?.library?.public_key_pem || !trustStore?.keys?.library?.key_id) {
+  skip('Trust store missing library key entry');
+}
+if (!fs.existsSync(ARCHIVIST_SNAPSHOT) || !fs.existsSync(ARCHIVIST_SNAPSHOT_JWS)) {
+  skip('Archivist snapshot artifacts are missing');
+}
 const snapshot = JSON.parse(fs.readFileSync(ARCHIVIST_SNAPSHOT, 'utf8'));
 const jws = fs.readFileSync(ARCHIVIST_SNAPSHOT_JWS, 'utf8').trim();
 
@@ -82,14 +94,20 @@ function base64UrlEncode(data) {
 
 // For this test, directly use Library's identity system
 const libraryIdentityPath = 'S:/self-organizing-library/.identity';
+if (!fs.existsSync(path.join(libraryIdentityPath, 'private.pem'))) {
+  skip('Library private key is missing');
+}
 const encryptedKey = fs.readFileSync(path.join(libraryIdentityPath, 'private.pem'), 'utf8');
-const passphrase = process.env.LANE_KEY_PASSPHRASE || 'library-secret-2026';
+const passphrase = process.env.LIBRARY_TEST_PASSPHRASE;
+if (!passphrase) {
+  skip('LIBRARY_TEST_PASSPHRASE is not set for private-key integration path');
+}
 const libraryPrivateKey = crypto.createPrivateKey({
   key: encryptedKey,
   passphrase: passphrase,
   format: 'pem'
 });
-const libraryKeyId = '713485afdb41c35a';
+const libraryKeyId = trustStore.keys.library.key_id;
 
 const artifact = {
   id: `artifact-${Date.now()}`,

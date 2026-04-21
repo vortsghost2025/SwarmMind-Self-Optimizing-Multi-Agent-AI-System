@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.1",
+  "report_type": "audit_claim",
+  "repo": "<repo-name>",
+  "commit": "<full-sha>",
+  "timestamp": "<iso-8601>",
+  "status": "proven|conflicted|blocked",
+  "claim": "<generated-from-evidence>",
+  "evidence_commands": [
+    "git show --stat --oneline <sha>",
+    "<test-command-or-test-output-source>"
+  ],
+  "evidence_results": {
+    "git_show_stat": "<raw git show --stat output>",
+    "tests": {
+      "command": "<command-used-or-null-when-reading-file>",
+      "exit_code": 0,
+      "summary": {
+        "passed": 25,
+        "failed": 0,
+        "total": 25
+      },
+      "output_excerpt": "<tail of test output>"
+    }
+  },
+  "snapshot_scope": {
+    "swarm_local_status": "unknown/not managed here",
+    "cross_repo_status": "unproven_without_explicit_probe",
+    "rule": "Cross-repo snapshot status must come from an explicit probe, never inference."
+  }
+}

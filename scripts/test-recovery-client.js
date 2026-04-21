@@ -10,6 +10,7 @@ const assert = require('assert');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
+const { ensureTestTrustStore } = require('./test-support/trustStoreFixture');
 
 const TEST_DIR = path.join(__dirname, '..', '.test-recovery-client');
 const TRUST_STORE_PATH = path.join(TEST_DIR, 'keys.json');
@@ -208,9 +209,14 @@ async function runTests() {
 		// Test 6: VerifierWrapper integration
 		console.log('\n📋 Test 6: VerifierWrapper with RecoveryClient');
 		try {
+			const trustStorePath = ensureTestTrustStore({
+				trustStorePath: path.join(TEST_DIR, 'trust-store.json'),
+				reset: true
+			});
 			const wrapper = new VerifierWrapper({
 				recoveryClient: client,
-				submitToRecovery: true
+				submitToRecovery: true,
+				trustStorePath
 			});
 
 			const item = {

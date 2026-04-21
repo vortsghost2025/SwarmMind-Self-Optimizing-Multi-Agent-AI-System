@@ -1,6 +1,7 @@
 const { Verifier } = require('../src/attestation/Verifier');
 const { Signer } = require('../src/attestation/Signer');
 const { KeyManager } = require('../src/attestation/KeyManager');
+const { ensureTestTrustStore } = require('./test-support/trustStoreFixture');
 const fs = require('fs');
 const path = require('path');
 
@@ -23,7 +24,11 @@ async function run() {
   const km = new KeyManager({ laneId: 'swarmmind' });
   km.initialize(process.env.LANE_KEY_PASSPHRASE);
   const signer = new Signer();
-  const verifier = new Verifier();
+  const trustStorePath = ensureTestTrustStore({
+    trustStorePath: path.join(process.cwd(), '.test-trust', 'verifier-trust-store.json'),
+    reset: true
+  });
+  const verifier = new Verifier({ trustStorePath });
   verifier.addTrustedKey('swarmmind', km.loadPublicKey(), km.getPublicKeyInfo().key_id);
 
   // Test 1: sign + verify round-trip

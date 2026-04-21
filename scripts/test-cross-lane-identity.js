@@ -104,6 +104,12 @@ if (!fs.existsSync(TRUST_STORE_PATH)) {
   process.exit(0);
 }
 const trustStore = JSON.parse(fs.readFileSync(TRUST_STORE_PATH, 'utf8'));
+const hasArchivistKey = Boolean(trustStore?.keys?.archivist?.public_key_pem && trustStore?.keys?.archivist?.key_id);
+const hasLibraryKey = Boolean(trustStore?.keys?.library?.public_key_pem && trustStore?.keys?.library?.key_id);
+if (!hasArchivistKey || !hasLibraryKey) {
+  console.log('SKIP: Trust store does not contain required archivist/library key entries');
+  process.exit(0);
+}
 const revocations = fs.existsSync(REVOCATIONS_PATH) ? JSON.parse(fs.readFileSync(REVOCATIONS_PATH, 'utf8')) : { revoked_snapshots: [], revoked_keys: [] };
 
 // Verify identity snapshots (Archivist and Library only - SwarmMind is execution layer, no persistent identity)
@@ -131,9 +137,19 @@ for (const lane of lanes) {
 // Cross-lane artifact signing test (Library → SwarmMind)
 console.log('\n[Cross-Lane Artifact Test]');
 try {
+  if (!process.env.LIBRARY_TEST_PASSPHRASE) {
+    console.log('  ℹ SKIP: LIBRARY_TEST_PASSPHRASE not set; skipping private-key signing scenario');
+    throw { _skipOnly: true };
+  }
+
   // Simulate: Library signs artifact, SwarmMind verifies
   const libraryIdentityDir = 'S:/self-organizing-library/.identity';
-  const libraryPrivKey = fs.readFileSync(path.join(libraryIdentityDir, 'private.pem'), 'utf8');
+  const encryptedKey = fs.readFileSync(path.join(libraryIdentityDir, 'private.pem'), 'utf8');
+  const libraryPrivKey = crypto.createPrivateKey({
+    key: encryptedKey,
+    passphrase: process.env.LIBRARY_TEST_PASSPHRASE,
+    format: 'pem'
+  });
   const testArtifact = {
     id: `cross-test-${Date.now()}`,
     lane: 'library',
@@ -177,8 +193,12 @@ try {
   console.log(`    Artifact ID: ${testArtifact.id}`);
   console.log(`    Signature: ${jws.substring(0, 50)}...`);
 } catch (e) {
+  if (e && e._skipOnly) {
+    // keep allPassed unchanged for explicit skip
+  } else {
   console.log(`  ✗ Cross-lane artifact test FAILED: ${e.message}`);
   allPassed = false;
+  }
 }
 
 console.log('\n========================================');

@@ -91,8 +91,14 @@ async function runTests() {
   assert(caught, 'Should have thrown on non-retryable');
   assert(attempts5 === 2, 'Should have attempted twice (1 retry + 1 final)');
 
-  // Test 6: Backoff delay increases
-  const retry6 = new RetryWrapper({ maxAttempts: 4, initialDelayMs: 50, timeoutMs: 100, audit: false });
+  // Test 6: Deterministic backoff curve (no jitter)
+  const retry6 = new RetryWrapper({
+    maxAttempts: 4,
+    initialDelayMs: 50,
+    timeoutMs: 100,
+    enableJitter: false,
+    audit: false
+  });
   const delays = [];
   retry6.onRetry = (attempt, err, delayMs) => { delays.push(delayMs); };
   let attempts6 = 0;
@@ -104,8 +110,38 @@ async function runTests() {
   }
   assert(attempts6 === 4, 'Should have 4 attempts');
   assert(delays.length === 3, 'Should have 3 retry backoffs');
-  // Verify exponential: delays[1] should be 2x delays[0] (roughly, jitter may vary)
-  assert(delays[1] >= delays[0] * 1.5, 'Second delay should be roughly 2x first (with jitter margin)');
+  assert(delays[0] === 50, 'First deterministic delay should be 50ms');
+  assert(delays[1] === 100, 'Second deterministic delay should be 100ms');
+  assert(delays[2] === 200, 'Third deterministic delay should be 200ms');
+
+  // Test 7: Jitter mode stays in expected bounds
+  const retry7 = new RetryWrapper({
+    maxAttempts: 4,
+    initialDelayMs: 80,
+    timeoutMs: 100,
+    enableJitter: true,
+    audit: false
+  });
+  const jitterDelays = [];
+  retry7.onRetry = (attempt, err, delayMs) => { jitterDelays.push(delayMs); };
+  let attempts7 = 0;
+  const failWithJitter = async () => { attempts7++; throw new Error('fail'); };
+  try {
+    await retry7.execute(failWithJitter, { operation: 'test_jitter_bounds' });
+  } catch (e) {
+    // Expected to exhaust
+  }
+  assert(attempts7 === 4, 'Jitter path should also execute 4 attempts');
+  assert(jitterDelays.length === 3, 'Jitter path should have 3 retry backoffs');
+  const expectedBases = [80, 160, 320];
+  for (let i = 0; i < jitterDelays.length; i++) {
+    const min = Math.floor(expectedBases[i] * 0.75);
+    const max = Math.ceil(expectedBases[i] * 1.25);
+    assert(
+      jitterDelays[i] >= min && jitterDelays[i] <= max,
+      `Jitter delay ${i + 1} should be within [${min}, ${max}]ms; got ${jitterDelays[i]}`
+    );
+  }
 
   console.log('\n✓ All Retry Wrapper tests passed');
   process.exit(0);
