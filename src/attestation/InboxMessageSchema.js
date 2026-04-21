@@ -5,6 +5,9 @@ const VALID_LANES = ['archivist', 'library', 'swarmmind', 'kernel'];
 const VALID_VERSIONS = ['1.0', '1.1'];
 const VALID_PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
 const VALID_TYPES = ['task', 'status', 'ack', 'proposal', 'review', 'alert'];
+const VALID_HEARTBEAT_STATUSES = ['pending', 'in_progress', 'done', 'failed', 'escalated', 'timed_out'];
+const VALID_EXECUTION_ACTORS = ['lane', 'subagent', 'watcher'];
+const VALID_PAYLOAD_COMPRESSIONS = ['none', 'gzip', 'zstd'];
 const REQUIRED_FIELDS = [
   'schema_version', 'id', 'task_id', 'idempotency_key',
   'from', 'to', 'type', 'priority', 'subject', 'timestamp'
@@ -98,14 +101,53 @@ class InboxMessageSchema {
       warnings.push('key_id present without signature; key_id is only meaningful with signature');
     }
 
-    if (msg.schema_version === '1.0') {
-      if (Object.prototype.hasOwnProperty.call(msg, 'payload')) {
-        warnings.push('payload is a v1.1 extension on a v1.0 message');
-      }
-      if (Object.prototype.hasOwnProperty.call(msg, 'execution')) {
-        warnings.push('execution is a v1.1 extension on a v1.0 message');
+  if (msg.schema_version === '1.0') {
+    if (Object.prototype.hasOwnProperty.call(msg, 'payload')) {
+      warnings.push('payload is a v1.1 extension on a v1.0 message');
+    }
+    if (Object.prototype.hasOwnProperty.call(msg, 'execution')) {
+      warnings.push('execution is a v1.1 extension on a v1.0 message');
+    }
+    // v1.0 compat: accept from_lane/to_lane if from/to missing
+    if (!Object.prototype.hasOwnProperty.call(msg, 'from') && Object.prototype.hasOwnProperty.call(msg, 'from_lane')) {
+      warnings.push('from_lane is deprecated in v1.1; use "from" instead');
+    }
+    if (!Object.prototype.hasOwnProperty.call(msg, 'to') && Object.prototype.hasOwnProperty.call(msg, 'to_lane')) {
+      warnings.push('to_lane is deprecated in v1.1; use "to" instead');
+    }
+  }
+
+  // v1.1 specific validations
+  if (msg.schema_version === '1.1') {
+    // Reject from_lane/to_lane on v1.1 messages
+    if (Object.prototype.hasOwnProperty.call(msg, 'from_lane')) {
+      errors.push('v1.1 messages must use "from" not "from_lane"');
+    }
+    if (Object.prototype.hasOwnProperty.call(msg, 'to_lane')) {
+      errors.push('v1.1 messages must use "to" not "to_lane"');
+    }
+
+    // Validate heartbeat.status enum
+    if (msg.heartbeat && typeof msg.heartbeat === 'object' && msg.heartbeat.status) {
+      if (!VALID_HEARTBEAT_STATUSES.includes(msg.heartbeat.status)) {
+        errors.push(`heartbeat.status must be one of ${VALID_HEARTBEAT_STATUSES.join(', ')}, got "${msg.heartbeat.status}"`);
       }
     }
+
+    // Validate execution.actor enum
+    if (msg.execution && typeof msg.execution === 'object' && msg.execution.actor) {
+      if (!VALID_EXECUTION_ACTORS.includes(msg.execution.actor)) {
+        errors.push(`execution.actor must be one of ${VALID_EXECUTION_ACTORS.join(', ')}, got "${msg.execution.actor}"`);
+      }
+    }
+
+    // Validate payload.compression enum
+    if (msg.payload && typeof msg.payload === 'object' && msg.payload.compression) {
+      if (!VALID_PAYLOAD_COMPRESSIONS.includes(msg.payload.compression)) {
+        errors.push(`payload.compression must be one of ${VALID_PAYLOAD_COMPRESSIONS.join(', ')}, got "${msg.payload.compression}"`);
+      }
+    }
+  }
 
     if (msg.evidence && typeof msg.evidence === 'object') {
       if (!Object.prototype.hasOwnProperty.call(msg.evidence, 'required')) {

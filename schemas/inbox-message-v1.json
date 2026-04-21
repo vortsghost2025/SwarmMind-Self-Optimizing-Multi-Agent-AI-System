@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "SwarmMind Inbox Message v1.0/v1.1",
-  "description": "Schema for lane-relay inbox messages per the v1.0 contract. Supports both schema_version 1.0 and 1.1 (with payload/execution extensions).",
+  "title": "SwarmMind Inbox Message v1.1",
+  "description": "Schema for lane-relay inbox messages per the v1.1 contract. Key changes from v1.0: from/to replace from_lane/to_lane, heartbeat.status uses enum, added watcher/delivery_verification blocks, payload.compression, execution.parent_id/actor.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -20,7 +20,7 @@
     "schema_version": {
       "type": "string",
       "enum": ["1.0", "1.1"],
-      "description": "Message schema version"
+      "description": "Message schema version. v1.1 is the current canonical version."
     },
     "id": {
       "type": "string",
@@ -41,12 +41,12 @@
     "from": {
       "type": "string",
       "enum": ["archivist", "library", "swarmmind", "kernel"],
-      "description": "Sender lane"
+      "description": "Sender lane (replaces v1.0 from_lane)"
     },
     "to": {
       "type": "string",
       "enum": ["archivist", "library", "swarmmind", "kernel"],
-      "description": "Target lane"
+      "description": "Target lane (replaces v1.0 to_lane)"
     },
     "type": {
       "type": "string",
@@ -87,35 +87,55 @@
       "description": "v1.1 payload extension",
       "properties": {
         "mode": {
-          "type": "string"
+          "type": "string",
+          "enum": ["inline", "indirect"],
+          "description": "Payload delivery mode"
+        },
+        "compression": {
+          "type": "string",
+          "enum": ["none", "gzip", "zstd"],
+          "default": "none",
+          "description": "Compression algorithm for payload body"
         },
         "path": {
-          "type": "string"
+          "type": ["string", "null"],
+          "description": "Path to external payload file (for indirect mode)"
         },
         "chunk": {
-          "type": "string"
+          "type": "object",
+          "properties": {
+            "index": { "type": "integer", "minimum": 0 },
+            "count": { "type": "integer", "minimum": 1 },
+            "group_id": { "type": ["string", "null"] }
+          }
         }
       }
     },
     "execution": {
       "type": "object",
       "additionalProperties": false,
-      "description": "v1.1 execution context extension",
+      "description": "v1.1 execution provenance extension",
       "properties": {
         "mode": {
-          "type": "string"
+          "type": "string",
+          "description": "Execution mode (e.g., session_task, automated)"
         },
         "engine": {
-          "type": "string"
+          "type": "string",
+          "description": "Execution engine (e.g., kilo)"
         },
         "actor": {
-          "type": "string"
+          "type": "string",
+          "enum": ["lane", "subagent", "watcher"],
+          "description": "Execution actor type"
         },
         "session_id": {
-          "type": "string"
+          "type": ["string", "null"],
+          "description": "Session identifier"
         },
         "parent_id": {
-          "type": "string"
+          "type": ["string", "null"],
+          "description": "Parent execution context ID"
         }
       }
     },
@@ -157,7 +177,7 @@
           "format": "date-time"
         },
         "expires_at": {
-          "type": "string",
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "renew_count": {
@@ -184,10 +204,10 @@
           "minimum": 0
         },
         "last_error": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "last_attempt_at": {
-          "type": "string",
+          "type": ["string", "null"],
           "format": "date-time"
         }
       }
@@ -202,7 +222,7 @@
           "minimum": 1
         },
         "last_heartbeat_at": {
-          "type": "string",
+          "type": ["string", "null"],
           "format": "date-time"
         },
         "timeout_seconds": {
@@ -210,8 +230,41 @@
           "minimum": 1
         },
         "status": {
-          "type": "string"
+          "type": "string",
+          "enum": ["pending", "in_progress", "done", "failed", "escalated", "timed_out"],
+          "description": "Heartbeat status — v1.1 restricts to these enum values (replaces v1.0 'active')"
         }
+      }
+    },
+    "watcher": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "v1.1 watcher policy block",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "poll_seconds": { "type": "integer", "minimum": 1 },
+        "p0_fast_path": { "type": "boolean" },
+        "max_concurrent": { "type": "integer", "minimum": 1 },
+        "heartbeat_required": { "type": "boolean" },
+        "stale_after_seconds": { "type": "integer", "minimum": 1 },
+        "backoff": {
+          "type": "object",
+          "properties": {
+            "initial_seconds": { "type": "integer" },
+            "max_seconds": { "type": "integer" },
+            "multiplier": { "type": "number" }
+          }
+        }
+      }
+    },
+    "delivery_verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "v1.1 delivery verification block",
+      "properties": {
+        "verified": { "type": "boolean" },
+        "verified_at": { "type": ["string", "null"], "format": "date-time" },
+        "retries": { "type": "integer", "minimum": 0 }
       }
     },
     "content_hash": {
