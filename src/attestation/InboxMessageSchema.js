@@ -2,10 +2,10 @@ const fs = require('fs');
 const path = require('path');
 
 const VALID_LANES = ['archivist', 'library', 'swarmmind', 'kernel'];
-const VALID_VERSIONS = ['1.0', '1.1'];
+const VALID_VERSIONS = ['1.0', '1.1', '1.2', '1.3'];
 const VALID_PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
-const VALID_TYPES = ['task', 'status', 'ack', 'proposal', 'review', 'alert'];
-const VALID_HEARTBEAT_STATUSES = ['pending', 'in_progress', 'done', 'failed', 'escalated', 'timed_out'];
+const VALID_TYPES = ['task', 'status', 'ack', 'proposal', 'review', 'alert', 'response', 'heartbeat', 'escalation', 'handoff'];
+const VALID_HEARTBEAT_STATUSES = ['pending', 'in_progress', 'active', 'done', 'failed', 'escalated', 'timed_out'];
 const VALID_EXECUTION_ACTORS = ['lane', 'subagent', 'watcher'];
 const VALID_PAYLOAD_COMPRESSIONS = ['none', 'gzip', 'zstd'];
 const REQUIRED_FIELDS = [
@@ -118,37 +118,49 @@ class InboxMessageSchema {
     }
   }
 
-  // v1.1 specific validations
-  if (msg.schema_version === '1.1') {
-    // Reject from_lane/to_lane on v1.1 messages
-    if (Object.prototype.hasOwnProperty.call(msg, 'from_lane')) {
-      errors.push('v1.1 messages must use "from" not "from_lane"');
-    }
-    if (Object.prototype.hasOwnProperty.call(msg, 'to_lane')) {
-      errors.push('v1.1 messages must use "to" not "to_lane"');
+    // v1.1+ specific validations (apply to 1.1, 1.2, 1.3)
+    if (['1.1', '1.2', '1.3'].includes(msg.schema_version)) {
+        // Reject from_lane/to_lane on v1.1+ messages
+        if (Object.prototype.hasOwnProperty.call(msg, 'from_lane')) {
+            errors.push('v1.1+ messages must use "from" not "from_lane"');
+        }
+        if (Object.prototype.hasOwnProperty.call(msg, 'to_lane')) {
+            errors.push('v1.1+ messages must use "to" not "to_lane"');
+        }
+
+        // Validate heartbeat.status enum
+        if (msg.heartbeat && typeof msg.heartbeat === 'object' && msg.heartbeat.status) {
+            if (!VALID_HEARTBEAT_STATUSES.includes(msg.heartbeat.status)) {
+                errors.push(`heartbeat.status must be one of ${VALID_HEARTBEAT_STATUSES.join(', ')}, got "${msg.heartbeat.status}"`);
+            }
+        }
+
+        // Validate execution.actor enum
+        if (msg.execution && typeof msg.execution === 'object' && msg.execution.actor) {
+            if (!VALID_EXECUTION_ACTORS.includes(msg.execution.actor)) {
+                errors.push(`execution.actor must be one of ${VALID_EXECUTION_ACTORS.join(', ')}, got "${msg.execution.actor}"`);
+            }
+        }
+
+        // Validate payload.compression enum
+        if (msg.payload && typeof msg.payload === 'object' && msg.payload.compression) {
+            if (!VALID_PAYLOAD_COMPRESSIONS.includes(msg.payload.compression)) {
+                errors.push(`payload.compression must be one of ${VALID_PAYLOAD_COMPRESSIONS.join(', ')}, got "${msg.payload.compression}"`);
+            }
+        }
     }
 
-    // Validate heartbeat.status enum
-    if (msg.heartbeat && typeof msg.heartbeat === 'object' && msg.heartbeat.status) {
-      if (!VALID_HEARTBEAT_STATUSES.includes(msg.heartbeat.status)) {
-        errors.push(`heartbeat.status must be one of ${VALID_HEARTBEAT_STATUSES.join(', ')}, got "${msg.heartbeat.status}"`);
-      }
+    // v1.2+ specific validations
+    if (['1.2', '1.3'].includes(msg.schema_version)) {
+        // v1.2+: signature and key_id are REQUIRED (already in REQUIRED_FIELDS,
+        // but add explicit diagnostic if missing)
+        if (!msg.signature || msg.signature === '') {
+            errors.push('v1.2+ requires non-empty signature field');
+        }
+        if (!msg.key_id || msg.key_id === '') {
+            errors.push('v1.2+ requires non-empty key_id field');
+        }
     }
-
-    // Validate execution.actor enum
-    if (msg.execution && typeof msg.execution === 'object' && msg.execution.actor) {
-      if (!VALID_EXECUTION_ACTORS.includes(msg.execution.actor)) {
-        errors.push(`execution.actor must be one of ${VALID_EXECUTION_ACTORS.join(', ')}, got "${msg.execution.actor}"`);
-      }
-    }
-
-    // Validate payload.compression enum
-    if (msg.payload && typeof msg.payload === 'object' && msg.payload.compression) {
-      if (!VALID_PAYLOAD_COMPRESSIONS.includes(msg.payload.compression)) {
-        errors.push(`payload.compression must be one of ${VALID_PAYLOAD_COMPRESSIONS.join(', ')}, got "${msg.payload.compression}"`);
-      }
-    }
-  }
 
     if (msg.evidence && typeof msg.evidence === 'object') {
       if (!Object.prototype.hasOwnProperty.call(msg.evidence, 'required')) {
