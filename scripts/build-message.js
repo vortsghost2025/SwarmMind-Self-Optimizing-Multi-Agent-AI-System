@@ -202,13 +202,25 @@ function deliverMessage(msg, send) {
   var filename = msg.id + '.json';
   var outboxPath = path.join(OUTBOX_DIR, filename);
 
-  // Try to sign the message before delivering/writing
-  var finalMsg = msg;
+  // Sign the message before delivering/writing — FAIL CLOSED
+  var finalMsg;
   try {
     finalMsg = signMessageForOutbox(msg, msg.from || 'swarmmind');
   } catch (signErr) {
-    console.error('[build-message] WARNING: Could not sign message: ' + signErr.message);
-    console.error('[build-message] Message will be unsigned and likely rejected by lane watchers');
+    console.error('[build-message] FATAL: Could not sign message: ' + signErr.message);
+    console.error('[build-message] Outbox write BLOCKED — unsigned messages are rejected by schema v1.2');
+    return false;
+  }
+
+  // Guard: verify signature before writing
+  var { validateOutboxMessage } = {};
+  try { ({ validateOutboxMessage } = require('./outbox-write-guard')); } catch (_) {}
+  if (validateOutboxMessage) {
+    var guardCheck = validateOutboxMessage(finalMsg);
+    if (!guardCheck.valid) {
+      console.error('[build-message] FATAL: Outbox guard rejected: ' + guardCheck.errors.join(', '));
+      return false;
+    }
   }
 
   // Write to outbox
