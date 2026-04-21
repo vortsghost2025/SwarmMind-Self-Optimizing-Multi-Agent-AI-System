@@ -168,7 +168,8 @@ function resolvePassphrase(lane) {
       if (!fs.existsSync(passfile)) continue;
       const parsed = JSON.parse(fs.readFileSync(passfile, 'utf8'));
       if (parsed && typeof parsed === 'object' && parsed[lane]) {
-        return parsed[lane];
+        const val = parsed[lane];
+        return typeof val === 'object' && val.passphrase ? val.passphrase : val;
       }
     } catch (_) {}
   }
