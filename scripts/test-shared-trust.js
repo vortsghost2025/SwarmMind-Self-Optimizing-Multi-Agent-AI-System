@@ -98,7 +98,7 @@ async function run() {
 	console.log('✓ Signature verified using canonical trust store');
 
 	// Status transition also verifies and re-signs
-	const updated = q.updateStatus(item.id, 'accepted', 'processed');
+  const updated = await q.updateStatus(item.id, 'accepted', 'processed');
 	assert(updated.signature, 'Updated item should remain signed');
 	const verify2 = verifier.verifyAgainstTrustStore(updated.signature, 'swarmmind');
 	assert(verify2.valid, 'Updated signature should also verify');

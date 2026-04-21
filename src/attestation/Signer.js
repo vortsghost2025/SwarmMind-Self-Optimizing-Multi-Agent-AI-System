@@ -1,11 +1,11 @@
 /**
-* Signer.js - Phase 4.3 JWS Signing
-*
-* Creates JSON Web Signatures (JWS) for queue items, audit events,
-* and continuity records using RSA private keys.
-*
-* ENFORCEMENT: Canonical 'lane' field in all payloads
-*/
+ * Signer.js - Phase 4.3 JWS Signing
+ *
+ * Creates JSON Web Signatures (JWS) for queue items, audit events,
+ * and continuity records using RSA private keys.
+ *
+ * ENFORCEMENT: Canonical 'lane' field in all payloads
+ */
 
 const crypto = require('crypto');
 const { stableStringify } = require('./stableStringify');
@@ -56,18 +56,19 @@ class Signer {
 	}
 
 	signQueueItem(item, privateKey, keyId) {
-		// Canonical lane field (not origin_lane)
 		const lane = item.lane || item.origin_lane;
 
 		const signablePayload = {
 			id: item.id,
 			timestamp: item.timestamp,
-			lane: lane,  // CANONICAL FIELD
-			target_lane: item.target_lane,
+			lane: lane,
 			type: item.type
 		};
 
-		// Only add payload if it exists and is not undefined
+		if (item.target_lane !== undefined && item.target_lane !== null) {
+			signablePayload.target_lane = item.target_lane;
+		}
+
 		if (item.payload !== undefined && item.payload !== null) {
 			signablePayload.payload = item.payload;
 		}
@@ -75,7 +76,7 @@ class Signer {
 		const result = this.sign(signablePayload, privateKey, keyId);
 		return {
 			...item,
-			lane: lane,  // Ensure canonical field in returned item
+			lane: lane,
 			signature: result.jws,
 			signature_alg: this.algorithm,
 			key_id: keyId
@@ -83,16 +84,21 @@ class Signer {
 	}
 
 	signAuditEvent(event, privateKey, keyId) {
+		const lane = event.lane || event.originating_lane || process.env.LANE_NAME || 'unknown';
+
 		const signablePayload = {
 			timestamp: event.timestamp,
-			lane: event.lane,
-			event: event.event,
-			...event
+			lane: lane,
+			event_type: event.event_type
 		};
+
+		if (event.queue_item_id) signablePayload.queue_item_id = event.queue_item_id;
+		if (event.queue_type) signablePayload.queue_type = event.queue_type;
 
 		const result = this.sign(signablePayload, privateKey, keyId);
 		return {
 			...event,
+			lane: lane,
 			signature: result.jws,
 			signature_alg: this.algorithm,
 			key_id: keyId
@@ -101,7 +107,7 @@ class Signer {
 
 	signContinuityRecord(record, privateKey, keyId) {
 		const signablePayload = {
-			lane: record.lane || record.lane_id,  // Canonical field
+			lane: record.lane || record.lane_id,
 			fingerprint: record.fingerprint,
 			timestamp: record.timestamp || new Date().toISOString()
 		};

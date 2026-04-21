@@ -132,15 +132,15 @@ if (fs.existsSync(this.lineageFile)) {
 	 */
 	_saveCurrentData(currentFp, lineage, recoveryStatus) {
 		const laneId = process.env.LANE_NAME || 'unknown';
-		const fingerprintRecord = {
-			fingerprint: currentFp,
-			updated_at: new Date().toISOString(),
-			lane_id: laneId
-		};
-		const lineageRecord = {
-			...lineage,
-			lane_id: laneId
-		};
+  const fingerprintRecord = {
+    fingerprint: currentFp,
+    updated_at: new Date().toISOString(),
+    lane: laneId
+  };
+  const lineageRecord = {
+    ...lineage,
+    lane: laneId
+  };
 
 		// Sign if signer and keyManager available
 		if (this._signer && this._keyManager) {

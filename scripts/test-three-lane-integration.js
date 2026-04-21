@@ -28,6 +28,10 @@ console.log('========================================\n');
 
 // Step 1: Verify Archivist identity (SwarmMind perspective simulation)
 console.log('[Step 1] Verifying Archivist identity snapshot...');
+if (!fs.existsSync(ARCHIVIST_TRUST_STORE)) {
+  console.log(`SKIP: Trust store not found at ${ARCHIVIST_TRUST_STORE} — this test requires the Archivist lane to be present`);
+  process.exit(0);
+}
 const trustStore = JSON.parse(fs.readFileSync(ARCHIVIST_TRUST_STORE, 'utf8'));
 const snapshot = JSON.parse(fs.readFileSync(ARCHIVIST_SNAPSHOT, 'utf8'));
 const jws = fs.readFileSync(ARCHIVIST_SNAPSHOT_JWS, 'utf8').trim();

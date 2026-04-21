@@ -55,7 +55,7 @@ class Queue {
 		fs.appendFileSync(this.filePath, line, { encoding: 'utf8' });
 	}
 
-	_enqueue(item) {
+  enqueue(item) {
 		const now = new Date().toISOString();
 		const laneName = process.env.LANE_NAME || 'unknown';
 
@@ -133,7 +133,7 @@ class Queue {
           if (!current.signature) {
             throw new Error(`Queue item ${id} missing required signature - HMAC fallback removed`);
           }
-          const v = await Queue._verifierWrapper.verify(current);
+          const v = Queue._verifierWrapper.verifyQueueItem(current);
           if (!v.valid) {
             throw new Error(`Signature verification failed for item ${id}: ${v.reason || v.error || 'unknown'}`);
           }

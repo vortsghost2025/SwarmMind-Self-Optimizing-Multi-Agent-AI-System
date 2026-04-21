@@ -73,20 +73,23 @@ async function run() {
 	const fpRaw = JSON.parse(fs.readFileSync(fpPath, 'utf8'));
 	const lnRaw = JSON.parse(fs.readFileSync(lnPath, 'utf8'));
 
-	assert(fpRaw.signature, 'Fingerprint should be signed');
-	assert(lnRaw.signature, 'Lineage should be signed');
+  assert(fpRaw.jws, 'Fingerprint should be signed');
+  assert(lnRaw.jws, 'Lineage should be signed');
 
 	// Verify signature using verifier (trust includes our key)
-	const fpVerify = verifier.verifyAgainstTrustStore(fpRaw.signature, 'swarmmind');
-	assert(fpVerify.valid, 'Fingerprint signature valid');
-	const lnVerify = verifier.verifyAgainstTrustStore(lnRaw.signature, 'swarmmind');
-	assert(lnVerify.valid, 'Lineage signature valid');
+  const fpVerify = verifier.verifyAgainstTrustStore(fpRaw.jws, 'swarmmind');
+  assert(fpVerify.valid, 'Fingerprint signature valid');
+  const lnVerify = verifier.verifyAgainstTrustStore(lnRaw.jws, 'swarmmind');
+  assert(lnVerify.valid, 'Lineage signature valid');
 
 	console.log('✓ Continuity files signed and verifiable');
 
-	// Test that corrupted signature fails: modify file, keep signature but change payload
-	fpRaw.fingerprint = 'tampered';
-	fs.writeFileSync(fpPath, JSON.stringify(fpRaw, null, 2));
+  // Test that corrupted signature fails: modify JWS to invalidate it
+  const jwsParts = fpRaw.jws.split('.');
+  const tamperedPayload = Buffer.from('tampered', 'utf8').toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const tamperedJws = `${jwsParts[0]}.${tamperedPayload}.${jwsParts[2]}`;
+  fpRaw.jws = tamperedJws;
+  fs.writeFileSync(fpPath, JSON.stringify(fpRaw, null, 2));
 	// Load via _loadStoredData; should detect invalid signature and return null prevFp
 	const reloaded = cv._loadStoredData();
 	assert(reloaded.prevFp === null, 'Tampered fingerprint should be rejected on load');

@@ -11,6 +11,14 @@ const fs = require('fs');
 const path = require('path');
 
 class AuditLogger {
+  static _signer = null;
+  static _keyManager = null;
+
+  static setAttestation(signer, keyManager) {
+    AuditLogger._signer = signer;
+    AuditLogger._keyManager = keyManager;
+  }
+
   /**
    * @param {string} logDir - Directory where audit logs are stored
    */
@@ -34,11 +42,29 @@ class AuditLogger {
       timestamp: new Date().toISOString(),
       event_type: event.type,
       originating_lane: process.env.LANE_NAME || 'unknown',
+      lane: process.env.LANE_NAME || 'unknown',
       queue_item_id: event.itemId || null,
       queue_type: event.queueType || null,
       details: event.details || {},
       metadata: event.metadata || {}
     };
+
+    if (AuditLogger._signer && AuditLogger._keyManager) {
+      const passphrase = process.env.LANE_KEY_PASSPHRASE;
+      if (passphrase) {
+        try {
+          const privateKey = AuditLogger._keyManager.loadPrivateKey(passphrase);
+          const publicKeyInfo = AuditLogger._keyManager.getPublicKeyInfo();
+          if (privateKey && publicKeyInfo) {
+            const signed = AuditLogger._signer.signAuditEvent(entry, privateKey, publicKeyInfo.key_id);
+            Object.assign(entry, signed);
+          }
+        } catch (e) {
+          console.error('[AuditLogger] Failed to sign entry:', e.message);
+        }
+      }
+    }
+
     const line = JSON.stringify(entry) + '\n';
     fs.appendFileSync(this.filePath, line, { encoding: 'utf8' });
   }

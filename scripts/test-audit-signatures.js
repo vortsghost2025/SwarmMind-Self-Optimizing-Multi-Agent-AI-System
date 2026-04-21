@@ -39,8 +39,9 @@ async function run() {
 	// Add own key to verifier's trust store
 	verifier.addTrustedKey('swarmmind', km.loadPublicKey(), km.getPublicKeyInfo().key_id);
 
-	// Create AuditLogger with signer and keyManager
-	const audit = new AuditLogger(path.join(process.cwd(), 'audit'), signer, km);
+  // Create AuditLogger with attestation configured via static method
+  const audit = new AuditLogger(path.join(process.cwd(), 'audit'));
+  AuditLogger.setAttestation(signer, km);
 
 	// Record an event
 	audit.record({

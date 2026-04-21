@@ -69,7 +69,7 @@ async function run() {
 	assert(parsed.signature, 'Persisted item should include signature');
 
 	// Update status — should verify signature and re-sign
-	const updated = q.updateStatus(item.id, 'accepted', 'handled');
+  const updated = await q.updateStatus(item.id, 'accepted', 'handled');
 	assert(updated.signature, 'Updated item should have signature');
 	// Ensure status changed
 	assert(updated.status === 'accepted', 'Status should be accepted');
@@ -90,7 +90,7 @@ async function run() {
 	// Now try to updateStatus again via queue; it should fail verification on load
 	let threw = false;
 	try {
-		const anotherUpdate = q.updateStatus(item.id, 'superseded', 'tamper');
+    const anotherUpdate = await q.updateStatus(item.id, 'superseded', 'tamper');
 	} catch (e) {
 		threw = true;
 		console.log('✓ Tampered item detected on updateStatus attempt');

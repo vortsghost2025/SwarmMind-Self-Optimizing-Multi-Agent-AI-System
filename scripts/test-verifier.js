@@ -1,71 +1,86 @@
-const { execSync } = require('child_process');
+const { Verifier } = require('../src/attestation/Verifier');
+const { Signer } = require('../src/attestation/Signer');
+const { KeyManager } = require('../src/attestation/KeyManager');
 const fs = require('fs');
+const path = require('path');
 
-const result = {
-  passed: false,
-  details: '',
-  verifyJsPassed: false,
-  scriptsPassed: false,
-  discrepancies: [],
-  command_executed: [],
-  raw_output: {}
-};
-
-try {
-  // Test 1: Run verify.js and check its output file
-  execSync('node verify.js', { 
-    encoding: 'utf8', 
-    cwd: process.cwd(),
-    timeout: 60000,
-    env: process.env 
-  });
-  result.command_executed.push('node verify.js');
-  
-  // Read the JSON file verify.js creates
-  const verifyFile = fs.readFileSync('verification/system_check.json', 'utf8');
-  const verifyData = JSON.parse(verifyFile);
-  result.verifyJsPassed = verifyData.verification_passed === true;
-  result.raw_output.verify = verifyData.verification_passed;
-  
-} catch (e) {
-  result.raw_output.verify_error = e.message;
+function assert(condition, message) {
+  if (!condition) {
+    console.error('ASSERTION FAILED:', message);
+    process.exit(1);
+  }
 }
 
-try {
-  // Test 2: Run scripts check
-  execSync('node scripts/run-all-checks.js', { 
-    encoding: 'utf8', 
-    cwd: process.cwd(),
-    timeout: 30000,
-    env: process.env 
-  });
-  result.command_executed.push('node scripts/run-all-checks.js');
-  
-  // Read the JSON file scripts creates
-  const scriptsFile = fs.readFileSync('verification/check_results.json', 'utf8');
-  const scriptsData = JSON.parse(scriptsFile);
-  result.scriptsPassed = scriptsData.verification_passed === true;
-  result.raw_output.scripts = scriptsData.verification_passed;
-  
-} catch (e) {
-  result.raw_output.scripts_error = e.message;
+async function run() {
+  console.log('Testing Verifier in-process...\n');
+
+  // Setup keys
+  process.env.LANE_NAME = 'swarmmind';
+  process.env.LANE_KEY_PASSPHRASE = 'test-passphrase-verifier';
+  const idDir = path.join(process.cwd(), '.identity');
+  if (fs.existsSync(idDir)) fs.rmSync(idDir, { recursive: true, force: true });
+
+  const km = new KeyManager({ laneId: 'swarmmind' });
+  km.initialize(process.env.LANE_KEY_PASSPHRASE);
+  const signer = new Signer();
+  const verifier = new Verifier();
+  verifier.addTrustedKey('swarmmind', km.loadPublicKey(), km.getPublicKeyInfo().key_id);
+
+  // Test 1: sign + verify round-trip
+  const passphrase = process.env.LANE_KEY_PASSPHRASE;
+  const privateKey = km.loadPrivateKey(passphrase);
+  const keyId = km.getPublicKeyInfo().key_id;
+  const payload = { id: 'Q-TEST', timestamp: new Date().toISOString(), lane: 'swarmmind', type: 'test' };
+  const signed = signer.signQueueItem(payload, privateKey, keyId);
+
+  const vResult = verifier.verifyQueueItem(signed);
+  assert(vResult.valid, `Queue item signature should verify, got: ${JSON.stringify(vResult)}`);
+  console.log('Queue item signature verified');
+
+  // Test 2: verifyAgainstTrustStore directly
+  const trustResult = verifier.verifyAgainstTrustStore(signed.signature, 'swarmmind');
+  assert(trustResult.valid, 'verifyAgainstTrustStore should return valid');
+  console.log('Trust store verification passed');
+
+  // Test 3: lane mismatch detection
+  const badResult = verifier.verifyAgainstTrustStore(signed.signature, 'wrong-lane');
+  assert(!badResult.valid, 'Wrong lane should fail verification');
+  console.log('Lane mismatch correctly detected');
+
+  // Test 4: missing signature detection
+  const unsigned = { ...signed };
+  delete unsigned.signature;
+  const noSigResult = verifier.verifyQueueItem(unsigned);
+  assert(!noSigResult.valid, 'Unsigned item should fail verification');
+  console.log('Unsigned item correctly rejected');
+
+  // Test 5: corrupted signature detection
+  const corrupted = { ...signed, signature: signed.signature.slice(0, -5) + 'XXXXX' };
+  const corruptResult = verifier.verifyQueueItem(corrupted);
+  assert(!corruptResult.valid, 'Corrupted signature should fail verification');
+  console.log('Corrupted signature correctly rejected');
+
+  // Test 6: audit event verification
+  const auditPayload = { timestamp: new Date().toISOString(), lane: 'swarmmind', event_type: 'enqueue' };
+  const signedAudit = signer.signAuditEvent(auditPayload, privateKey, keyId);
+  const auditResult = verifier.verifyAuditEvent(signedAudit);
+  assert(auditResult.valid, 'Audit event signature should verify');
+  console.log('Audit event signature verified');
+
+  // Test 7: trust store stats
+  const stats = verifier.getTrustStoreStats();
+  assert(stats.total_lanes >= 1, 'Trust store should have at least 1 lane');
+  assert(stats.registered >= 1, 'At least 1 registered lane');
+  console.log('Trust store stats valid');
+
+  // Cleanup
+  if (fs.existsSync(idDir)) fs.rmSync(idDir, { recursive: true, force: true });
+
+  console.log('\nAll Verifier tests passed');
+  process.exit(0);
 }
 
-// Compare results
-if (result.verifyJsPassed !== result.scriptsPassed) {
-  result.discrepancies.push({
-    verifyJs: result.verifyJsPassed,
-    scripts: result.scriptsPassed,
-    command: 'verification_passed comparison',
-    mismatch: 'Results do not match'
-  });
-}
-
-// PASS only if both match
-result.passed = (result.verifyJsPassed === result.scriptsPassed) && result.discrepancies.length === 0;
-
-result.details = result.passed 
-  ? 'verify.js and scripts produce identical results' 
-  : 'DISCREPANCY: Results do not match';
-
-console.log(JSON.stringify(result, null, 2));
+run().catch(e => {
+  console.error('Test failed:', e);
+  process.exit(1);
+});

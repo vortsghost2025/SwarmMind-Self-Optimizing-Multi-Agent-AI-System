@@ -6,7 +6,7 @@ const path = require('path');
 // CRITICAL: Missing permission enforcement is a hard failure, not a soft warning.
 // Without it, file operations bypass lane-based write whitelists entirely.
 try {
-  require('../../permissions/FilePermissionEnforcer');
+  require('../permissions/FilePermissionEnforcer');
   console.log('[LANE-GATE] Permission enforcement module loaded');
 } catch (e) {
   console.error('[LANE-GATE] FATAL: Permission enforcement module could not be loaded:', e.message);

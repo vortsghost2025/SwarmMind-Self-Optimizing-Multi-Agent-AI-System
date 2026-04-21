@@ -1,15 +1,16 @@
 {
   "last_session": null,
   "current_session": {
-    "started_at": "2026-04-18T23:52:46.814Z",
-    "fingerprint": "79150d27925b0be3fbe49bf83e65cb489354a2dde0dddbd117c9196174d0e9e7",
+    "started_at": "2026-04-21T03:57:00.196Z",
+    "fingerprint": "a88ac80025dce56b81031b741ff7f1209c3f543ea61518c9866f2d9d2aff2c22",
     "recovery_classification": "transient"
   },
   "drift_history": [
     {
-      "timestamp": "2026-04-18T23:52:46.814Z",
-      "fingerprint": "79150d27925b0be3fbe49bf83e65cb489354a2dde0dddbd117c9196174d0e9e7",
+      "timestamp": "2026-04-21T03:57:00.196Z",
+      "fingerprint": "a88ac80025dce56b81031b741ff7f1209c3f543ea61518c9866f2d9d2aff2c22",
       "classification": "transient"
     }
-  ]
+  ],
+  "lane": "unknown"
 }

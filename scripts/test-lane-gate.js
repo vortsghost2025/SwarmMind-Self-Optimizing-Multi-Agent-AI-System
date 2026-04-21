@@ -4,16 +4,21 @@
  *
  * Tests cross-lane write enforcement:
  * 1. Same-lane write (SwarmMind lane) should succeed
- * 2. Cross-lane write (to Archivist-Agent) should be blocked and enter HOLD
+ * 2. Cross-lane write (to governance root) should be blocked and enter HOLD
  * 3. Operator resolution clears HOLD
  * 4. Child process respects gate (Phase 2.5 NODE_OPTIONS enforcement)
  * 5. fs.promises respects gate (Phase 2.5 async coverage)
  */
 
+if (!process.env.LANE_NAME) process.env.LANE_NAME = 'swarmmind';
+
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { LaneContextGate } = require('../src/core/laneContextGate');
+const { LaneContextGate, __reloadGate } = (() => {
+  const gate = require('../src/core/laneContextGate');
+  return { LaneContextGate: gate.LaneContextGate };
+})();
 
 console.log('\n[+] Lane-Context Gate Test Suite\n');
 console.log('='.repeat(60));
@@ -25,9 +30,42 @@ function createTempPath(dir, name) {
 async function runTests() {
   const projectRoot = process.cwd();
   const governanceRoot = 'S:\\Archivist-Agent';
+  let gateGovernanceRoot;
+
+  const archivistRegistryExists = (() => {
+    try { return fs.existsSync(path.join(governanceRoot, 'FILE_OWNERSHIP_REGISTRY.json')); }
+    catch (e) { return false; }
+  })();
+
+  if (!archivistRegistryExists) {
+    const mockDir = path.join(projectRoot, '.test-mock-governance');
+    if (!fs.existsSync(mockDir)) fs.mkdirSync(mockDir, { recursive: true });
+    const mockRegistryPath = path.join(mockDir, 'FILE_OWNERSHIP_REGISTRY.json');
+    const sessionLock = JSON.parse(fs.readFileSync(path.join(projectRoot, '.session-lock'), 'utf8'));
+    const swarmmindPath = projectRoot.replace(/\\/g, '/');
+    const archivistPath = governanceRoot.replace(/\\/g, '/');
+    fs.writeFileSync(mockRegistryPath, JSON.stringify({
+      default_ownership: "swarmmind",
+      cross_lane_write_policy: { rule: "require_authority_100_or_same_lane" },
+      ownership: {
+        [swarmmindPath]: { lane_id: sessionLock.lane_id, authority: 80 },
+        [archivistPath]: { lane_id: "archivist-agent", authority: 100 }
+      }
+    }, null, 2));
+
+    const { PERMISSION_WHITELIST } = require('../src/permissions/FilePermissionEnforcer');
+    const mockDirNorm = mockDir.replace(/\\/g, '/');
+    PERMISSION_WHITELIST.swarmmind.read.push(mockDirNorm + '/**');
+    PERMISSION_WHITELIST.swarmmind.write.push(mockDirNorm + '/**');
+
+    console.log(`[INFO] Archivist governance root unavailable — using mock registry at ${mockRegistryPath}`);
+    gateGovernanceRoot = mockDir;
+  } else {
+    gateGovernanceRoot = governanceRoot;
+  }
 
   console.log('\n[TEST] Initializing LaneContextGate...');
-  const gate = new LaneContextGate(projectRoot, { governanceRoot });
+  const gate = new LaneContextGate(projectRoot, { governanceRoot: gateGovernanceRoot });
 
   const initOk = gate.initialize();
   if (!initOk) {
@@ -72,8 +110,8 @@ async function runTests() {
 
   // TEST 2: Cross-lane write blocked
   console.log('\n' + '-'.repeat(60));
-  console.log('[TEST 2] Cross-lane write to Archivist-Agent directory');
-  const archivistTestFile = path.join(governanceRoot, `cross-lane-block-test-${Date.now()}.tmp`);
+  console.log('[TEST 2] Cross-lane write to governance root directory');
+  const archivistTestFile = path.join(gateGovernanceRoot, `cross-lane-block-test-${Date.now()}.tmp`);
 
   let blocked = false;
 
@@ -130,11 +168,13 @@ async function runTests() {
   console.log('[TEST 4] Child process respects LaneContextGate (NODE_OPTIONS enforcement)');
 
   const testTimestamp = Date.now();
-  const childCommand = `node -e "require('fs').writeFileSync('S:\\\\Archivist-Agent\\\\test-child-${testTimestamp}.tmp', 'child-process-test')"`;
+  const childTargetPath = path.join(gateGovernanceRoot, `test-child-${testTimestamp}.tmp`).replace(/\\/g, '\\\\');
+  const childCommand = `node -e "require('fs').writeFileSync('${childTargetPath}', 'child-process-test')"`;
 
   const gateModulePath = path.join(process.cwd(), 'src', 'core', 'laneContextGate.js');
   const childEnv = {
     ...process.env,
+    LANE_NAME: 'swarmmind',
     NODE_OPTIONS: `--require ${gateModulePath}`
   };
 
@@ -155,7 +195,7 @@ async function runTests() {
 
   console.log('[PASS] Child process cross-lane write blocked');
 
-  const testChildPath = `S:\\Archivist-Agent\\test-child-${testTimestamp}.tmp`;
+  const testChildPath = path.join(gateGovernanceRoot, `test-child-${testTimestamp}.tmp`);
   if (fs.existsSync(testChildPath)) {
     try { fs.unlinkSync(testChildPath); } catch(e) {}
     console.error('[FAIL] Child process file was created despite block');
@@ -168,7 +208,7 @@ async function runTests() {
   console.log('[TEST 5] fs.promises write respects LaneContextGate');
 
   const fsPromises = fs.promises;
-  const testPromisePath = path.join(governanceRoot, `test-promises-${Date.now()}.tmp`);
+  const testPromisePath = path.join(gateGovernanceRoot, `test-promises-${Date.now()}.tmp`);
 
   let promisesBlocked = false;
 

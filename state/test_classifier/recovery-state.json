@@ -1,12 +1,12 @@
 {
   "lane_id": "test8",
-  "created_at": "2026-04-18T23:51:07.690Z",
-  "last_updated": "2026-04-18T23:51:07.690Z",
+  "created_at": "2026-04-21T03:57:01.749Z",
+  "last_updated": "2026-04-21T03:57:01.749Z",
   "current_classification": "persistent_dependency",
   "consecutive_failures": 1,
   "recent_events": [
     {
-      "timestamp": "2026-04-18T23:51:07.690Z",
+      "timestamp": "2026-04-21T03:57:01.749Z",
       "classification": "persistent_dependency",
       "operation": "op",
       "target": "t",

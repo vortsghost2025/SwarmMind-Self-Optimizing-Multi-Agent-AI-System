@@ -54,7 +54,7 @@ class InboxWatcher extends EventEmitter {
       p0FastPath: true,
       maxConcurrent: 1,
       leaseDurationSeconds: 300,
-      heartbeatIntervalSeconds: 300,
+      heartbeatIntervalSeconds: 60,
       staleAfterSeconds: 900,
       logPath: path.join(__dirname, '..', 'lanes', 'swarmmind', 'inbox', 'watcher.log'),
       ...overrides
@@ -96,7 +96,11 @@ class InboxWatcher extends EventEmitter {
 
     await this._scanInbox();
 
-    this._startWatchMode();
+    if (!this.config.pollOnly) {
+      this._startWatchMode();
+    } else {
+      this._log('INFO', 'poll-only mode (fs.watch disabled)');
+    }
     this._startPolling();
     this._startHeartbeatCheck();
   }
@@ -399,8 +403,34 @@ class InboxWatcher extends EventEmitter {
       }
     }
 
-    this.emit('processed', msg);
+    if (msg.priority === 'P0') {
+    this._writeP0UrgentFile(msg);
+  }
+
+  this.emit('processed', msg);
     this._log('INFO', `processed: ${msg.id}`);
+  }
+
+  /**
+   * Write an urgent_ copy of a P0 message to the inbox per Lane-Relay Protocol.
+   * Per AGENTS.md: "For P0 priority: ALSO WRITE lanes/{target}/inbox/urgent_{id}.json"
+   *
+   * @param {object} msg - P0 message
+   */
+  _writeP0UrgentFile(msg) {
+    const id = msg.id || 'unknown';
+    const urgentFilename = `urgent_${id}.json`;
+    const urgentPath = path.join(this.config.inboxPath, urgentFilename);
+
+    const urgentMsg = { ...msg, priority: 'P0' };
+
+    try {
+      this._writeMessage(urgentPath, urgentMsg);
+      this._log('INFO', `P0 urgent file written: ${urgentFilename}`);
+    } catch (err) {
+      this._log('ERROR', `failed to write P0 urgent file ${urgentFilename}: ${err.message}`);
+      this.emit('error', err);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -619,7 +649,11 @@ class InboxWatcher extends EventEmitter {
 // -----------------------------------------------------------------------------
 
 if (require.main === module) {
-  const watcher = new InboxWatcher();
+  const pollOnly = process.argv.includes('--poll');
+  const watcher = new InboxWatcher({
+    pollOnly,
+    ...(pollOnly ? { pollSeconds: 2 } : {}),
+  });
 
   watcher.on('message', (msg) => {
     console.log(`[message] ${msg.id} priority=${msg.priority} from=${msg.from}`);
@@ -664,6 +698,17 @@ if (require.main === module) {
 
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
+  process.on('SIGHUP', shutdown);
+
+  if (process.platform === 'win32') {
+    process.on('SIGBREAK', shutdown);
+
+    process.on('exit', () => {
+      if (!watcher._shuttingDown) {
+        watcher.stop().catch(() => {});
+      }
+    });
+  }
 }
 
 module.exports = InboxWatcher;

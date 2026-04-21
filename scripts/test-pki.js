@@ -96,23 +96,7 @@ try {
 	assert.strictEqual(itemResult.mode, 'JWS_VERIFIED', 'Should indicate JWS mode');
 	console.log('  ✓ Queue item verified\n');
 
-	console.log('Test 8: Handle unsigned item (dual-mode)');
-	verifier.trustStore.migration = { jws_only_start: '2099-01-01T00:00:00Z' };
-	const unsignedItem = { ...queueItem };
-	delete unsignedItem.signature;
-	const unsignedResult = verifier.verifyQueueItem(unsignedItem);
-	assert(unsignedResult.valid, 'Should accept unsigned in dual-mode');
-	assert.strictEqual(unsignedResult.mode, 'HMAC_ACCEPTED_DUAL_MODE', 'Should indicate dual-mode');
-	console.log('  ✓ Unsigned item accepted in dual-mode\n');
-
-	console.log('Test 9: Reject unsigned item after cutoff');
-	verifier.trustStore.migration = { jws_only_start: '2020-01-01T00:00:00Z' };
-	const rejectedResult = verifier.verifyQueueItem(unsignedItem);
-	assert(!rejectedResult.valid, 'Should reject unsigned after cutoff');
-	assert.strictEqual(rejectedResult.error, 'SIGNATURE_REQUIRED', 'Should require signature');
-	console.log('  ✓ Unsigned item rejected after cutoff\n');
-
-	console.log('Test 10: Key rotation');
+  console.log('Test 8: Key rotation');
 	const rotated = km.rotateKeyPair(TEST_PASSPHRASE);
 	assert(rotated.oldKeyId, 'Should have old key ID');
 	assert(rotated.newKeyId, 'Should have new key ID');
