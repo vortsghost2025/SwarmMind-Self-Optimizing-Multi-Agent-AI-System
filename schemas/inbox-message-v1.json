@@ -18,10 +18,19 @@
     "minLength": 1,
     "description": "v1.3: Relaxed from hex64 to any non-empty string. Lanes generate descriptive keys."
   },
-    "from": {
-      "type": "string",
-      "default": "library"
-    },
+  "id": {
+    "type": "string",
+    "description": "Unique message identifier. Should follow ISO timestamp prefix pattern (e.g., 2026-04-21T18-30-00Z_sender_subject)."
+  },
+  "content_hash": {
+    "type": "string",
+    "pattern": "^sha256:[a-f0-9]{64}$",
+    "description": "SHA-256 content hash of the message body for integrity verification."
+  },
+  "from": {
+    "type": "string",
+    "enum": ["archivist", "library", "swarmmind", "kernel"]
+  },
   "to": {
     "type": "string",
     "enum": ["archivist", "library", "swarmmind", "kernel"]
@@ -139,20 +148,28 @@
         }
       }
     },
-    "evidence": {
-      "type": "object",
-      "properties": {
-        "required": {
-          "type": "boolean",
-          "default": true
-        },
-        "evidence_path": {"type": "string"},
-        "verified": {"type": "boolean", "default": false},
-        "verified_by": {"type": "string"},
-        "verified_at": {"type": "string",
-          "format": "date-time"}
+  "evidence": {
+    "oneOf": [
+      {
+        "type": "object",
+        "properties": {
+          "required": {
+            "type": "boolean",
+            "default": true
+          },
+          "evidence_path": {"type": "string"},
+          "verified": {"type": "boolean", "default": false},
+          "verified_by": {"type": "string"},
+          "verified_at": {"type": "string",
+            "format": "date-time"}
+        }
+      },
+      {
+        "type": "array",
+        "items": {}
       }
-    },
+    ]
+  },
     "heartbeat": {
       "type": "object",
       "properties": {
@@ -162,7 +179,7 @@
         "timeout_seconds": {"type": "integer", "default": 900},
         "status": {
           "type": "string",
-          "enum": ["pending", "in_progress", "done", "failed", "escalated", "timed_out"]
+          "enum": ["pending", "in_progress", "active", "done", "failed", "escalated", "timed_out"]
         }
       }
     },
@@ -226,11 +243,11 @@
     }
   },
   "required": [
-    "schema_version", "task_id", "idempotency_key", "from", "to",
+    "schema_version", "id", "task_id", "idempotency_key", "from", "to",
     "type", "priority", "subject", "body",
     "timestamp", "requires_action", "payload", "execution",
     "lease", "retry", "evidence", "heartbeat",
-    "signature", "key_id"
+    "signature", "key_id", "content_hash"
   ],
   "allOf": [
     {

@@ -90,3 +90,6 @@ state/test_*/
 
 lanes/*/outbox/unsigned/
 logs/quarantine-tracker.json
+
+# Session prompt artifacts
+.act-prompt.txt
