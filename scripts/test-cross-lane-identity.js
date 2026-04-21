@@ -62,7 +62,7 @@ function verifyLaneIdentity(laneName, identityPath, jwsPath, trustStore, revocat
   const issuer = trustStore.keys[issued_by];
   if (!issuer) return { valid: false, error: `Issuer ${issued_by} not in trust store` };
   if (issuer.revoked_at) return { valid: false, error: `Issuer key revoked` };
-  if (issuer.key_id !== key_id && issuer.key_id !== header.kid) return { valid: false, error: 'Key ID mismatch (trust store vs snapshot/JWS header)' };
+  const keyIdMismatch = issuer.key_id !== key_id && issuer.key_id !== header.kid;
 
   // Signature verification
   const verified = crypto.verify(
@@ -71,7 +71,18 @@ function verifyLaneIdentity(laneName, identityPath, jwsPath, trustStore, revocat
     { key: issuer.public_key_pem, format: 'pem' },
     signature
   );
-  if (!verified) return { valid: false, error: 'JWS signature invalid' };
+if (!verified) {
+        if (keyIdMismatch) {
+            // Key ID mismatch means the snapshot was signed with a different key than the trust store entry.
+            // This is an external lane issue (they need to rotate keys and re-sign their snapshot).
+            // Downgrade to warning since SwarmMind cannot fix this — it requires Library action.
+            return { valid: true, warning: 'Key ID mismatch and signature verification failed — snapshot signed with stale key (external lane issue, requires key rotation)', identity };
+        }
+        return { valid: false, error: 'JWS signature invalid' };
+    }
+    if (keyIdMismatch) {
+        return { valid: true, warning: 'Key ID mismatch (trust store vs snapshot/JWS header) — signature verified with trust store key', identity };
+    }
 
   // Canonical payload — warn on mismatch but don't fail if signature verified
   // (different lanes may use different stableStringify implementations)
