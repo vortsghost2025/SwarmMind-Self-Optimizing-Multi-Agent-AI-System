@@ -87,3 +87,6 @@ state/test_*/
 # Passphrase files (NEVER commit)
 *passphrase*
 *134679*
+
+lanes/*/outbox/unsigned/
+logs/quarantine-tracker.json
