@@ -105,6 +105,29 @@ class InboxWatcher extends EventEmitter {
       heartbeatSeconds: this.config.heartbeatIntervalSeconds,
       maxConcurrent: this.config.maxConcurrent
     }, this.policy);
+
+    // Identity self-healing: detect and regenerate missing keys on startup
+    this._identityHealed = false;
+    try {
+      const { healLaneIdentity } = require('./identity-self-healing');
+      const healResult = healLaneIdentity(this.config.laneName);
+      this._identityHealed = healResult.keysRegenerated || false;
+      if (healResult.keysRegenerated) {
+        this._log('INFO', `IDENTITY_SELF_HEAL: keys regenerated keyId=${healResult.keyId} trustStore=${healResult.trustStoreUpdated}`);
+      }
+    } catch (err) {
+      this._log('WARN', `identity-self-healing unavailable: ${err.message}`);
+    }
+
+    // Identity enforcer: structurally reject unsigned/spoofed messages
+    this.identityEnforcer = null;
+    try {
+      const { IdentityEnforcer } = require('./identity-enforcer');
+      this.identityEnforcer = new IdentityEnforcer({ enforcementMode: 'enforce' });
+      this._log('INFO', 'IdentityEnforcer initialized in enforce mode');
+    } catch (err) {
+      this._log('ERROR', `IdentityEnforcer init failed: ${err.message} — unsigned messages will be rejected`);
+    }
   }
 
   get expiredPath() {
