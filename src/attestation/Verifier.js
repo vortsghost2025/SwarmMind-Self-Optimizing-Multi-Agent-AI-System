@@ -12,13 +12,17 @@ const { TRUST_STORE_PATH, TRUST_STORE_VERSION, VERIFY_REASON } = require('./cons
 const { stableStringify } = require('./stableStringify');
 
 class Verifier {
-	constructor(options = {}) {
-		this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
-		this.hmacCutoffDate = options.hmacCutoffDate || new Date('2026-05-19T00:00:00Z');
-		this._explicitLegacyMode = options.allowLegacy; // undefined, true, or false
-		this.trustStore = null;
-		this._loadTrustStore();
-	}
+  constructor(options = {}) {
+    if (Object.prototype.hasOwnProperty.call(options, 'allowLegacy')) {
+      throw new Error('allowLegacy is removed: JWS-only enforcement is mandatory');
+    }
+    if (Object.prototype.hasOwnProperty.call(options, 'hmacCutoffDate')) {
+      throw new Error('hmacCutoffDate is removed: HMAC fallback is disabled');
+    }
+    this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
+    this.trustStore = null;
+    this._loadTrustStore();
+  }
 
 	_defaultTrustStorePath() {
 		return TRUST_STORE_PATH;
@@ -125,12 +129,17 @@ class Verifier {
 	 * @param {string} laneId - The expected lane identity (outer lane)
 	 * @returns {object} Verification result
 	 */
-	verifyAgainstTrustStore(jws, laneId) {
-		// Step 1: Parse JWS to extract payload
-		const parsed = this._parseJWS(jws);
-		if (!parsed) {
-			return { valid: false, error: VERIFY_REASON.SIGNATURE_MISMATCH };
-		}
+  verifyAgainstTrustStore(jws, laneId) {
+    // Step 1: Parse JWS to extract payload (guarded against malformed input)
+    let parsed;
+    try {
+      parsed = this._parseJWS(jws);
+    } catch (e) {
+      return { valid: false, error: VERIFY_REASON.SIGNATURE_MISMATCH, note: `JWS parse error: ${e.message}` };
+    }
+    if (!parsed) {
+      return { valid: false, error: VERIFY_REASON.SIGNATURE_MISMATCH };
+    }
 
 		// Step 2: Check lane field presence
 		if (!parsed.payload.lane) {
@@ -217,22 +226,9 @@ class Verifier {
 		return this.verifyAgainstTrustStore(event.signature, laneId);
 	}
 
-	// isHMACAccepted() removed - HMAC fallback fully deprecated
+  // getMigrationStatus() removed — HMAC→JWS migration is complete; no dual-mode exists
 
-	getMigrationStatus() {
-		// HMAC fallback removed - JWS-only enforcement active
-		const now = new Date();
-		return {
-			dual_mode_active: false,
-			hmac_accepted: false,
-			jws_required: true,
-			migration_status: 'JWS_ONLY_ENFORCED',
-			cutoff_date: '2026-04-01T00:00:00Z',
-			days_remaining: 0
-		};
-	}
-
-	getTrustStoreStats() {
+  getTrustStoreStats() {
 		const lanes = Object.keys(this.trustStore.keys || {});
 		const registered = lanes.filter(l => this.trustStore.keys[l]?.public_key_pem?.startsWith('-----BEGIN'));
 		const pending = lanes.filter(l => this.trustStore.keys[l]?.public_key_pem === 'PENDING_GENERATION');

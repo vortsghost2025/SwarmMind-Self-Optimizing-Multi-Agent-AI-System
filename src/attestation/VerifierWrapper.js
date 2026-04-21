@@ -26,9 +26,9 @@ class VerifierWrapper {
 		this.phenotypeStore = options.phenotypeStore || new PhenotypeStore(options);
 		this.onQuarantineRetry = options.onQuarantineRetry || null;
 
-		// RecoveryEngine integration (optional)
-		this.recoveryClient = options.recoveryClient || null;
-		this.submitToRecovery = options.submitToRecovery !== false; // Default true if client provided
+    // RecoveryEngine integration (optional), but never policy-toggleable.
+    // If a client is provided, submission is always attempted.
+    this.recoveryClient = options.recoveryClient || null;
 	}
 
 	async verify(item) {
@@ -101,10 +101,15 @@ class VerifierWrapper {
 			key_id: result.header?.kid || 'unknown'
 		});
 
-		const quarantinedId = item.id || item.signature?.slice(0, 16);
-		if (quarantinedId && this.quarantineManager.isQuarantined(quarantinedId)) {
-			this.quarantineManager.release(quarantinedId);
-		}
+  const quarantinedId = item.id || item.signature?.slice(0, 16);
+  if (
+    quarantinedId &&
+    typeof this.quarantineManager.isQuarantined === 'function' &&
+    this.quarantineManager.isQuarantined(quarantinedId) &&
+    typeof this.quarantineManager.release === 'function'
+  ) {
+    this.quarantineManager.release(quarantinedId);
+  }
 
 		return { ...result, mode: 'JWS_VERIFIED' };
 	}
@@ -115,61 +120,90 @@ class VerifierWrapper {
 
 		const quarantineResult = this.quarantineManager.quarantine(item, reason);
 
-		// Submit to RecoveryEngine if client configured
-		if (this.recoveryClient && this.submitToRecovery) {
-			try {
-				const recoveryResult = await submitToRecoveryEngine(
-					this,
-					this.recoveryClient,
-					item,
-					lane,
-					{ valid: false, reason, note, itemId, lane }
-				);
+  // Submit to RecoveryEngine if client configured
+  if (this.recoveryClient) {
+    try {
+      const recoveryResult = await submitToRecoveryEngine(
+        this,
+        this.recoveryClient,
+        item,
+        lane,
+        { valid: false, reason, note, itemId, lane }
+      );
 
-// RecoveryEngine CANNOT override local deterministic failure
-			// "Provable" guarantees require this to be locally verifiable
-			console.log('[RECOVERY] RecoveryEngine response ignored - local verification is authoritative');
-			console.log('[RECOVERY] Status:', recoveryResult.status);
-			console.log('[RECOVERY] Local reason:', reason);
+      // RecoveryEngine CANNOT override local deterministic failure
+      // "Provable" guarantees require this to be locally verifiable
+      // If RecoveryEngine says OK, we log but still REJECT
+      console.log('[RECOVERY] RecoveryEngine response ignored - local verification is authoritative');
+      console.log('[RECOVERY] Status:', recoveryResult.status);
+      console.log('[RECOVERY] Local reason:', reason);
 
-				// RecoveryEngine returned a definitive status
-				if (recoveryResult.quarantineId) {
-					return {
-						valid: false,
-						reason: recoveryResult.status || reason,
-						note,
-						itemId,
-						lane,
-						recoveryId: recoveryResult.quarantineId,
-						retryCount: recoveryResult.retryCount,
-						handoffRequired: recoveryResult.handoffRequired
-					};
-				}
-		} catch (e) {
-			// RecoveryEngine unreachable - FATAL FAILURE
-			console.error('[FATAL] RecoveryEngine unreachable - cannot enforce deterministic guarantee');
-			console.error('  Error:', e.message);
-			console.error('  Item ID:', itemId);
-			console.error('  Lane:', lane);
+      // RecoveryEngine returned a definitive status
+      if (recoveryResult.quarantineId) {
+        return {
+          valid: false,
+          reason: recoveryResult.status || reason,
+          note,
+          itemId,
+          lane,
+          recoveryId: recoveryResult.quarantineId,
+          retryCount: recoveryResult.retryCount,
+          handoffRequired: recoveryResult.handoffRequired
+        };
+      }
+    } catch (e) {
+      // RecoveryEngine unreachable - FATAL FAILURE
+      console.error('[FATAL] RecoveryEngine unreachable - cannot enforce deterministic guarantee');
+      console.error(' Error:', e.message);
+      console.error(' Item ID:', itemId);
+      console.error(' Lane:', lane);
 
-			// Write handoff signal immediately
-			this.quarantineManager._signalHumanIntervention(itemId, lane, 'ORCHESTRATOR_UNREACHABLE', 0);
+      // Attempt handoff signal via QuarantineManager public API;
+      // never call private methods that may not survive refactors.
+      if (typeof this.quarantineManager._signalHumanIntervention === 'function') {
+        try {
+          this.quarantineManager._signalHumanIntervention(itemId, lane, 'ORCHESTRATOR_UNREACHABLE', 0);
+        } catch (signalErr) {
+          console.error('[FATAL] Handoff signal also failed:', signalErr.message);
+        }
+      } else {
+        // Structured fallback: write handoff file directly so the signal
+        // is never lost even if QuarantineManager is refactored away.
+        const fs = require('fs');
+        const handoffPath = this.quarantineManager.handoffFile || 'AGENT_HANDOFF_REQUIRED.md';
+        try {
+          fs.writeFileSync(handoffPath, [
+            '# AGENT HANDOFF REQUIRED', '',
+            '**Status:** Orchestrator unreachable - fatal rejection',
+            `**Item ID:** ${itemId}`,
+            `**Lane:** ${lane}`,
+            `**Reason:** ORCHESTRATOR_UNREACHABLE`,
+            `**Timestamp:** ${new Date().toISOString()}`, '',
+            '## Action Required',
+            '1. Verify RecoveryEngine availability',
+            '2. Re-submit artifact after orchestrator recovery',
+            '3. Permanently reject if orchestrator is decommissioned', ''
+          ].join('\n'), 'utf8');
+        } catch (writeErr) {
+          console.error('[FATAL] Could not write handoff file:', writeErr.message);
+        }
+      }
 
-			// HALT - return hard failure, do NOT fallback to local quarantine
-			return {
-				valid: false,
-				reason: 'ORCHESTRATOR_UNREACHABLE',
-				note: 'RecoveryEngine unreachable - cannot verify artifact deterministically',
-				itemId,
-				lane,
-				handoffRequired: true,
-				handoffFile: this.quarantineManager.handoffFile,
-				fatal: true
-			};
-		}
-	}
+      // HALT - return hard failure, do NOT fallback to local quarantine
+      return {
+        valid: false,
+        reason: 'ORCHESTRATOR_UNREACHABLE',
+        note: 'RecoveryEngine unreachable - cannot verify artifact deterministically',
+        itemId,
+        lane,
+        handoffRequired: true,
+        handoffFile: this.quarantineManager.handoffFile,
+        fatal: true
+      };
+    }
+  }
 
-		if (quarantineResult.handoffRequired) {
+  if (quarantineResult.handoffRequired) {
 			return {
 				valid: false,
 				reason: VERIFY_REASON.QUARANTINE_MAX_RETRIES,
