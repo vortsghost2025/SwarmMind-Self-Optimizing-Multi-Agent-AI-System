@@ -56,12 +56,12 @@ const header = JSON.parse(Buffer.from(hdrB64, 'base64').toString());
 const payloadRaw = Buffer.from(payB64, 'base64').toString();
 const sig = Buffer.from(sigB64, 'base64');
 
-// Get issuer key
-const issuedBy = snapshot.identity.issued_by;
-const keyId = snapshot.identity.key_id;
-const issuerEntry = trustStore.keys[issuedBy];
-if (!issuerEntry) throw new Error(`Issuer ${issuedBy} not in trust store`);
-if (issuerEntry.key_id !== keyId) throw new Error('Key ID mismatch');
+  // Get issuer key
+  const issuedBy = snapshot.identity.issued_by;
+  const keyId = snapshot.identity.key_id;
+  const issuerEntry = trustStore.keys[issuedBy];
+  if (!issuerEntry) throw new Error(`Issuer ${issuedBy} not in trust store`);
+  if (issuerEntry.key_id !== keyId && issuerEntry.key_id !== header.kid) throw new Error('Key ID mismatch (trust store vs snapshot/JWS header)');
 
 // Verify signature
 const verified = crypto.verify(

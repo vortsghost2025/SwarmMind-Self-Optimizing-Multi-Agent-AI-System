@@ -49,16 +49,30 @@ class IdentitySelfHealing {
     const privPath = path.join(this.identityDir, 'private.pem');
     result.keysPresent = fs.existsSync(pubPath) && fs.existsSync(privPath);
 
-    if (result.keysPresent) {
-      try {
-        const pub = fs.readFileSync(pubPath, 'utf8');
-        result.keyId = crypto.createHash('sha256').update(pub).digest('hex').substring(0, 16);
-        this._log('INFO', `keys present: ${this.laneId} keyId=${result.keyId}`);
-      } catch (e) {
-        result.error = `KEY_READ_FAILED: ${e.message}`;
-        result.keysPresent = false;
+  if (result.keysPresent) {
+    try {
+      const pub = fs.readFileSync(pubPath, 'utf8');
+      result.keyId = crypto.createHash('sha256').update(pub).digest('hex').substring(0, 16);
+      // Verify keys are decryptable with known passphrase — don't regenerate if they work
+      const passphrase = this._findPassphrase();
+      if (passphrase) {
+        try {
+          const priv = fs.readFileSync(privPath, 'utf8');
+          crypto.createPrivateKey({ key: priv, passphrase, format: 'pem' });
+          this._log('INFO', `keys present and decryptable: ${this.laneId} keyId=${result.keyId}`);
+          return result; // Keys are good — skip any regeneration
+        } catch (decryptErr) {
+          this._log('WARN', `keys present but NOT decryptable — regenerating: ${this.laneId}`);
+          result.keysPresent = false; // treat as missing so regeneration happens
+        }
+      } else {
+        this._log('INFO', `keys present (no passphrase to verify): ${this.laneId} keyId=${result.keyId}`);
       }
+    } catch (e) {
+      result.error = `KEY_READ_FAILED: ${e.message}`;
+      result.keysPresent = false;
     }
+  }
 
     if (!result.keysPresent) {
       this._log('WARN', `keys MISSING for ${this.laneId} — attempting self-heal`);
