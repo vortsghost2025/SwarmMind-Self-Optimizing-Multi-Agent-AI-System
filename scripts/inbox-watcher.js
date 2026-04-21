@@ -5,6 +5,11 @@ const { EventEmitter } = require('events');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const {
+  loadPolicy,
+  assertWatcherConfig,
+  acquireWatcherLock
+} = require('./concurrency-policy');
 
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
 
@@ -60,6 +65,8 @@ class InboxWatcher extends EventEmitter {
       ...overrides
     };
 
+    this.verifierWrapper = overrides.verifierWrapper || null;
+
     this._watcher = null;
     this._pollTimer = null;
     this._heartbeatTimer = null;
@@ -71,6 +78,19 @@ class InboxWatcher extends EventEmitter {
     this._sourceFileByMessage = new WeakMap();
     this._shuttingDown = false;
     this._started = false;
+    this._releaseWatcherLock = null;
+    this.repoRoot = path.join(__dirname, '..');
+    this.policy = loadPolicy(this.repoRoot);
+    assertWatcherConfig({
+      laneName: this.config.laneName,
+      pollSeconds: this.config.pollSeconds,
+      heartbeatSeconds: this.config.heartbeatIntervalSeconds,
+      maxConcurrent: this.config.maxConcurrent
+    }, this.policy);
+  }
+
+  get expiredPath() {
+    return path.join(this.config.inboxPath, 'expired');
   }
 
   /**
@@ -80,6 +100,11 @@ class InboxWatcher extends EventEmitter {
   async start() {
     if (this._started) return;
     this._started = true;
+    this._releaseWatcherLock = acquireWatcherLock({
+      repoRoot: this.repoRoot,
+      laneName: this.config.laneName,
+      policy: this.policy
+    });
 
     this._ensureDir(this.config.inboxPath);
     this._ensureDir(this.config.processedPath);
@@ -136,6 +161,10 @@ class InboxWatcher extends EventEmitter {
 
     this.emit('shutdown');
     this._log('INFO', 'InboxWatcher stopped');
+    if (this._releaseWatcherLock) {
+      this._releaseWatcherLock();
+      this._releaseWatcherLock = null;
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -281,6 +310,24 @@ class InboxWatcher extends EventEmitter {
       return;
     }
 
+    if (this.verifierWrapper) {
+      try {
+        const vResult = await this.verifierWrapper.verifyInboxMessage(msg);
+        if (!vResult.valid) {
+          this._log('WARN', `Message rejected (depth-${vResult.depth || 0}): ${vResult.reason || vResult.error}`);
+          this.emit('rejected', { msg, result: vResult });
+          await this._moveToExpired(msg);
+          return;
+        }
+        this._log('INFO', `Message verified at depth-${vResult.depth}: ${msg.id}`);
+        this.emit('verified', { msg, result: vResult });
+      } catch (err) {
+        this._log('ERROR', `Verification error for ${msg.id}: ${err.message}`);
+        this.emit('error', err);
+        return;
+      }
+    }
+
     this._acquire(msg);
 
     const filePath = path.join(this.config.inboxPath, filename);
@@ -409,6 +456,24 @@ class InboxWatcher extends EventEmitter {
 
   this.emit('processed', msg);
     this._log('INFO', `processed: ${msg.id}`);
+  }
+
+  async _moveToExpired(msg) {
+    const filename = this._messageFilename(msg);
+    if (!filename) {
+      this._log('WARN', 'cannot move rejected message: missing stable filename');
+      return;
+    }
+    const src = path.join(this.config.inboxPath, filename);
+    const dest = path.join(this.expiredPath, filename);
+    try {
+      if (!fs.existsSync(this.expiredPath)) {
+        fs.mkdirSync(this.expiredPath, { recursive: true });
+      }
+      fs.renameSync(src, dest);
+    } catch (err) {
+      this._log('WARN', `Could not move rejected message to expired/: ${err.message}`);
+    }
   }
 
   /**
@@ -650,10 +715,28 @@ class InboxWatcher extends EventEmitter {
 
 if (require.main === module) {
   const pollOnly = process.argv.includes('--poll');
-  const watcher = new InboxWatcher({
-    pollOnly,
-    ...(pollOnly ? { pollSeconds: 2 } : {}),
-  });
+  const options = {
+    pollOnly
+  };
+
+  if (process.argv.includes('--verify')) {
+    try {
+      const { VerifierWrapper } = require('../src/attestation/VerifierWrapper');
+      const { KeyManager } = require('../src/attestation/KeyManager');
+      const { Verifier } = require('../src/attestation/Verifier');
+      const { Signer } = require('../src/attestation/Signer');
+      const km = new KeyManager({ laneId: options.laneName || 'swarmmind' });
+      const signer = new Signer();
+      const verifier = new Verifier();
+      const verifierWrapper = new VerifierWrapper(verifier, { laneName: options.laneName || 'swarmmind' });
+      options.verifierWrapper = verifierWrapper;
+    } catch (err) {
+      console.error(`[WATCHER] Could not initialize verification: ${err.message}`);
+      console.error('[WATCHER] Running without deep verification (depth-1 only)');
+    }
+  }
+
+  const watcher = new InboxWatcher(options);
 
   watcher.on('message', (msg) => {
     console.log(`[message] ${msg.id} priority=${msg.priority} from=${msg.from}`);
@@ -673,6 +756,14 @@ if (require.main === module) {
 
   watcher.on('stale', (msg) => {
     console.log(`[stale] ${msg.id} — heartbeat timed out`);
+  });
+
+  watcher.on('rejected', ({ msg, result }) => {
+    console.log(`[rejected] ${msg.id} depth-${result.depth || 0}: ${result.reason || result.error}`);
+  });
+
+  watcher.on('verified', ({ msg, result }) => {
+    console.log(`[verified] ${msg.id} depth-${result.depth}`);
   });
 
   watcher.on('error', (err) => {

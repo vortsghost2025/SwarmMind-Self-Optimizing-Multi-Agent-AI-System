@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { loadPolicy, assertWatcherConfig } = require('./concurrency-policy');
 
 /** @typedef {{ laneName: string, inboxPath: string, intervalSeconds: number, staleAfterSeconds: number, canonicalPaths: Object<string, string> }} HeartbeatConfig */
 
@@ -17,6 +18,13 @@ const DEFAULT_CONFIG = {
     swarmmind: 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/lanes/swarmmind/inbox/'
   }
 };
+
+const REPO_ROOT = path.join(__dirname, '..');
+const POLICY = loadPolicy(REPO_ROOT);
+assertWatcherConfig({
+  laneName: DEFAULT_CONFIG.laneName,
+  heartbeatSeconds: DEFAULT_CONFIG.intervalSeconds
+}, POLICY);
 
 class Heartbeat {
   /**
