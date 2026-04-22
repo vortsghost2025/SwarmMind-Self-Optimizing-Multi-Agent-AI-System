@@ -1,0 +1,6 @@
+{
+  "lane_id": "library",
+  "key_id": "9222d10e5debe062",
+  "algorithm": "RS256",
+  "registered_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
