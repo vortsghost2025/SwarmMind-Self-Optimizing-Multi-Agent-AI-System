@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.1",
+  "id": "2026-04-22T12-04-32Z_archivist_stress-39",
+  "task_id": "stress-39",
+  "idempotency_key": "archivist-stress-39-2026-04-22T12-04-32",
+  "from": "archivist",
+  "to": "library",
+  "type": "task",
+  "priority": "P2",
+  "subject": "Stress round 39",
+  "timestamp": "2026-04-22T12:04:32.319Z",
+  "requires_action": false,
+  "body": "Automated stress test message from archivist to library",
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "path": null,
+    "chunk": {
+      "index": 0,
+      "count": 1,
+      "group_id": null
+    }
+  },
+  "execution": {
+    "mode": "session_task",
+    "engine": "kilo",
+    "actor": "lane",
+    "session_id": null,
+    "parent_id": null
+  },
+  "lease": {
+    "owner": "archivist",
+    "acquired_at": "2026-04-22T12:04:32.319Z",
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-22T12:04:32.319Z",
+    "timeout_seconds": 900,
+    "status": "in_progress"
+  },
+  "watcher": {
+    "enabled": true,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "delivery_verification": {
+    "verified": false,
+    "verified_at": null,
+    "retries": 0
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "lanes/archivist/outbox/2026-04-22T12-04-32Z_archivist_stress-39.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "content_hash": "sha256:3c6acaab7fb50c0447813e9f6cd0cac895486a3a13b3c647642fb7417c67ae87",
+  "signature": "",
+  "key_id": "",
+  "signature_alg": "RS256"
+}
