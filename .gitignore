@@ -54,6 +54,7 @@ typings/
 nul
 
 # Identity keys (NEVER commit)
+*.jws
 .identity/
 *.key
 *.pem

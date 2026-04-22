@@ -180,14 +180,25 @@ class IdentitySelfHealing {
       const tsPath = path.join(dir, 'trust-store.json');
       try {
         if (!fs.existsSync(tsPath)) continue;
-        const ts = JSON.parse(fs.readFileSync(tsPath, 'utf8'));
-        if (ts[this.laneId]) {
-          ts[this.laneId].public_key_pem = publicKey;
-          ts[this.laneId].key_id = keyId;
-          ts[this.laneId].registered_at = new Date().toISOString();
-          fs.writeFileSync(tsPath, JSON.stringify(ts, null, 2));
-          updated++;
-        }
+      let ts;
+      try {
+        ts = JSON.parse(fs.readFileSync(tsPath, 'utf8'));
+      } catch (_) {
+        continue;
+      }
+        if (ts && typeof ts === 'object') {
+          ts[this.laneId] = {
+            lane_id: this.laneId,
+            public_key_pem: publicKey,
+            algorithm: 'RS256',
+            key_id: keyId,
+            registered_at: new Date().toISOString(),
+            expires_at: null,
+            revoked_at: null,
+          };
+        fs.writeFileSync(tsPath, JSON.stringify(ts, null, 2));
+        updated++;
+      }
       } catch (_) {}
     }
 

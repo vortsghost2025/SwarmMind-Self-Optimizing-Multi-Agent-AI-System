@@ -53,7 +53,7 @@
     "status": "pending"
   },
   "content_hash": "sha256:6cca28622e8525c017c485cc27c91d6f6df7cee2ff632742af6872b9f12e27fd",
-  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImEzMTM2YTkzNjI3YjdiNDYifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6NmNjYTI4NjIyZTg1MjVjMDE3YzQ4NWNjMjdjOTFkNmY2ZGY3Y2VlMmZmNjMyNzQyYWY2ODcyYjlmMTJlMjdmZCIsImV4cCI6MTc3Njg4NTYyMCwiZnJvbSI6ImxpYnJhcnkiLCJpYXQiOjE3NzY3OTkyMjAsImlkIjpudWxsLCJsYW5lIjoibGlicmFyeSIsInByaW9yaXR5IjoiUDEiLCJ0YXNrX2lkIjoiYXV0b25vbW91cy1jeWNsZS10ZXN0LXJvdW5kLTAwMS10by1zd2FybW1pbmQiLCJ0byI6InN3YXJtbWluZCJ9.oYByy2M9U-k03MDJ38J7TScAc_1upugPBKtzSRQSxAf3CewVpBv3UzaT6hhz_mryEVGnYLddyKiSw6m3I560m9co-RKN5hcQRJFoc3NKIpyOLnZ1kpk3xFlSFynYs_PExkRIaD5wU-nk63s3RWX3cPACCQ_rXgqjjpfm7usxoJssDXZYSr6YcCyfKQMtdvvQgodysovg6YQ1ZWTHGJn2W_3fq9gD8pkUgKt73Sd27bELtXRxTL3LYZ-EzFOpApm3f53lB1u1pK10o4hvW3cjdLOYdo5_lCA-6YKC5TdqNAgXCt34zi7vDNlH3YYWfzawcwOXjp5JXHcb4wl5vnIBpw",
+  "signature": "REF:2026-04-21T19-01-21Z_library_act-round-001.jws",\n    "signature_ref": "2026-04-21T19-01-21Z_library_act-round-001.jws",,
   "signature_alg": "RS256",
   "key_id": "a3136a93627b7b46"
 }
