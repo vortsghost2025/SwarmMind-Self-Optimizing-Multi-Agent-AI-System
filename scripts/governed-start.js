@@ -22,6 +22,7 @@ const { LaneResolver } = require('../src/coordination/LaneResolver');
 const path = require('path');
 const fs = require('fs');
 
+const { TRUST_STORE_PATH } = require('../src/attestation/constants');
 class GovernedStartup {
   constructor() {
     this.resolver = new GovernanceResolver(process.cwd());
@@ -111,7 +112,7 @@ class GovernedStartup {
      const identityRoot = path.join('S:', 'Archivist-Agent', '.identity');
      const snapshotPath = path.join(identityRoot, 'snapshot.json');
      const jwsPath = path.join(identityRoot, 'snapshot.jws');
-     const trustStorePath = path.join('S:', 'Archivist-Agent', '.trust', 'keys.json');
+     const trustStorePath = TRUST_STORE_PATH;
      const revocationsPath = path.join(identityRoot, 'revocations.json');
 
      const identityResult = this.verifyArchivistIdentity(snapshotPath, jwsPath, trustStorePath, revocationsPath);

@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { TRUST_STORE_PATH } = require('../src/attestation/constants');
 
 const TRUST_STORE_SEARCH_PATHS = [
   'S:/Archivist-Agent/lanes/broadcast/trust-store.json',
@@ -15,7 +16,7 @@ const TRUST_STORE_SEARCH_PATHS = [
 class IdentityEnforcer {
   constructor(options = {}) {
     this.trustStore = null;
-    this.trustStorePath = options.trustStorePath || this._findTrustStore();
+    this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
     this.enforcementMode = options.enforcementMode || 'enforce'; // 'enforce' | 'warn' | 'audit'
     this.verificationLog = [];
     this._loadTrustStore();

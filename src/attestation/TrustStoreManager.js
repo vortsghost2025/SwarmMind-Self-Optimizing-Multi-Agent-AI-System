@@ -6,11 +6,12 @@
  */
 
 const fs = require('fs');
+const { TRUST_STORE_PATH } = require('./constants');
 const path = require('path');
 
 class TrustStoreManager {
 	constructor(options = {}) {
-		this.trustStorePath = options.trustStorePath || path.join('S:', 'Archivist-Agent', '.trust', 'keys.json');
+		this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
 		this.trustStore = null;
 		this._load();
 	}

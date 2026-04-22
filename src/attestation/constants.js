@@ -13,7 +13,7 @@ const path = require('path');
 
 const TRUST_STORE_PATH =
 	process.env.ATTESTATION_TRUST_STORE ||
-	path.join('S:', 'Archivist-Agent', '.trust', 'keys.json');
+	path.join('S:', 'SwarmMind Self-Optimizing Multi-Agent AI System', 'lanes', 'broadcast', 'trust-store.json');
 
 const TRUST_STORE_VERSION = '1.0';
 

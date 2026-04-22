@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { TRUST_STORE_PATH } = require('../src/attestation/constants');
 
 const LANES = {
   archivist: { root: 'S:/Archivist-Agent', inbox: 'S:/Archivist-Agent/lanes/archivist/inbox' },
@@ -15,7 +16,7 @@ const LANES = {
 class PostCompactAudit {
   constructor(options = {}) {
     this.auditDir = options.auditDir || 'S:/Archivist-Agent/.compact-audit';
-    this.trustStorePath = options.trustStorePath || 'S:/Archivist-Agent/lanes/broadcast/trust-store.json';
+    this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
     this.constraintsPath = options.constraintsPath || 'S:/Archivist-Agent/constitutional_constraints.yaml';
     this.bootstrapPath = options.bootstrapPath || 'S:/Archivist-Agent/BOOTSTRAP.md';
     this.governancePath = options.governancePath || 'S:/Archivist-Agent/GOVERNANCE.md';
