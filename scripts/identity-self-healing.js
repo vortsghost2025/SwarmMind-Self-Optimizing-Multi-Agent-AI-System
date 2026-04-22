@@ -60,6 +60,8 @@ class IdentitySelfHealing {
           const priv = fs.readFileSync(privPath, 'utf8');
           crypto.createPrivateKey({ key: priv, passphrase, format: 'pem' });
           this._log('INFO', `keys present and decryptable: ${this.laneId} keyId=${result.keyId}`);
+          // Ensure meta.json and snapshot.json exist even if keys were already present
+          this._ensureMetadataAndSnapshot(pub, result.keyId, passphrase);
           return result; // Keys are good — skip any regeneration
         } catch (decryptErr) {
           this._log('WARN', `keys present but NOT decryptable — regenerating: ${this.laneId}`);
@@ -128,6 +130,9 @@ class IdentitySelfHealing {
 
       this._log('INFO', `keys regenerated: ${this.laneId} keyId=${keyId}`);
 
+      // Create and sign snapshot.json
+      this._createAndSignSnapshot(keyId, passphrase);
+
       const trustStoreUpdated = this._updateTrustStores(publicKey, keyId);
 
       return { keyId, passphraseSource: this._passphraseSource, trustStoreUpdated };
@@ -135,6 +140,128 @@ class IdentitySelfHealing {
       this._log('ERROR', `regeneration failed for ${this.laneId}: ${e.message}`);
       return { error: `REGENERATION_ERROR: ${e.message}` };
     }
+  }
+
+  _ensureMetadataAndSnapshot(publicKey, keyId, passphrase) {
+    const metaPath = path.join(this.identityDir, 'meta.json');
+    const snapshotPath = path.join(this.identityDir, 'snapshot.json');
+    const snapshotJwsPath = path.join(this.identityDir, 'snapshot.jws');
+
+    // Write meta.json if missing or has wrong key_id
+    let needMetaWrite = true;
+    if (fs.existsSync(metaPath)) {
+      try {
+        const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+        if (meta.key_id === keyId) needMetaWrite = false;
+      } catch (_) {}
+    }
+    if (needMetaWrite) {
+      const meta = {
+        lane_id: this.laneId,
+        key_id: keyId,
+        algorithm: 'RS256',
+        generated_at: new Date().toISOString(),
+        self_healed: true,
+      };
+      fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
+      this._log('INFO', `meta.json written for ${this.laneId} keyId=${keyId}`);
+    }
+
+    // Write snapshot.json and sign if missing or has wrong key_id
+    let needSnapshotWrite = true;
+    if (fs.existsSync(snapshotPath)) {
+      try {
+        const snap = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+        if (snap.identity && snap.identity.key_id === keyId) needSnapshotWrite = false;
+      } catch (_) {}
+    }
+    if (needSnapshotWrite) {
+      this._createAndSignSnapshot(keyId, passphrase);
+    } else if (!fs.existsSync(snapshotJwsPath)) {
+      // snapshot.json exists but no JWS — sign it
+      this._signSnapshot(passphrase);
+    }
+  }
+
+  _createAndSignSnapshot(keyId, passphrase) {
+    const now = new Date().toISOString();
+    const expiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(); // 90 days
+    const snapshot = {
+      version: '2.0',
+      identity: {
+        id: `${this.laneId}-agent-001`,
+        lane: this.laneId,
+        authority: this.laneId === 'archivist' ? 100 : this.laneId === 'library' ? 90 : this.laneId === 'swarmmind' ? 80 : 70,
+        created_at: now,
+        model_origin: 'nvidia/glm5',
+        last_updated: now,
+        issued_by: this.laneId,
+        key_id: keyId,
+        expires_at: expiresAt,
+      },
+      invariants: [],
+      trust_state: {
+        lanes_registered: ['archivist', 'library', 'swarmmind', 'kernel'],
+        last_verification: now,
+        quarantine_count: 0,
+        handoffs_triggered: 0,
+      },
+      open_loops: [],
+      goals: [],
+      context_fingerprint: {
+        files_read: [],
+        key_decisions: [],
+        last_activity: now,
+      },
+    };
+    fs.writeFileSync(path.join(this.identityDir, 'snapshot.json'), JSON.stringify(snapshot, null, 2));
+    this._log('INFO', `snapshot.json written for ${this.laneId} keyId=${keyId}`);
+    this._signSnapshot(passphrase);
+  }
+
+  _signSnapshot(passphrase) {
+    try {
+      const snapshotPath = path.join(this.identityDir, 'snapshot.json');
+      const jwsPath = path.join(this.identityDir, 'snapshot.jws');
+      const privPath = path.join(this.identityDir, 'private.pem');
+      const metaPath = path.join(this.identityDir, 'meta.json');
+
+      if (!fs.existsSync(snapshotPath) || !fs.existsSync(privPath) || !fs.existsSync(metaPath)) {
+        this._log('WARN', `cannot sign snapshot — missing files for ${this.laneId}`);
+        return;
+      }
+
+      const snapshot = JSON.parse(fs.readFileSync(snapshotPath, 'utf8'));
+      const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+      const keyId = meta.key_id;
+      const encryptedKey = fs.readFileSync(privPath, 'utf8');
+      const privateKey = crypto.createPrivateKey({ key: encryptedKey, passphrase, format: 'pem' });
+
+      const header = { alg: 'RS256', typ: 'JWS', kid: keyId };
+      const headerB64 = this._base64UrlEncode(JSON.stringify(header));
+      const payloadB64 = this._base64UrlEncode(this._stableStringify(snapshot));
+      const signingInput = `${headerB64}.${payloadB64}`;
+      const signature = crypto.sign('RSA-SHA256', Buffer.from(signingInput), privateKey);
+      const signatureB64 = this._base64UrlEncode(signature);
+      const jws = `${headerB64}.${payloadB64}.${signatureB64}`;
+
+      fs.writeFileSync(jwsPath, jws);
+      this._log('INFO', `snapshot.jws written for ${this.laneId} keyId=${keyId}`);
+    } catch (e) {
+      this._log('ERROR', `snapshot signing failed for ${this.laneId}: ${e.message}`);
+    }
+  }
+
+  _stableStringify(value) {
+    if (value === null || typeof value !== 'object') return JSON.stringify(value);
+    if (Array.isArray(value)) return '[' + value.map(v => this._stableStringify(v)).join(',') + ']';
+    const keys = Object.keys(value).sort();
+    return '{' + keys.map(k => JSON.stringify(k) + ':' + this._stableStringify(value[k])).join(',') + '}';
+  }
+
+  _base64UrlEncode(data) {
+    const buf = Buffer.isBuffer(data) ? data : Buffer.from(data);
+    return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
   }
 
   _findPassphrase() {
