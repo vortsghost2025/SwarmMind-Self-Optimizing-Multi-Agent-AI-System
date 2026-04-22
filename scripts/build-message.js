@@ -18,6 +18,10 @@ const path = require('path');
 const { Signer } = require('../src/attestation/Signer');
 const { KeyManager } = require('../src/attestation/KeyManager');
 
+// LEASE + ATOMIC WRITE: Require kernel primitives for cross-lane mutation safety
+const KERNEL_ROOT = 'S:/kernel-lane';
+const { atomicWriteJson, atomicWriteWithLease } = require(path.join(KERNEL_ROOT, 'scripts', 'atomic-write-util'));
+
 const VALID_LANES = ['archivist', 'library', 'swarmmind', 'kernel'];
 const VALID_PRIORITIES = ['P0', 'P1', 'P2', 'P3'];
 const VALID_TYPES = ['task', 'status', 'ack', 'proposal', 'review', 'alert'];
@@ -198,7 +202,12 @@ function signMessageForOutbox(msg, lane) {
   return signer.signInboxMessage(msg, privateKey, info.key_id);
 }
 
-function deliverMessage(msg, send) {
+// Wrapper for sync caller - calls async lease+atomic write
+function writeWithLease(filePath, data, laneName) {
+  return atomicWriteWithLease(filePath, data, laneName, 30000);
+}
+
+async function deliverMessage(msg, send) {
   var filename = msg.id + '.json';
   var outboxPath = path.join(OUTBOX_DIR, filename);
 
@@ -208,24 +217,31 @@ function deliverMessage(msg, send) {
     finalMsg = signMessageForOutbox(msg, msg.from || 'swarmmind');
   } catch (signErr) {
     console.error('[build-message] FATAL: Could not sign message: ' + signErr.message);
+    return false;
+  }
     console.error('[build-message] Outbox write BLOCKED — unsigned messages are rejected by schema v1.2');
     return false;
   }
 
-  // Guard: verify signature before writing
-  var { validateOutboxMessage } = {};
-  try { ({ validateOutboxMessage } = require('./outbox-write-guard')); } catch (_) {}
-  if (validateOutboxMessage) {
-    var guardCheck = validateOutboxMessage(finalMsg);
-    if (!guardCheck.valid) {
-      console.error('[build-message] FATAL: Outbox guard rejected: ' + guardCheck.errors.join(', '));
-      return false;
-    }
+  // Guard: NON-BYPASSABLE outbox write enforcement
+  // guardWrite() throws OUTBOX_GUARD_REJECTED on any violation — this is intentional.
+  // If the outbox-write-guard module cannot be loaded, the write is BLOCKED (fail-closed).
+  var guardWrite;
+  try { ({ guardWrite } = require('./outbox-write-guard')); } catch (loadErr) {
+    console.error('[build-message] FATAL: outbox-write-guard module failed to load — write BLOCKED (fail-closed)');
+    console.error('[build-message] Load error: ' + loadErr.message);
+    return false;
+  }
+  try {
+    guardWrite(finalMsg, OUTBOX_DIR, filename);
+  } catch (guardErr) {
+    console.error('[build-message] FATAL: Outbox guard rejected write: ' + guardErr.message);
+    return false;
   }
 
-  // Write to outbox
-  fs.writeFileSync(outboxPath, JSON.stringify(finalMsg, null, 2), 'utf8');
-  console.log('[build-message] Written to outbox: ' + outboxPath);
+// Write to outbox using mandatory lease + atomic write
+  const writeResult = await atomicWriteWithLease(outboxPath, finalMsg, 'swarmmind', 30000);
+  console.log('[build-message] Written to outbox: ' + writeResult.path);
 
   if (send) {
     // Deliver to target lane's canonical inbox
@@ -237,7 +253,8 @@ function deliverMessage(msg, send) {
 
     var inboxPath = path.join(targetPath, filename);
     try {
-      fs.writeFileSync(inboxPath, JSON.stringify(finalMsg, null, 2), 'utf8');
+      const targetLane = msg.to || 'archivist';
+      await atomicWriteWithLease(inboxPath, finalMsg, targetLane, 30000);
       console.log('[build-message] Delivered to: ' + inboxPath);
     } catch (e) {
       console.error('[build-message] Delivery failed: ' + e.message);
@@ -269,9 +286,9 @@ if (require.main === module) {
     process.exit(1);
   }
 
-try {
+async function main(options) {
   var msg = buildMessage(options);
-  var sent = deliverMessage(msg, options.send === 'true');
+  var sent = await deliverMessage(msg, options.send === 'true');
 
   // Show the message (after signing attempt in deliverMessage)
   // Re-read the outbox version to get the signed copy
@@ -293,11 +310,32 @@ try {
   if (result.errors.length > 0) console.error('[validation] Errors:', result.errors);
   if (result.warnings.length > 0) console.warn('[validation] Warnings:', result.warnings);
 
+  return sent;
+}
+
+main(options).then(function(sent) {
+  if (!sent) {
+    process.exit(1);
+  }
+}).catch(function(e) {
+  console.error('[build-message] FATAL:', e.message);
+  process.exit(1);
+});
+  }
+
+  // Validate the built message with InboxMessageSchema
+  var InboxMessageSchema = require('../src/attestation/InboxMessageSchema').InboxMessageSchema;
+  var schema = new InboxMessageSchema();
+  var result = schema.validate(msg);
+  console.log('\n[validation] valid=' + result.valid + ' depth=' + result.depth + ' errors=' + result.errors.length + ' warnings=' + result.warnings.length);
+  if (result.errors.length > 0) console.error('[validation] Errors:', result.errors);
+  if (result.warnings.length > 0) console.warn('[validation] Warnings:', result.warnings);
+
   } catch (e) {
     console.error('Error:', e.message);
     process.exit(1);
   }
 }
 
-module.exports = { buildMessage, deliverMessage };
+module.exports = { buildMessage, deliverMessage, writeWithLease };
 

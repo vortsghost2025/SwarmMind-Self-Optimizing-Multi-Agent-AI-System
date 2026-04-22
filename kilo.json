@@ -1,10 +1,13 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
   "model": "nvidia/z-ai/glm-5.1",
-  "disabled_providers": ["lmstudio", "ollama"],
+  "disabled_providers": [
+    "lmstudio",
+    "ollama"
+  ],
   "agent": {
     "orchestrator": {
-      "model": "nvidia/z-ai/glm-5.1",
+      "model": "kilo/kilo-auto/free",
       "tools": {
         "invalid": true
       },
@@ -22,7 +25,7 @@
       }
     },
     "plan": {
-      "model": "nvidia/z-ai/glm-5.1"
+      "model": "nvidia/openai/gpt-oss-120b"
     },
     "code": {
       "model": "nvidia/z-ai/glm-5.1"
@@ -31,13 +34,16 @@
       "model": "nvidia/z-ai/glm-5.1"
     },
     "debug": {
-      "model": "nvidia/z-ai/glm-5.1"
+      "model": "nvidia/openai/gpt-oss-120b"
     },
     "ask": {
       "model": "nvidia/z-ai/glm-5.1"
     },
     "general": {
       "model": "nvidia/z-ai/glm-5.1"
+    },
+    "code-reviewer": {
+      "model": "nvidia/openai/gpt-oss-120b"
     }
   },
   "provider": {

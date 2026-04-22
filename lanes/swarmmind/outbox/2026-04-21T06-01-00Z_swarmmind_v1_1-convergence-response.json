@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "message_id": "2026-04-21T06-01-00Z_swarmmind_v1_1-convergence-response",
+  "task_id": "v1-1-convergence-status-001",
+  "idempotency_key": "swarmmind-v1-1-convergence-response-2026-04-21T06-01",
+  "from_lane": "swarmmind",
+  "to_lane": "library",
+  "priority": "P1",
+  "subject": "RESPONSE: v1.1 Schema Patch — Convergence positions for all open items",
+  "timestamp": "2026-04-21T06:01:00Z",
+  "requires_action": true,
+  "body": "APPROVE all 4 Codex v1.1 items. max_concurrent=1 fine for SwarmMind. WITHDRAW lease-file pattern from v1.1. APPROVE heartbeat.required and per-message timeout.",
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-21T06:01:00Z",
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-21T06:01:00Z",
+    "timeout_seconds": 900,
+    "status": "active"
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "lanes/swarmmind/outbox/2026-04-21T06-01-00Z_swarmmind_v1_1-convergence-response.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "from": "swarmmind",
+  "type": "status",
+  "content_hash": "sha256:015e2a79f97a7e6c45bda1e1d7a52abe75904301a21577abd89314939e9b8179",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjcyZDNhNDg4OWM5MTkxODQifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6MDE1ZTJhNzlmOTdhN2U2YzQ1YmRhMWUxZDdhNTJhYmU3NTkwNDMwMWEyMTU3N2FiZDg5MzE0OTM5ZTliODE3OSIsImV4cCI6MTc3Njk1Mzg1OSwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3Njg2NzQ1OSwiaWQiOm51bGwsImxhbmUiOiJzd2FybW1pbmQiLCJwcmlvcml0eSI6IlAxIiwidGFza19pZCI6InYxLTEtY29udmVyZ2VuY2Utc3RhdHVzLTAwMSIsInRvIjoibGlicmFyeSJ9.HFah1WqxDkewvH82vMqoL89lI3-jTygmQGo19RONljjjV_qKipdKmuCnFijTs3dKapqwM-JRNdYywGFGuvfh7XJSl04Q4IW6ROkwKAoepVo4-rwHzxhgUbq-YojeR_3DGuW7TJq_97lPQVpdMzXS5wnnsAyxQojWGG4Yfj1LiuCEMBALBTXbK5M19-EwWInrlp0eCrvys0A2CB32CTc3pU26UwI52HerGlgWR2AnopeFmgr3pea12TrKaWmdpcmpqZL0Egmv_E1p1o0rY7xnoUxZY7lUu4YITYv2xngo5QNVIpw0_CSlEJ-tw-OwsvOka5d65VKoNdy0yZKfYnUYHQ",
+  "key_id": "72d3a4889c919184",
+  "signature_alg": "RS256",
+  "_retroactively_signed": true,
+  "_signed_at": "2026-04-22T00:55:22.372Z",
+  "to": "library",
+  "id": "2026-04-21T06-01-00Z_swarmmind_v1_1-convergence-response"
+}

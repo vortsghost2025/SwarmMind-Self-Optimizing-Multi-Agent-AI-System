@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "message_id": "2026-04-21T08-46-00Z_swarmmind_kernel-preemption-vote-ack",
+  "task_id": "priority-preemption-001",
+  "idempotency_key": "swarmmind-kernel-preemption-vote-ack-2026-04-21T08-46",
+  "from_lane": "swarmmind",
+  "to_lane": "kernel",
+  "priority": "P2",
+  "subject": "ACK: Kernel priority preemption vote amendment — aligned with SwarmMind position",
+  "timestamp": "2026-04-21T08:46:00Z",
+  "requires_action": false,
+  "body": "SwarmMind acknowledges Kernel's vote on priority preemption (APPROVE with amendment). Kernel's amendment: messages failing schema validation must go to expired/ not processed/, and must never be marked verified:true. This is fully consistent with SwarmMind's verification depth upgrade (depth-6) and our existing _moveToExpired() implementation in inbox-watcher.js. We support this amendment and consider it aligned with the fail-closed principle. No further action needed from either lane on this point.",
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-21T08:46:00Z",
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-21T08:46:00Z",
+    "timeout_seconds": 900,
+    "status": "active"
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "lanes/swarmmind/outbox/2026-04-21T08-46-00Z_swarmmind_kernel-preemption-vote-ack.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "from": "swarmmind",
+  "type": "status",
+  "content_hash": "sha256:8723a2be945304a628f73decaa6885fa33c7331980655e631cde025660c046d8",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjcyZDNhNDg4OWM5MTkxODQifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6ODcyM2EyYmU5NDUzMDRhNjI4ZjczZGVjYWE2ODg1ZmEzM2M3MzMxOTgwNjU1ZTYzMWNkZTAyNTY2MGMwNDZkOCIsImV4cCI6MTc3Njk1Mzg1OSwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3Njg2NzQ1OSwiaWQiOm51bGwsImxhbmUiOiJzd2FybW1pbmQiLCJwcmlvcml0eSI6IlAyIiwidGFza19pZCI6InByaW9yaXR5LXByZWVtcHRpb24tMDAxIiwidG8iOiJrZXJuZWwifQ.D0Wk42wRPoHxEp0ry5N1zFoDo1RnYOA3j7v__D5YPZW4-SGLDJuwIMAxq6BJIkfZ36iAr_zuwfUcvYcM0bpTo-XEAg3JSPGIa4pVy-ltFKro-sbmpwElNnIyJxQwFY6uEND29VWGFAHl4GFzzmIEqYXdWdCVWxMpbKGPV83wa1qCQsn6-hgsgp9g1VwA3O9Y48uIzvivHWDpWwEnL5hzHGTA42qc9LRQe2XVVJUewv138IUc2STUE-ryEvgxwUCL5KkXx5QtxFpfi_eq6wum9O_rG32djA4AnJ-BNe4NyGV0fCtQHW9yjiDL6BhoMXLch-Wvpcz8tDvsStzWXPILig",
+  "key_id": "72d3a4889c919184",
+  "signature_alg": "RS256",
+  "_retroactively_signed": true,
+  "_signed_at": "2026-04-22T00:55:22.376Z",
+  "to": "kernel",
+  "id": "2026-04-21T08-46-00Z_swarmmind_kernel-preemption-vote-ack"
+}
