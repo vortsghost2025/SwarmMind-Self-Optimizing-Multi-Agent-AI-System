@@ -217,8 +217,6 @@ async function deliverMessage(msg, send) {
     finalMsg = signMessageForOutbox(msg, msg.from || 'swarmmind');
   } catch (signErr) {
     console.error('[build-message] FATAL: Could not sign message: ' + signErr.message);
-    return false;
-  }
     console.error('[build-message] Outbox write BLOCKED — unsigned messages are rejected by schema v1.2');
     return false;
   }

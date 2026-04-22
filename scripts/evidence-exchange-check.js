@@ -31,13 +31,13 @@ function loadMessage(filePath) {
   }
 }
 
-function verifyEvidence(msg) {
+function verifyEvidence(msg, laneBaseDir) {
   const result = { evidence_path_exists: false, hash_match: null, errors: [] };
   if (!msg || typeof msg !== 'object') return result;
   if (!msg.evidence || typeof msg.evidence !== 'object') return result;
   const evPath = msg.evidence.evidence_path;
   if (evPath) {
-    const absolute = path.isAbsolute(evPath) ? evPath : path.join(process.cwd(), evPath);
+    const absolute = path.isAbsolute(evPath) ? evPath : path.join(laneBaseDir || process.cwd(), evPath);
     result.evidence_path_exists = fs.existsSync(absolute);
     if (!result.evidence_path_exists) {
       result.errors.push('evidence_path_missing');
@@ -59,7 +59,7 @@ function scanLane(lane, baseDir) {
   report.total = files.length;
   for (const file of files) {
     const msg = loadMessage(path.join(outbox, file));
-    const ev = verifyEvidence(msg);
+    const ev = verifyEvidence(msg, baseDir);
     if (ev.errors.length === 0) {
       report.verified++;
     } else {
@@ -81,6 +81,8 @@ function main() {
   fs.writeFileSync(outPath, JSON.stringify(reports, null, 2), 'utf8');
   console.log('Evidence exchange report written to', outPath);
 }
+
+module.exports = { verifyEvidence, scanLane, LANE_DIRS };
 
 if (require.main === module) {
   main();
