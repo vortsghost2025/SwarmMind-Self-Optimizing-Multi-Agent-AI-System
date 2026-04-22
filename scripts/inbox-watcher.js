@@ -11,6 +11,11 @@ const {
   acquireWatcherLock
 } = require('./concurrency-policy');
 
+const { atomicWriteJson } = require('./atomic-write-util');
+
+let guardWrite;
+try { ({ guardWrite } = require('./outbox-write-guard')); } catch (_) { guardWrite = null; }
+
 const PRIORITY_ORDER = { P0: 0, P1: 1, P2: 2, P3: 3 };
 
 const SKIP_FILENAMES = new Set([
@@ -510,26 +515,22 @@ class InboxWatcher extends EventEmitter {
       }
     }
 
-    const destFile = path.join(this.config.processedPath, filename);
-    try {
-      fs.renameSync(srcFile, destFile);
-    } catch (err) {
-      if (!fs.existsSync(srcFile)) {
-        this._log('WARN', `source already moved or gone: ${path.basename(srcFile)}`);
-        this.emit('processed', msg);
-        this._log('INFO', `processed (source absent): ${msg.id}`);
-        return;
-      }
-      try {
-        const raw = fs.readFileSync(srcFile, 'utf8');
-        fs.writeFileSync(destFile, raw, 'utf8');
-        fs.unlinkSync(srcFile);
-      } catch (err2) {
-        this._log('ERROR', `failed to move message ${msg.id}: ${err2.message}`);
-        this.emit('error', err2);
-        return;
-      }
-    }
+const destFile = path.join(this.config.processedPath, filename);
+try {
+  const raw = fs.readFileSync(srcFile, 'utf8');
+  atomicWriteJson(destFile, raw.trim());
+  fs.unlinkSync(srcFile);
+} catch (err) {
+  if (!fs.existsSync(srcFile)) {
+    this._log('WARN', `source already moved or gone: ${path.basename(srcFile)}`);
+    this.emit('processed', msg);
+    this._log('INFO', `processed (source absent): ${msg.id}`);
+    return;
+  }
+  this._log('ERROR', `failed to move message ${msg.id}: ${err.message}`);
+  this.emit('error', err);
+  return;
+}
 
     if (msg.priority === 'P0') {
     this._writeP0UrgentFile(msg);
@@ -547,14 +548,16 @@ class InboxWatcher extends EventEmitter {
     }
     const src = path.join(this.config.inboxPath, filename);
     const dest = path.join(this.expiredPath, filename);
-    try {
-      if (!fs.existsSync(this.expiredPath)) {
-        fs.mkdirSync(this.expiredPath, { recursive: true });
-      }
-      fs.renameSync(src, dest);
-    } catch (err) {
-      this._log('WARN', `Could not move rejected message to expired/: ${err.message}`);
-    }
+try {
+  if (!fs.existsSync(this.expiredPath)) {
+    fs.mkdirSync(this.expiredPath, { recursive: true });
+  }
+  const raw = fs.readFileSync(src, 'utf8');
+  atomicWriteJson(dest, raw.trim());
+  fs.unlinkSync(src);
+} catch (err) {
+  this._log('WARN', `Could not move rejected message to expired/: ${err.message}`);
+}
   }
 
   /**
@@ -571,7 +574,10 @@ class InboxWatcher extends EventEmitter {
     const urgentMsg = { ...msg, priority: 'P0' };
 
     try {
-      this._writeMessage(urgentPath, urgentMsg);
+      if (guardWrite) {
+        guardWrite(urgentMsg, this.config.inboxPath, urgentFilename);
+      }
+      atomicWriteJson(urgentPath, urgentMsg);
       this._log('INFO', `P0 urgent file written: ${urgentFilename}`);
     } catch (err) {
       this._log('ERROR', `failed to write P0 urgent file ${urgentFilename}: ${err.message}`);
@@ -660,9 +666,7 @@ class InboxWatcher extends EventEmitter {
    * @param {object} msg
    */
   _writeMessage(filePath, msg) {
-    const tmp = filePath + '.tmp.' + crypto.randomBytes(6).toString('hex');
-    fs.writeFileSync(tmp, JSON.stringify(msg, null, 2) + '\n', 'utf8');
-    fs.renameSync(tmp, filePath);
+    atomicWriteJson(filePath, msg);
   }
 
   /**

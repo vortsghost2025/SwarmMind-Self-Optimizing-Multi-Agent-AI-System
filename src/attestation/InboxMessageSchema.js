@@ -152,46 +152,43 @@ class InboxMessageSchema {
       }
     }
 
-    // v1.2+ specific validations
-    if (['1.2', '1.3', '1.4'].includes(msg.schema_version)) {
-      // v1.2+: signature and key_id are REQUIRED (already in REQUIRED_FIELDS,
-      // but add explicit diagnostic if missing)
-      if (!msg.signature || msg.signature === '') {
-        errors.push('v1.2+ requires non-empty signature field');
-      }
-      if (!msg.key_id || msg.key_id === '') {
-        errors.push('v1.2+ requires non-empty key_id field');
-      }
+// v1.2+ specific validations
+  if (['1.2', '1.3', '1.4'].includes(msg.schema_version)) {
+    if (!msg.signature || msg.signature === '') {
+      errors.push('v1.2+ requires non-empty signature field');
     }
+    if (!msg.key_id || msg.key_id === '') {
+      errors.push('v1.2+ requires non-empty key_id field');
+    }
+  }
 
-    // v1.4+ specific validations
-    if (msg.schema_version === '1.4') {
-      // v1.4: evidence_hash is REQUIRED for task/response/escalation/handoff
-      if (['task', 'response', 'escalation', 'handoff'].includes(msg.type)) {
-        if (!msg.evidence_hash || !/^sha256:[a-f0-9]{64}$/.test(msg.evidence_hash)) {
-          errors.push('v1.4 requires evidence_hash on task/response/escalation/handoff messages');
-        }
-      }
+  // UNIVERSAL: evidence_hash required on all actionable message types
+  if (['task', 'response', 'escalation', 'handoff'].includes(msg.type)) {
+    if (!msg.evidence_hash || !/^sha256:[a-f0-9]{64}$/.test(msg.evidence_hash)) {
+      errors.push('evidence_hash is universally required on task/response/escalation/handoff messages');
     }
+  }
 
-    // evidence block validation (all versions)
-    if (msg.evidence && typeof msg.evidence === 'object') {
-      if (!Object.prototype.hasOwnProperty.call(msg.evidence, 'required')) {
-        warnings.push('evidence object should include "required" field');
-      }
+  // evidence block validation (all versions)
+  if (msg.evidence && typeof msg.evidence === 'object') {
+    if (!Object.prototype.hasOwnProperty.call(msg.evidence, 'required')) {
+      warnings.push('evidence object should include "required" field');
     }
+  }
 
-    // evidence_hash validation: pattern check + integrity verification
-    if (msg.evidence_hash) {
-      if (!/^sha256:[a-f0-9]{64}$/.test(msg.evidence_hash)) {
-        errors.push(`evidence_hash must match sha256 pattern, got "${msg.evidence_hash}"`);
-      } else if (msg.evidence && typeof msg.evidence === 'object') {
-        const computed = 'sha256:' + crypto.createHash('sha256').update(JSON.stringify(msg.evidence)).digest('hex');
-        if (computed !== msg.evidence_hash) {
-          errors.push(`evidence_hash mismatch: computed ${computed} vs provided ${msg.evidence_hash}`);
-        }
+  // evidence_hash validation: pattern check + integrity verification
+  if (msg.evidence_hash) {
+    if (!/^sha256:[a-f0-9]{64}$/.test(msg.evidence_hash)) {
+      errors.push(`evidence_hash must match sha256 pattern, got "${msg.evidence_hash}"`);
+    } else if (msg.evidence && typeof msg.evidence === 'object') {
+      const computed = 'sha256:' + crypto.createHash('sha256').update(JSON.stringify(msg.evidence)).digest('hex');
+      if (computed !== msg.evidence_hash) {
+        errors.push(`evidence_hash mismatch: computed ${computed} vs provided ${msg.evidence_hash}`);
       }
     }
+  } else if (msg.evidence && typeof msg.evidence === 'object') {
+    errors.push('evidence object present but evidence_hash missing — evidence_hash is mandatory when evidence is provided');
+  }
 
     // evidence_exchange block validation (v1.3+)
     if (msg.evidence_exchange && typeof msg.evidence_exchange === 'object') {

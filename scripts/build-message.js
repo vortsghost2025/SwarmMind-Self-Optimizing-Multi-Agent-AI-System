@@ -319,20 +319,6 @@ main(options).then(function(sent) {
   console.error('[build-message] FATAL:', e.message);
   process.exit(1);
 });
-  }
-
-  // Validate the built message with InboxMessageSchema
-  var InboxMessageSchema = require('../src/attestation/InboxMessageSchema').InboxMessageSchema;
-  var schema = new InboxMessageSchema();
-  var result = schema.validate(msg);
-  console.log('\n[validation] valid=' + result.valid + ' depth=' + result.depth + ' errors=' + result.errors.length + ' warnings=' + result.warnings.length);
-  if (result.errors.length > 0) console.error('[validation] Errors:', result.errors);
-  if (result.warnings.length > 0) console.warn('[validation] Warnings:', result.warnings);
-
-  } catch (e) {
-    console.error('Error:', e.message);
-    process.exit(1);
-  }
 }
 
 module.exports = { buildMessage, deliverMessage, writeWithLease };

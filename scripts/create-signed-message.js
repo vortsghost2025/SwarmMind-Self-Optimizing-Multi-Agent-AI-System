@@ -6,8 +6,10 @@ const path = require('path');
 const crypto = require('crypto');
 
 // LEASE + ATOMIC WRITE: Require kernel primitives for cross-lane mutation safety
-const KERNEL_ROOT = 'S:/kernel-lane';
-const { atomicWriteJson, atomicWriteWithLease } = require(path.join(KERNEL_ROOT, 'scripts', 'atomic-write-util'));
+const { atomicWriteJson, atomicWriteWithLease } = require('./atomic-write-util');
+
+let guardWrite;
+try { ({ guardWrite } = require('./outbox-write-guard')); } catch (_) { guardWrite = null; }
 
 const PASSFILE = 'S:/Archivist-Agent/.runtime/lane-passphrases.json';
 
@@ -113,7 +115,9 @@ async function writeSignedMessage(msg, laneId, outboxPath) {
   }
   const filename = `${msg.id || 'msg-' + Date.now()}.json`;
   const filePath = path.join(outboxPath, filename);
-  // Atomic write with mandatory lease
+  if (guardWrite) {
+    guardWrite(signed, outboxPath, filename);
+  }
   await atomicWriteWithLease(filePath, signed, laneId, 30000);
   return { filePath, keyId: signed.key_id, filename };
 }

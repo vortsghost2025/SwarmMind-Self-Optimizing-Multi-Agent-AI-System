@@ -331,7 +331,7 @@ if (require.main === module) {
     const report = await verifier.verify({ deepVerify: deepMode });
     const mirrorLeaks = verifier.scanMirrorLeaks();
 
-    const exitCode = (report.mirror_only > 0 || report.missing > 0 || deepUnsigned > 0) ? 1 : 0;
+    const exitCode = (report.mirror_only > 0 || report.missing > 0 || report.unsigned > 0) ? 1 : 0;
 
     if (jsonMode) {
       const full = {
