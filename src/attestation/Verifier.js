@@ -23,6 +23,11 @@ class Verifier {
       options.testMode === true ||
       process.env.SWARM_TEST_MODE === '1' ||
       process.env.NODE_ENV === 'test';
+    if (options.trustStorePath && !testMode) {
+      throw new Error(
+        'trustStorePath override is forbidden in production - use the broadcast store via TRUST_STORE_PATH'
+      );
+    }
     this.allowMissingTrustStoreForTests =
       testMode &&
       (options.allowMissingTrustStoreForTests === true ||

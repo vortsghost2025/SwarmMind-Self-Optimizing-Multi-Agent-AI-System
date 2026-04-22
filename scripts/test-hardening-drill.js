@@ -22,6 +22,8 @@ const { Signer } = require('../src/attestation/Signer');
 const { VerifierWrapper } = require('../src/attestation/VerifierWrapper');
 const { QuarantineManager } = require('../src/attestation/QuarantineManager');
 
+process.env.SWARM_TEST_MODE = '1';
+
 // ---------------------------------------------------------------------------
 // Test environment setup (isolated)
 // ---------------------------------------------------------------------------

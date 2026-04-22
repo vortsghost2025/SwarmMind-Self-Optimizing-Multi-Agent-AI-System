@@ -11,6 +11,8 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 
+process.env.SWARM_TEST_MODE = '1';
+
 const TEST_DIR = path.join(__dirname, '..', '.test-quarantine');
 const TRUST_STORE_PATH = path.join(TEST_DIR, 'keys.json');
 const QUARANTINE_LOG_PATH = path.join(TEST_DIR, 'quarantine.log');

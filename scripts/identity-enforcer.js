@@ -6,34 +6,35 @@ const path = require('path');
 const crypto = require('crypto');
 const { TRUST_STORE_PATH } = require('../src/attestation/constants');
 
-const TRUST_STORE_SEARCH_PATHS = [
-  'S:/Archivist-Agent/lanes/broadcast/trust-store.json',
-  'S:/self-organizing-library/lanes/broadcast/trust-store.json',
-  'S:/SwarmMind Self-Optimizing Multi-Agent AI System/lanes/broadcast/trust-store.json',
-  'S:/kernel-lane/lanes/broadcast/trust-store.json',
-];
+const GLOBAL_TEST_MODE =
+  process.env.SWARM_TEST_MODE === '1' || process.env.NODE_ENV === 'test';
 
 class IdentityEnforcer {
   constructor(options = {}) {
+    const testMode = options.testMode === true || GLOBAL_TEST_MODE;
+    if (options.trustStorePath && !testMode) {
+      throw new Error(
+        'trustStorePath override is forbidden in production - use the broadcast store via TRUST_STORE_PATH'
+      );
+    }
     this.trustStore = null;
     this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
+    this.allowMissingTrustStoreForTests =
+      testMode &&
+      (options.allowMissingTrustStoreForTests === true ||
+        process.env.ALLOW_MISSING_TRUST_STORE_FOR_TESTS === '1');
     this.enforcementMode = options.enforcementMode || 'enforce'; // 'enforce' | 'warn' | 'audit'
     this.verificationLog = [];
     this._loadTrustStore();
   }
 
-  _findTrustStore() {
-    for (const p of TRUST_STORE_SEARCH_PATHS) {
-      if (fs.existsSync(p)) return p;
-    }
-    return null;
-  }
-
   _loadTrustStore() {
-    if (!this.trustStorePath || !fs.existsSync(this.trustStorePath)) {
-      console.error('[identity] No trust store found — identity enforcement DISABLED');
-      this.trustStore = null;
-      return;
+    if (!fs.existsSync(this.trustStorePath)) {
+      if (this.allowMissingTrustStoreForTests) {
+        this.trustStore = { keys: {}, version: '1.0' };
+        return;
+      }
+      throw new Error(`IdentityEnforcer: trust store missing at ${this.trustStorePath}`);
     }
 
     try {
@@ -54,8 +55,11 @@ class IdentityEnforcer {
       const laneCount = Object.keys(this.trustStore.keys || {}).length;
       console.log(`[identity] Trust store loaded: ${laneCount} lanes from ${this.trustStorePath}`);
     } catch (e) {
-      console.error('[identity] Trust store load failed:', e.message);
-      this.trustStore = null;
+      if (this.allowMissingTrustStoreForTests) {
+        this.trustStore = { keys: {}, version: '1.0' };
+        return;
+      }
+      throw new Error(`IdentityEnforcer: trust store load failed at ${this.trustStorePath}: ${e.message}`);
     }
   }
 
@@ -297,4 +301,3 @@ if (require.main === module) {
   console.log('  warn   — log + console warnings, no rejection');
   console.log('  enforce — reject unsigned/invalid messages');
 }
-

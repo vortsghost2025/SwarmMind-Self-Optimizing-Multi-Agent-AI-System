@@ -18,22 +18,39 @@ const { stableStringify } = require('./stableStringify');
 
 class PhenotypeStore {
 	constructor(options = {}) {
+    const testMode =
+      options.testMode === true ||
+      process.env.SWARM_TEST_MODE === '1' ||
+      process.env.NODE_ENV === 'test';
+    if (options.trustStorePath && !testMode) {
+      throw new Error(
+        'trustStorePath override is forbidden in production - use the broadcast store via TRUST_STORE_PATH'
+      );
+    }
 		this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
+    this.testMode = testMode;
 		this.phenotypes = null;
 		this._load();
 	}
 
 	_load() {
 		if (!fs.existsSync(this.trustStorePath)) {
-			this.phenotypes = {};
-			return;
+      if (this.testMode) {
+        this.phenotypes = {};
+        return;
+      }
+      throw new Error(`Trust store missing at path: ${this.trustStorePath}`);
 		}
 		try {
 			const raw = fs.readFileSync(this.trustStorePath, 'utf8');
 			const data = JSON.parse(raw);
 			this.phenotypes = data.phenotypes || {};
 		} catch (e) {
-			this.phenotypes = {};
+      if (this.testMode) {
+        this.phenotypes = {};
+        return;
+      }
+      throw new Error(`Trust store load failed at ${this.trustStorePath}: ${e.message}`);
 		}
 	}
 

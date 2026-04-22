@@ -12,6 +12,8 @@ const Queue = require('../src/queue/Queue');
 const fs = require('fs');
 const path = require('path');
 
+process.env.SWARM_TEST_MODE = '1';
+
 function assert(condition, message) {
 	if (!condition) {
 		console.error('ASSERTION FAILED:', message);

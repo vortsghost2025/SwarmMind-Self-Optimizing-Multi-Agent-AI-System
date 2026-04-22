@@ -18,6 +18,8 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 
+process.env.SWARM_TEST_MODE = '1';
+
 // Test setup
 const TEST_DIR = path.join(__dirname, '..', '.test-lane-consistency');
 const TRUST_STORE_PATH = path.join(TEST_DIR, 'keys.json');

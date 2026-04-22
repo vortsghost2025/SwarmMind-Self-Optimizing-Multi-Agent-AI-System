@@ -11,6 +11,15 @@ const path = require('path');
 
 class TrustStoreManager {
 	constructor(options = {}) {
+    const testMode =
+      options.testMode === true ||
+      process.env.SWARM_TEST_MODE === '1' ||
+      process.env.NODE_ENV === 'test';
+    if (options.trustStorePath && !testMode) {
+      throw new Error(
+        'trustStorePath override is forbidden in production - use the broadcast store via TRUST_STORE_PATH'
+      );
+    }
 		this.trustStorePath = options.trustStorePath || TRUST_STORE_PATH;
 		this.trustStore = null;
 		this._load();
