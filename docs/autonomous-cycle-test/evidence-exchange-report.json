@@ -15,17 +15,18 @@
   },
   {
     "lane": "swarmmind",
-    "total": 1,
+    "total": 2,
     "verified": 0,
     "mismatches": [
+      "cross-lane-code-review-001.json",
       "swarmmind-round7-patches-completed-001.json"
     ],
     "missingEvidence": []
   },
   {
     "lane": "kernel",
-    "total": 2,
-    "verified": 2,
+    "total": 3,
+    "verified": 3,
     "mismatches": [],
     "missingEvidence": []
   }

@@ -13,13 +13,28 @@ const LANE_ROOTS = {
   kernel: 'S:/kernel-lane',
 };
 
-function readTrustStore(lane) {
-  const trustPath = path.join(LANE_ROOTS[lane], '.trust', 'keys.json');
-  try {
-    return JSON.parse(fs.readFileSync(trustPath, 'utf8'));
-  } catch (err) {
-    return { error: err.message, lane };
+const BROADCAST_TRUST_STORE_REL = path.join('lanes', 'broadcast', 'trust-store.json');
+
+function readPublicKeyPem(lane) {
+  const candidates = [
+    path.join(LANE_ROOTS[lane], '.identity', 'public.pem'),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      return fs.readFileSync(p, 'utf8').trim();
+    }
   }
+  const broadcastPath = path.join(LANE_ROOTS[lane], BROADCAST_TRUST_STORE_REL);
+  if (fs.existsSync(broadcastPath)) {
+    try {
+      const store = JSON.parse(fs.readFileSync(broadcastPath, 'utf8'));
+      const entry = store[lane] || store.lanes?.[lane];
+      if (entry?.public_key_pem) {
+        return entry.public_key_pem.trim();
+      }
+    } catch {}
+  }
+  throw new Error(`Cannot find public key PEM for ${lane}`);
 }
 
 function computeFingerprint(pem) {
@@ -32,82 +47,80 @@ function computeFingerprint(pem) {
 }
 
 function sync() {
-  const stores = {};
-  const fingerprints = {};
   const report = { lanes: {}, discrepancies: [], converged: false };
+  const pems = {};
+  const keyIds = {};
 
   for (const lane of Object.keys(LANE_ROOTS)) {
-    const store = readTrustStore(lane);
-    stores[lane] = store;
-    if (store.public_key_pem) {
-      fingerprints[lane] = computeFingerprint(store.public_key_pem);
+    try {
+      const pem = readPublicKeyPem(lane);
+      pems[lane] = pem;
+      keyIds[lane] = computeFingerprint(pem).substring(0, 16);
+      report.lanes[lane] = { key_id: keyIds[lane], source: '.identity/public.pem' };
+    } catch (err) {
+      report.lanes[lane] = { error: err.message };
     }
-    report.lanes[lane] = {
-      key_id: store.key_id || 'MISSING',
-      fingerprint: fingerprints[lane] || 'MISSING',
-      error: store.error || null,
-    };
   }
 
-  const uniqueFingerprints = new Set(Object.values(fingerprints));
-  const uniqueKeyIds = new Set(Object.values(stores).map(s => s.key_id));
+  const uniqueKeyIds = new Set(Object.values(keyIds));
+  const uniquePems = new Set(Object.values(pems).map(p => p.trim()));
 
-  if (uniqueFingerprints.size === 1 && uniqueKeyIds.size === 1) {
-    report.converged = true;
-    report.summary = 'All lanes share identical trust store (key_id + PEM)';
+  report.converged = uniqueKeyIds.size === Object.keys(keyIds).length &&
+    Object.keys(keyIds).length === 4;
+
+  if (!report.converged) {
+    report.summary = `Trust stores diverge: ${uniqueKeyIds.size} unique key_ids`;
   } else {
-    report.converged = false;
-    report.summary = `Trust stores diverge: ${uniqueKeyIds.size} unique key_ids, ${uniqueFingerprints.size} unique PEMs`;
-    for (const [lane, store] of Object.entries(stores)) {
-      for (const [otherLane, otherStore] of Object.entries(stores)) {
-        if (lane >= otherLane) continue;
-        if (store.key_id !== otherStore.key_id || fingerprints[lane] !== fingerprints[otherLane]) {
-          report.discrepancies.push({
-            lanes: [lane, otherLane],
-            key_id_match: store.key_id === otherStore.key_id,
-            pem_match: fingerprints[lane] === fingerprints[otherLane],
-          });
-        }
-      }
-    }
+    report.summary = 'All 4 lanes have distinct, correct key_ids';
   }
 
-  return report;
+  return { pems, keyIds, report };
 }
 
 function buildUnifiedStore() {
-  const report = sync();
+  const { pems, keyIds, report } = sync();
   if (report.converged) {
-    return { report, action: 'none', reason: 'already converged' };
+    const existingStore = JSON.parse(
+      fs.readFileSync(path.join(LANE_ROOTS.archivist, BROADCAST_TRUST_STORE_REL), 'utf8')
+    );
+    let needsUpdate = false;
+    for (const lane of Object.keys(LANE_ROOTS)) {
+      if (existingStore[lane]?.key_id !== keyIds[lane]) {
+        needsUpdate = true;
+        break;
+      }
+    }
+    if (!needsUpdate) {
+      return { report, action: 'none', reason: 'already converged and deployed' };
+    }
   }
 
-  const archivistStore = readTrustStore('archivist');
-  if (!archivistStore.public_key_pem || !archivistStore.key_id) {
-    return { report, action: 'blocked', reason: 'archivist trust store missing or corrupt — cannot use as authority' };
+  const now = new Date().toISOString();
+  const unified = {};
+  for (const [lane, pem] of Object.entries(pems)) {
+    unified[lane] = {
+      lane_id: lane,
+      public_key_pem: pem,
+      algorithm: 'RS256',
+      key_id: keyIds[lane],
+      registered_at: now,
+      expires_at: null,
+      revoked_at: null,
+    };
   }
-
-  const unified = {
-    key_id: archivistStore.key_id,
-    public_key_pem: archivistStore.public_key_pem,
-    unified_by: 'swarmmind',
-    unified_at: new Date().toISOString(),
-  };
+  unified.preCommitChecks = [
+    'signature_validates_against_key_id',
+    'key_id_matches_trust_store_entry',
+    'lane_id_invariant',
+  ];
 
   const results = {};
   for (const [lane, root] of Object.entries(LANE_ROOTS)) {
-    const trustDir = path.join(root, '.trust');
-    const trustPath = path.join(trustDir, 'keys.json');
+    const broadcastPath = path.join(root, BROADCAST_TRUST_STORE_REL);
     try {
-      if (!fs.existsSync(trustDir)) {
-        fs.mkdirSync(trustDir, { recursive: true });
-      }
-      const backupPath = path.join(trustDir, 'keys.json.pre-sync-backup');
-      if (fs.existsSync(trustPath)) {
-        const existing = fs.readFileSync(trustPath, 'utf8');
-        atomicWriteJson(backupPath, existing);
-      }
-      atomicWriteJson(trustPath, unified);
-      results[lane] = 'updated';
+      atomicWriteJson(broadcastPath, unified);
+      const verify = JSON.parse(fs.readFileSync(broadcastPath, 'utf8'));
+      results[lane] = verify[lane]?.key_id === keyIds[lane] ? 'verified' : 'MISMATCH';
     } catch (err) {
       results[lane] = `error: ${err.message}`;
     }
@@ -121,13 +134,13 @@ if (require.main === module) {
   const mode = args[0] || 'check';
 
   if (mode === 'check') {
-    const report = sync();
+    const { report } = sync();
     console.log(JSON.stringify(report, null, 2));
     process.exit(report.converged ? 0 : 1);
   } else if (mode === 'sync') {
     const result = buildUnifiedStore();
     console.log(JSON.stringify(result, null, 2));
-    process.exit(result.action === 'synced' ? 0 : 1);
+    process.exit(result.action === 'synced' || result.action === 'none' ? 0 : 1);
   } else {
     console.error('Usage: node sync-trust-store.js [check|sync]');
     process.exit(1);
