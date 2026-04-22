@@ -163,6 +163,11 @@
           "verified_at": {"type": "string",
             "format": "date-time"}
         }
+    "evidence_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "description": "SHA-256 hash of serialized evidence object"
+    },
       },
       {
         "type": "array",

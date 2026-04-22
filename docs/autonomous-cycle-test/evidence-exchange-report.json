@@ -1,0 +1,38 @@
+[
+  {
+    "lane": "archivist",
+    "total": 0,
+    "verified": 0,
+    "mismatches": [],
+    "missingEvidence": []
+  },
+  {
+    "lane": "library",
+    "total": 1,
+    "verified": 0,
+    "mismatches": [],
+    "missingEvidence": [
+      "2026-04-22T01-35-00Z_library-release-evidence.json"
+    ]
+  },
+  {
+    "lane": "swarmmind",
+    "total": 0,
+    "verified": 0,
+    "mismatches": [],
+    "missingEvidence": []
+  },
+  {
+    "lane": "kernel",
+    "total": 9,
+    "verified": 4,
+    "mismatches": [],
+    "missingEvidence": [
+      "2026-04-21T00-50-00Z_kernel_onboarding-ack.json",
+      "2026-04-21T06-24-13Z_kernel_library_v0.1.0-reject-ack.json",
+      "2026-04-21T15-28-46Z_kernel_archivist_delegation-proposal.json",
+      "2026-04-22T01-12-00Z_kernel_library_act-round-004-response.json",
+      "2026-04-22T01-30-00Z_kernel-benchmark-evidence.json"
+    ]
+  }
+]

@@ -167,6 +167,17 @@ class InboxMessageSchema {
         warnings.push('evidence object should include "required" field');
       }
     }
+    if (msg.evidence_hash) {
+      if (!/^sha256:[a-f0-9]{64}$/.test(msg.evidence_hash)) {
+        errors.push(`evidence_hash must match sha256 pattern, got "${msg.evidence_hash}"`);
+      } else {
+        const crypto = require(crypto);
+        const computed = sha256: + crypto.createHash(sha256).update(JSON.stringify(msg.evidence)).digest(hex);
+        if (computed !== msg.evidence_hash) {
+          errors.push(`evidence_hash mismatch: computed ${computed} vs provided ${msg.evidence_hash}`);
+        }
+      }
+    }
 
     depth = errors.length === 0 ? 3 : 2;
 
