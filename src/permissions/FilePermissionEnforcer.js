@@ -35,21 +35,25 @@ const PERMISSION_WHITELIST = {
     read: ['*'],  // Can read any file for verification
         write: [
                 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/**',
+                'S:/SwarmMind-Self-Optimizing-Multi-Agent-AI-System/**',
                 'S:/self-organizing-library/**',
                 'queue/**'
             ],
             append: [
                 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/**',
+                'S:/SwarmMind-Self-Optimizing-Multi-Agent-AI-System/**',
                 'S:/self-organizing-library/**',
                 'queue/**'
             ],
             mkdir: [
                 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/**',
+                'S:/SwarmMind-Self-Optimizing-Multi-Agent-AI-System/**',
                 'S:/self-organizing-library/**',
                 'queue/**'
             ],
             delete: [
                 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/**',
+                'S:/SwarmMind-Self-Optimizing-Multi-Agent-AI-System/**',
                 'queue/**'
     ]
   },

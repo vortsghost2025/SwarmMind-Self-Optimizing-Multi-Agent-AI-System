@@ -1,7 +1,7 @@
 {
   "lane_id": "swarmmind",
-  "session_id": "1776476695493-28240",
-  "acquired": "2026-04-18T04:16:35.493Z",
+  "session_id": "session-001",
+  "acquired": "2026-04-22T23:30:00.000Z",
   "pid": null,
-  "expires": "2026-04-18T12:00:00.000Z"
+  "expires": "2026-04-23T12:00:00.000Z"
 }
