@@ -1,0 +1,23 @@
+# Identity keys (NEVER commit)
+.identity/
+*.pem
+*.key
+keys.json
+
+# Inbox hygiene
+lanes/*/inbox/
+lanes/*/inbox/processed/
+lanes/*/inbox/expired/
+lanes/*/inbox/watcher.log
+lanes/*/inbox/heartbeat-*.json
+lanes/*/outbox/
+lanes/*/outbox/unsigned/
+
+# Trust store (operational, not versioned)
+lanes/*/broadcast/trust-store.json
+
+# OS
+.DS_Store
+
+# Env
+.env*
