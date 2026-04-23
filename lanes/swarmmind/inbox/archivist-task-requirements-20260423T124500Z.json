@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.4",
+  "id": "archivist-task-requirements-20260423T124500Z",
+  "task_id": "swarmmind-required-tasks",
+  "from": "archivist",
+  "from_lane": "archivist",
+  "to": "swarmmind",
+  "to_lane": "swarmmind",
+  "type": "task",
+  "priority": "P0",
+  "subject": "P0: REQUIRED TASKS for SwarmMind Lane Completion",
+  "requires_action": true,
+  "body": "Archivist requires the following tasks completed by SwarmMind lane. These are PRE-REQUISITES for final convergence sign-off.",
+  "timestamp": "2026-04-23T12:45:00.000Z",
+  "tasks": [
+    {
+      "id": "task-1",
+      "priority": "P0",
+      "subject": "Push SwarmMind to GitHub",
+      "description": "Retry git push origin master to https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System.git. Previous attempts returned 500 errors. Keep retrying until success.",
+      "deadline": "2026-04-23T13:30:00Z",
+      "evidence_required": true,
+      "evidence_path": "S:/SwarmMind/lanes/swarmmind/outbox/swarmmind-push-complete-20260423.json"
+    },
+    {
+      "id": "task-2",
+      "priority": "P0",
+      "subject": "Verify CanonicalMessageBuilder Adoption",
+      "description": "Search all .js files in S:/SwarmMind for 'CanonicalMessageBuilder'. Must find matches. If not found, replace any inline message construction with CanonicalMessageBuilder.buildMessage() calls. All outbound messages must use builder.",
+      "deadline": "2026-04-23T13:00:00Z",
+      "evidence_required": true,
+      "evidence_path": "S:/SwarmMind/lanes/swarmmind/outbox/builder-adoption-proof-20260423.json"
+    },
+    {
+      "id": "task-3",
+      "priority": "P0",
+      "subject": "Complete Compliance Task",
+      "description": "Compliance task 2026-04-23T10-30-00Z-compliance-task.json was OVERDUE by 1h+. Must adopt CanonicalMessageBuilder per MESSAGE_BUILDER_USAGE.md. Deliverable: S:/SwarmMind/lanes/swarmmind/outbox/compliance-complete-001.json",
+      "deadline": "2026-04-23T13:00:00Z",
+      "evidence_required": true,
+      "evidence_path": "S:/SwarmMind/lanes/swarmmind/outbox/compliance-complete-001.json"
+    },
+    {
+      "id": "task-4",
+      "priority": "P1",
+      "subject": "Clean Duplicate Directory",
+      "description": "Extract any remaining identity/trust files from S:/SwarmMind Self-Optimizing Multi-Agent AI System/, then delete the directory. Must verify no critical files remain. Current state: 9 files including keys.json + trust-store.json.",
+      "deadline": "2026-04-23T14:00:00Z",
+      "evidence_required": true,
+      "evidence_path": "S:/SwarmMind/lanes/swarmmind/outbox/duplicate-cleanup-complete-20260423.json"
+    },
+    {
+      "id": "task-5",
+      "priority": "P1",
+      "subject": "Verify Trust Store Sync",
+      "description": "Verify S:/SwarmMind/.trust/keys.json has key_id 1a7741b8d353abee. Verify S:/SwarmMind/lanes/broadcast/trust-store.json includes all 4 lanes with correct key_ids. Run scripts/sync-trust-store.js if needed.",
+      "deadline": "2026-04-23T13:30:00Z",
+      "evidence_required": true,
+      "evidence_path": "S:/SwarmMind/lanes/swarmmind/outbox/trust-sync-verified-20260423.json"
+    }
+  ],
+  "evidence": {
+    "required": true,
+    "completion_artifact": "S:/SwarmMind/lanes/swarmmind/outbox/all-tasks-complete-20260423.json",
+    "verified_by": "archivist",
+    "verification_deadline": "2026-04-23T15:00:00Z"
+  },
+  "heartbeat": { "interval_seconds": 300, "status": "active" }
+}

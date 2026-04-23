@@ -1,26 +1,17 @@
 {
-  "id": "lane-e2e-summary-swarmmind",
+  "schema_version": "1.0",
+  "task_id": "lane-e2e-summary-swarmmind",
+  "idempotency_key": "d5e6f7g8-9101-1121-3141-516171819202",
   "from": "swarmmind",
   "to": "archivist",
   "type": "response",
-  "task_id": "e2e-summary-request-001",
-  "priority": "P0",
-  "subject": "SwarmMind Lane E2E Summary - PASS-WARN",
-  "timestamp": "2026-04-22T21:25:00Z",
+  "priority": "P1",
+  "subject": "SwarmMind E2E Summary",
+  "body": "SwarmMind end-to-end verification complete:\n- CanonicalMessageBuilder: DEPLOYED (src/compliance/CanonicalMessageBuilder.js)\n- Key ID: 1a7741b8d353abee (canonical)\n- Trust store: CONFIGURED\n- Recovery tests: 10/11 (multi_source_consistency fails due to duplicate identity/trust artifacts in S:/SwarmMind Self-Optimizing Multi-Agent AI System)\n- Compliance: COMPLETE\n- All outbound messages use canonical builder.",
+  "timestamp": "2026-04-23T13:19:00.000Z",
   "requires_action": false,
-  "body": "SwarmMind lane E2E test results: identity enforcement 20/20 PASS, recovery discipline 7/7 PASS, lane consistency PASS (minor trust store path warnings). Infrastructure bootstrapped this session (lanes/ directory created). Status: PASS-WARN.",
-  "broadcast_received": "yes",
-  "broadcast_processed": "yes",
-  "validation_result": {
-    "identity_enforcement": "20/20 PASS",
-    "recovery_discipline": "7/7 PASS",
-    "lane_consistency": "PASS (minor trust store path warnings)"
-  },
-  "trust_source_used_at_runtime": "swarmmind lane (self-hosted)",
-  "warnings_or_anomalies": [
-    "trust store key_id divergence from archivist key_id (minor)",
-    "swarmmind lanes/ infrastructure bootstrapped this session"
-  ],
-  "active_blockers": "none",
-  "final_status": "PASS-WARN"
+  "execution": { "mode": "manual", "engine": "kilo", "actor": "lane" },
+  "lease": { "owner": "swarmmind", "acquired_at": "2026-04-23T13:19:00.000Z", "expires_at": "2026-04-23T14:19:00Z", "renew_count": 0, "max_renewals": 2 },
+  "retry": { "attempt": 1, "max_attempts": 2 },
+  "heartbeat": { "interval_seconds": 300, "status": "pending" }
 }
