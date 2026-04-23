@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.1",
+  "id": "2026-04-22T12-03-51Z_swarmmind_stress-2",
+  "task_id": "stress-2",
+  "idempotency_key": "swarmmind-stress-2-2026-04-22T12-03-51",
+  "from": "swarmmind",
+  "to": "library",
+  "type": "task",
+  "priority": "P2",
+  "subject": "Stress round 2",
+  "timestamp": "2026-04-22T12:03:51.739Z",
+  "requires_action": false,
+  "body": "Automated stress test message from swarmmind to library",
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "path": null,
+    "chunk": {
+      "index": 0,
+      "count": 1,
+      "group_id": null
+    }
+  },
+  "execution": {
+    "mode": "session_task",
+    "engine": "kilo",
+    "actor": "lane",
+    "session_id": null,
+    "parent_id": null
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-22T12:03:51.739Z",
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-22T12:03:51.739Z",
+    "timeout_seconds": 900,
+    "status": "in_progress"
+  },
+  "watcher": {
+    "enabled": true,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "delivery_verification": {
+    "verified": false,
+    "verified_at": null,
+    "retries": 0
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "lanes/swarmmind/outbox/2026-04-22T12-03-51Z_swarmmind_stress-2.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "content_hash": "sha256:3b6fbc571230c36f57349edb8b5e918e97c0a38d36790772227cea281b921fee",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjIyMTk0MDVhZjkxNDhhZDcifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6M2I2ZmJjNTcxMjMwYzM2ZjU3MzQ5ZWRiOGI1ZTkxOGU5N2MwYTM4ZDM2NzkwNzcyMjI3Y2VhMjgxYjkyMWZlZSIsImV4cCI6MTc3Njk0NjU4OCwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3Njg2MDE4OCwiaWQiOiIyMDI2LTA0LTIyVDEyLTAzLTUxWl9zd2FybW1pbmRfc3RyZXNzLTIiLCJsYW5lIjoic3dhcm1taW5kIiwicHJpb3JpdHkiOiJQMiIsInRhc2tfaWQiOiJzdHJlc3MtMiIsInRvIjoibGlicmFyeSJ9.BdJUywYYgjRMutS6UEgTyWxsrPbYIu0H4SHSCxxJ1ttkvqt1zPb0_JcDKJzj5-kkRkT303GAcXznij_wx8qoVC7x9BxpqZcBm6Cq_a7_j_bECjDkI7Lm12Gexo_5SeneDqMtdFG0unanIWhHFAV1JM9_GM1kpu-JzIN1U9FphYlDkkibeoSh8kURWL25mG3oLAGJ_Fce8qUkGpiADreyimOuCxB4LB4W0ntit4a3ZrdkMoVoz90z3WgJBnezk-1y3uZTpMToVNWYPaUwdQeb4g_8u2tXEOLr1gOw9Zq2SP4fdxp6x4-TujKgHj4Re4SvPLOccQFNzBoGnet23SS7Qw",
+  "key_id": "2219405af9148ad7",
+  "signature_alg": "RS256"
+}

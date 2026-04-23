@@ -1,0 +1,439 @@
+{
+  "schema_version": "1.4",
+  "round": 7,
+  "generated_at": "2026-04-22T12:25:42.022Z",
+  "lanes": {
+    "library": {
+      "total": 14,
+      "blocked": 14,
+      "corrupted": 4,
+      "passed": 0
+    },
+    "swarmmind": {
+      "total": 13,
+      "blocked": 13,
+      "corrupted": 4,
+      "passed": 0
+    },
+    "archivist": {
+      "total": 18,
+      "blocked": 18,
+      "corrupted": 3,
+      "passed": 0
+    },
+    "kernel": {
+      "total": 5,
+      "blocked": 5,
+      "corrupted": 3,
+      "passed": 0
+    }
+  },
+  "summary": {
+    "total_rounds": 50,
+    "total_blocked": 50,
+    "total_corrupted": 14,
+    "total_passed": 0
+  },
+  "raw": [
+    {
+      "round": 1,
+      "from": "library",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-03-50Z_library_stress-1 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 2,
+      "from": "swarmmind",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-03-51Z_swarmmind_stress-2 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 3,
+      "from": "archivist",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-03-52Z_archivist_stress-3 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 4,
+      "from": "swarmmind",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-03-54Z_swarmmind_stress-4 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 5,
+      "from": "library",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-03-56Z_library_stress-5 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 6,
+      "from": "swarmmind",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-03-56Z_swarmmind_stress-6 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 7,
+      "from": "library",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-03-57Z_library_stress-7 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 8,
+      "from": "swarmmind",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-03-59Z_swarmmind_stress-8 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 9,
+      "from": "archivist",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-00Z_archivist_stress-9 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 10,
+      "from": "swarmmind",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-01Z_swarmmind_stress-10 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 11,
+      "from": "swarmmind",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-02Z_swarmmind_stress-11 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 12,
+      "from": "archivist",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-03Z_archivist_stress-12 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 13,
+      "from": "library",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-03Z_library_stress-13 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 14,
+      "from": "swarmmind",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-03Z_swarmmind_stress-14 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 15,
+      "from": "archivist",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-04Z_archivist_stress-15 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 16,
+      "from": "archivist",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-05Z_archivist_stress-16 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 17,
+      "from": "kernel",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-07Z_kernel_stress-17 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 18,
+      "from": "swarmmind",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-08Z_swarmmind_stress-18 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 19,
+      "from": "archivist",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-08Z_archivist_stress-19 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 20,
+      "from": "archivist",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-09Z_archivist_stress-20 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 21,
+      "from": "library",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-10Z_library_stress-21 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 22,
+      "from": "swarmmind",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-12Z_swarmmind_stress-22 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 23,
+      "from": "library",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-14Z_library_stress-23 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 24,
+      "from": "kernel",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-15Z_kernel_stress-24 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 25,
+      "from": "library",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-16Z_library_stress-25 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 26,
+      "from": "swarmmind",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-16Z_swarmmind_stress-26 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 27,
+      "from": "archivist",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-17Z_archivist_stress-27 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 28,
+      "from": "swarmmind",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-19Z_swarmmind_stress-28 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 29,
+      "from": "archivist",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-20Z_archivist_stress-29 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 30,
+      "from": "kernel",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-21Z_kernel_stress-30 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 31,
+      "from": "archivist",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-23Z_archivist_stress-31 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 32,
+      "from": "archivist",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-24Z_archivist_stress-32 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 33,
+      "from": "library",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-26Z_library_stress-33 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 34,
+      "from": "kernel",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-26Z_kernel_stress-34 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 35,
+      "from": "library",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-28Z_library_stress-35 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 36,
+      "from": "swarmmind",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-28Z_swarmmind_stress-36 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 37,
+      "from": "library",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-29Z_library_stress-37 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 38,
+      "from": "archivist",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-30Z_archivist_stress-38 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 39,
+      "from": "archivist",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-32Z_archivist_stress-39 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 40,
+      "from": "swarmmind",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-34Z_swarmmind_stress-40 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 41,
+      "from": "archivist",
+      "to": "library",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-34Z_archivist_stress-41 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 42,
+      "from": "library",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-35Z_library_stress-42 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 43,
+      "from": "archivist",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-37Z_archivist_stress-43 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 44,
+      "from": "archivist",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-37Z_archivist_stress-44 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 45,
+      "from": "library",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-37Z_library_stress-45 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 46,
+      "from": "library",
+      "to": "archivist",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-38Z_library_stress-46 rejected",
+      "corrupted": true
+    },
+    {
+      "round": 47,
+      "from": "archivist",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-40Z_archivist_stress-47 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 48,
+      "from": "kernel",
+      "to": "swarmmind",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-42Z_kernel_stress-48 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 49,
+      "from": "archivist",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-44Z_archivist_stress-49 rejected",
+      "corrupted": false
+    },
+    {
+      "round": 50,
+      "from": "library",
+      "to": "kernel",
+      "blocked": true,
+      "guardError": "OUTBOX_WRITE_BLOCKED: MISSING_SIGNATURE, MISSING_KEY_ID — message 2026-04-22T12-04-45Z_library_stress-50 rejected",
+      "corrupted": true
+    }
+  ]
+}

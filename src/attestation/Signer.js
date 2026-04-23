@@ -1,0 +1,175 @@
+/**
+ * Signer.js - Phase 4.3 JWS Signing
+ *
+ * Creates JSON Web Signatures (JWS) for queue items, audit events,
+ * and continuity records using RSA private keys.
+ *
+ * ENFORCEMENT: Canonical 'lane' field in all payloads
+ */
+
+const crypto = require('crypto');
+const { stableStringify } = require('./stableStringify');
+
+class Signer {
+	constructor(options = {}) {
+		this.algorithm = 'RS256';
+		this.typ = 'JWT';
+		this.expiresInMs = options.expiresInMs || 86400000; // 24 hours default
+	}
+
+	_base64UrlEncode(data) {
+		const base64 = Buffer.isBuffer(data) ? data.toString('base64') : Buffer.from(data).toString('base64');
+		return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+	}
+
+	_createHeader(keyId) {
+		return {
+			alg: this.algorithm,
+			typ: this.typ,
+			kid: keyId
+		};
+	}
+
+	sign(payload, privateKey, keyId) {
+		const header = this._createHeader(keyId);
+		const headerB64 = this._base64UrlEncode(JSON.stringify(header));
+
+		const payloadWithTimestamp = {
+			...payload,
+			iat: Math.floor(Date.now() / 1000),
+			exp: Math.floor((Date.now() + this.expiresInMs) / 1000)
+		};
+
+		// Use stable stringify for deterministic serialization
+		const payloadB64 = this._base64UrlEncode(stableStringify(payloadWithTimestamp));
+
+		const signingInput = `${headerB64}.${payloadB64}`;
+		const signature = crypto.sign('RSA-SHA256', Buffer.from(signingInput), privateKey);
+		const signatureB64 = this._base64UrlEncode(signature);
+
+		return {
+			jws: `${headerB64}.${payloadB64}.${signatureB64}`,
+			header,
+			payload: payloadWithTimestamp,
+			signature: signatureB64
+		};
+	}
+
+	signQueueItem(item, privateKey, keyId) {
+		const lane = item.lane || item.origin_lane;
+
+		const signablePayload = {
+			id: item.id,
+			timestamp: item.timestamp,
+			lane: lane,
+			type: item.type
+		};
+
+		if (item.target_lane !== undefined && item.target_lane !== null) {
+			signablePayload.target_lane = item.target_lane;
+		}
+
+		if (item.payload !== undefined && item.payload !== null) {
+			signablePayload.payload = item.payload;
+		}
+
+		const result = this.sign(signablePayload, privateKey, keyId);
+		return {
+			...item,
+			lane: lane,
+			signature: result.jws,
+			signature_alg: this.algorithm,
+			key_id: keyId
+		};
+	}
+
+	signAuditEvent(event, privateKey, keyId) {
+		const lane = event.lane || event.originating_lane || process.env.LANE_NAME || 'unknown';
+
+		const signablePayload = {
+			timestamp: event.timestamp,
+			lane: lane,
+			event_type: event.event_type
+		};
+
+		if (event.queue_item_id) signablePayload.queue_item_id = event.queue_item_id;
+		if (event.queue_type) signablePayload.queue_type = event.queue_type;
+
+		const result = this.sign(signablePayload, privateKey, keyId);
+		return {
+			...event,
+			lane: lane,
+			signature: result.jws,
+			signature_alg: this.algorithm,
+			key_id: keyId
+		};
+	}
+
+	signContinuityRecord(record, privateKey, keyId) {
+		const signablePayload = {
+			lane: record.lane || record.lane_id,
+			fingerprint: record.fingerprint,
+			timestamp: record.timestamp || new Date().toISOString()
+		};
+
+		const result = this.sign(signablePayload, privateKey, keyId);
+		return {
+			...record,
+			lane: signablePayload.lane,
+			signature: result.jws,
+			signature_alg: this.algorithm,
+			key_id: keyId
+		};
+	}
+
+  signApprovalRequest(request, privateKey, keyId) {
+    const signablePayload = {
+      id: request.id,
+      lane_id: request.lane_id,
+      action: request.action,
+      artifact_path: request.artifact_path,
+      timestamp: request.timestamp || new Date().toISOString()
+    };
+
+    const result = this.sign(signablePayload, privateKey, keyId);
+    return {
+      ...request,
+      signature: result.jws,
+      signature_alg: this.algorithm,
+      key_id: keyId
+    };
+  }
+
+  signInboxMessage(msg, privateKey, keyId) {
+    const contentHash = 'sha256:' + crypto.createHash('sha256')
+      .update(stableStringify({ body: msg.body || '', payload: msg.payload || {} }))
+      .digest('hex');
+
+    const signablePayload = {
+      id: msg.id,
+      task_id: msg.task_id,
+      from: msg.from,
+      to: msg.to,
+      lane: msg.from,
+      priority: msg.priority,
+      content_hash: contentHash
+    };
+
+    const result = this.sign(signablePayload, privateKey, keyId);
+    return {
+      ...msg,
+      content_hash: contentHash,
+      signature: result.jws,
+      signature_alg: this.algorithm,
+      key_id: keyId
+    };
+  }
+
+  static computeContentHash(msg) {
+    return 'sha256:' + crypto.createHash('sha256')
+      .update(stableStringify({ body: msg.body || '', payload: msg.payload || {} }))
+      .digest('hex');
+  }
+}
+
+module.exports = { Signer };

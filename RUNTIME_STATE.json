@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-04-18T14:35:14.066Z",
+  "mode": "governed-standalone",
+  "governance_active": true,
+  "external_lane_enabled": true,
+  "claim_limit": "full",
+  "branch": "main",
+  "session_id": "1776522914066-57968",
+  "parent": "S:\\Archivist-Agent"
+}

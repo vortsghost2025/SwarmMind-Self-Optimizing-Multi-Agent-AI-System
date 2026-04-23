@@ -1,0 +1,48 @@
+{
+  "name": "swarmmind-self-optimizing-multi-agent-ai-system",
+  "version": "1.0.0",
+  "description": "A self-optimizing multi-agent AI system for hackathon demonstration",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node scripts/governed-start.js",
+    "start:isolated": "node src/app.js",
+    "dev": "node scripts/governed-start.js",
+    "resolve": "node scripts/resolve-governance-v2.js",
+    "resolve:legacy": "node scripts/resolve-governance.js",
+    "start:mode": "node scripts/governed-start-v2.js",
+    "watch": "node scripts/inbox-watcher.js",
+    "watch:poll": "node scripts/inbox-watcher.js --poll",
+    "heartbeat": "node scripts/heartbeat.js --start",
+    "heartbeat:check": "node scripts/heartbeat.js --check",
+    "heartbeat:once": "node scripts/heartbeat.js --once",
+    "test": "node scripts/run-tests.js",
+    "audit:claim": "node scripts/generate-audit-claim.js --run-tests"
+  },
+  "keywords": [
+    "multi-agent",
+    "ai",
+    "swarm",
+    "self-optimizing",
+    "hackathon",
+    "devpost",
+    "huggingface"
+  ],
+  "author": "SwarmMind Team",
+  "license": "MIT",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System/issues"
+  },
+  "homepage": "https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System#readme"
+}

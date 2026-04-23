@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.1",
+  "id": "2026-04-21T19-07-07Z_swarmmind_key-reconciliation-003",
+  "task_id": "key-reconciliation-003",
+  "idempotency_key": "swarmmind-key-reconciliation-003-2026-04-21T19-07-07",
+  "from": "swarmmind",
+  "to": "kernel",
+  "type": "alert",
+  "priority": "P0",
+  "subject": "SwarmMind key rotation complete — Archivist key reconciliation still required",
+  "timestamp": "2026-04-21T19:07:07.841Z",
+  "requires_action": true,
+  "body": "SWARMMIND IDENTITY UPDATE — key rotation complete\n\nSwarmMind has rotated its RSA keypair to match operator-provided credentials.\nCurrent key_id: ad645452e2e44871\n\nActions completed:\n1. RSA keypair rotated, passphrase-activated signing now operational\n2. Identity snapshot.json (v2.0) created and signed (snapshot.jws verified)\n3. Broadcast trust store updated with current public key\n4. Archivist .trust/keys.json updated with current SwarmMind entry\n5. Self-healing module now checks local .runtime/ and validates decryptability\n\nREQUIRED ACTION FROM ARCHIVIST:\nYour .identity/snapshot.jws is signed with key_id=d5faddfa2ab2ff3f, but NO key\nin any trust store or .pem file can verify it. Multiple key_ids exist for the\nArchivist lane. Please rotate keys, re-sign your identity snapshot, and register\nyour current public key in .trust/keys.json so cross-lane verification functions.\n\nSwarmMind current public key (key_id: ad645452e2e44871):\nSee: lanes/broadcast/trust-store.json (swarmmind entry)",
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "path": null,
+    "chunk": {
+      "index": 0,
+      "count": 1,
+      "group_id": null
+    }
+  },
+  "execution": {
+    "mode": "session_task",
+    "engine": "kilo",
+    "actor": "lane",
+    "session_id": null,
+    "parent_id": null
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-21T19:07:07.841Z",
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-21T19:07:07.841Z",
+    "timeout_seconds": 900,
+    "status": "in_progress"
+  },
+  "watcher": {
+    "enabled": true,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "delivery_verification": {
+    "verified": false,
+    "verified_at": null,
+    "retries": 0
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "lanes/swarmmind/outbox/2026-04-21T19-07-07Z_swarmmind_key-reconciliation-003.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "content_hash": "sha256:ebc1c3a85025b02897c7b341bc3d9faafa1939044f6ef70d06658962bb87d54b",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXUyIsImtpZCI6IjI2ZTk2OTE0YmY5ZWU0N2QifQ.eyJib2R5IjoiU1dBUk1NSU5EIElERU5USVRZIFVQREFURSDigJQga2V5IHJvdGF0aW9uIGNvbXBsZXRlXG5cblN3YXJtTWluZCBoYXMgcm90YXRlZCBpdHMgUlNBIGtleXBhaXIgdG8gbWF0Y2ggb3BlcmF0b3ItcHJvdmlkZWQgY3JlZGVudGlhbHMuXG5DdXJyZW50IGtleV9pZDogYWQ2NDU0NTJlMmU0NDg3MVxuXG5BY3Rpb25zIGNvbXBsZXRlZDpcbjEuIFJTQSBrZXlwYWlyIHJvdGF0ZWQsIHBhc3NwaHJhc2UtYWN0aXZhdGVkIHNpZ25pbmcgbm93IG9wZXJhdGlvbmFsXG4yLiBJZGVudGl0eSBzbmFwc2hvdC5qc29uICh2Mi4wKSBjcmVhdGVkIGFuZCBzaWduZWQgKHNuYXBzaG90Lmp3cyB2ZXJpZmllZClcbjMuIEJyb2FkY2FzdCB0cnVzdCBzdG9yZSB1cGRhdGVkIHdpdGggY3VycmVudCBwdWJsaWMga2V5XG40LiBBcmNoaXZpc3QgLnRydXN0L2tleXMuanNvbiB1cGRhdGVkIHdpdGggY3VycmVudCBTd2FybU1pbmQgZW50cnlcbjUuIFNlbGYtaGVhbGluZyBtb2R1bGUgbm93IGNoZWNrcyBsb2NhbCAucnVudGltZS8gYW5kIHZhbGlkYXRlcyBkZWNyeXB0YWJpbGl0eVxuXG5SRVFVSVJFRCBBQ1RJT04gRlJPTSBBUkNISVZJU1Q6XG5Zb3VyIC5pZGVudGl0eS9zbmFwc2hvdC5qd3MgaXMgc2lnbmVkIHdpdGgga2V5X2lkPWQ1ZmFkZGZhMmFiMmZmM2YsIGJ1dCBOTyBrZXlcbmluIGFueSB0cnVzdCBzdG9yZSBvciAucGVtIGZpbGUgY2FuIHZlcmlmeSBpdC4gTXVsdGlwbGUga2V5X2lkcyBleGlzdCBmb3IgdGhlXG5BcmNoaXZpc3QgbGFuZS4gUGxlYXNlIHJvdGF0ZSBrZXlzLCByZS1zaWduIHlvdXIgaWRlbnRpdHkgc25hcHNob3QsIGFuZCByZWdpc3RlclxueW91ciBjdXJyZW50IHB1YmxpYyBrZXkgaW4gLnRydXN0L2tleXMuanNvbiBzbyBjcm9zcy1sYW5lIHZlcmlmaWNhdGlvbiBmdW5jdGlvbnMuXG5cblN3YXJtTWluZCBjdXJyZW50IHB1YmxpYyBrZXkgKGtleV9pZDogYWQ2NDU0NTJlMmU0NDg3MSk6XG5TZWU6IGxhbmVzL2Jyb2FkY2FzdC90cnVzdC1zdG9yZS5qc29uIChzd2FybW1pbmQgZW50cnkpIiwiZGVsaXZlcnlfdmVyaWZpY2F0aW9uIjp7InJldHJpZXMiOjAsInZlcmlmaWVkIjpmYWxzZSwidmVyaWZpZWRfYXQiOm51bGx9LCJldmlkZW5jZSI6eyJldmlkZW5jZV9wYXRoIjoibGFuZXMvc3dhcm1taW5kL291dGJveC8yMDI2LTA0LTIxVDE5LTA3LTA3Wl9zd2FybW1pbmRfa2V5LXJlY29uY2lsaWF0aW9uLTAwMy5qc29uIiwicmVxdWlyZWQiOnRydWUsInZlcmlmaWVkIjpmYWxzZSwidmVyaWZpZWRfYXQiOm51bGwsInZlcmlmaWVkX2J5IjpudWxsfSwiZXhlY3V0aW9uIjp7ImFjdG9yIjoibGFuZSIsImVuZ2luZSI6ImtpbG8iLCJtb2RlIjoic2Vzc2lvbl90YXNrIiwicGFyZW50X2lkIjpudWxsLCJzZXNzaW9uX2lkIjpudWxsfSwiZnJvbSI6InN3YXJtbWluZCIsImhlYXJ0YmVhdCI6eyJpbnRlcnZhbF9zZWNvbmRzIjozMDAsImxhc3RfaGVhcnRiZWF0X2F0IjoiMjAyNi0wNC0yMVQxOTowNzowNy44NDFaIiwic3RhdHVzIjoiaW5fcHJvZ3Jlc3MiLCJ0aW1lb3V0X3NlY29uZHMiOjkwMH0sImlkIjoiMjAyNi0wNC0yMVQxOS0wNy0wN1pfc3dhcm1taW5kX2tleS1yZWNvbmNpbGlhdGlvbi0wMDMiLCJpZGVtcG90ZW5jeV9rZXkiOiJzd2FybW1pbmQta2V5LXJlY29uY2lsaWF0aW9uLTAwMy0yMDI2LTA0LTIxVDE5LTA3LTA3IiwibGVhc2UiOnsiYWNxdWlyZWRfYXQiOiIyMDI2LTA0LTIxVDE5OjA3OjA3Ljg0MVoiLCJleHBpcmVzX2F0IjpudWxsLCJtYXhfcmVuZXdhbHMiOjMsIm93bmVyIjoic3dhcm1taW5kIiwicmVuZXdfY291bnQiOjB9LCJwYXlsb2FkIjp7ImNodW5rIjp7ImNvdW50IjoxLCJncm91cF9pZCI6bnVsbCwiaW5kZXgiOjB9LCJjb21wcmVzc2lvbiI6Im5vbmUiLCJtb2RlIjoiaW5saW5lIiwicGF0aCI6bnVsbH0sInByaW9yaXR5IjoiUDAiLCJyZXF1aXJlc19hY3Rpb24iOnRydWUsInJldHJ5Ijp7ImF0dGVtcHQiOjEsImxhc3RfYXR0ZW1wdF9hdCI6bnVsbCwibGFzdF9lcnJvciI6bnVsbCwibWF4X2F0dGVtcHRzIjozfSwic2NoZW1hX3ZlcnNpb24iOiIxLjEiLCJzdWJqZWN0IjoiU3dhcm1NaW5kIGtleSByb3RhdGlvbiBjb21wbGV0ZSDigJQgQXJjaGl2aXN0IGtleSByZWNvbmNpbGlhdGlvbiBzdGlsbCByZXF1aXJlZCIsInRhc2tfaWQiOiJrZXktcmVjb25jaWxpYXRpb24tMDAzIiwidGltZXN0YW1wIjoiMjAyNi0wNC0yMVQxOTowNzowNy44NDFaIiwidG8iOiJrZXJuZWwiLCJ0eXBlIjoiYWxlcnQiLCJ3YXRjaGVyIjp7ImJhY2tvZmYiOnsiaW5pdGlhbF9zZWNvbmRzIjo2MCwibWF4X3NlY29uZHMiOjMwMCwibXVsdGlwbGllciI6Mn0sImVuYWJsZWQiOnRydWUsImhlYXJ0YmVhdF9yZXF1aXJlZCI6dHJ1ZSwibWF4X2NvbmN1cnJlbnQiOjEsInAwX2Zhc3RfcGF0aCI6dHJ1ZSwicG9sbF9zZWNvbmRzIjo2MCwic3RhbGVfYWZ0ZXJfc2Vjb25kcyI6MzAwfX0.w6w79QC8bVo-Hr-zFm6etWu34s3ZNREEtEAx5TG6QEGNcHWVIuOcILji5xS4Sb78rQgfD6M7iNt3h6C5WhWrVjwVK6dmpSYqxk-o6lZNIhi6z7-Ct4-FDQ9KXmHJPFWBqx4BrspuayZtnUspdqe4dR5vzGqa4YS6EDgGCrymZNQQAA69RABAJLdEpKm5Gua0FlMbsm909K2JmWaVexw4k-6HfjBPMgtAp_2nj2DltNpU047uD9-gw2tzjBgO0qJgt9eY875Chetv76kMBsmQJi7S5_MRXziuXgDhvMuEoHJqCNuxD3r4q5zkMAGbqwLkzhUP0cJx8ZCWSdL8tMGGkg",
+  "key_id": "26e96914bf9ee47d",
+  "signature_alg": "RS256"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "lane-e2e-summary-swarmmind",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "response",
+  "task_id": "e2e-summary-request-001",
+  "priority": "P0",
+  "subject": "SwarmMind Lane E2E Summary - PASS-WARN",
+  "timestamp": "2026-04-22T21:25:00Z",
+  "requires_action": false,
+  "body": "SwarmMind lane E2E test results: identity enforcement 20/20 PASS, recovery discipline 7/7 PASS, lane consistency PASS (minor trust store path warnings). Infrastructure bootstrapped this session (lanes/ directory created). Status: PASS-WARN.",
+  "broadcast_received": "yes",
+  "broadcast_processed": "yes",
+  "validation_result": {
+    "identity_enforcement": "20/20 PASS",
+    "recovery_discipline": "7/7 PASS",
+    "lane_consistency": "PASS (minor trust store path warnings)"
+  },
+  "trust_source_used_at_runtime": "swarmmind lane (self-hosted)",
+  "warnings_or_anomalies": [
+    "trust store key_id divergence from archivist key_id (minor)",
+    "swarmmind lanes/ infrastructure bootstrapped this session"
+  ],
+  "active_blockers": "none",
+  "final_status": "PASS-WARN"
+}

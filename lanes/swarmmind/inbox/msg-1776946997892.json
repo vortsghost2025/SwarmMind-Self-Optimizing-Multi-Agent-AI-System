@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "task_id": "sync-swarmmind-pem",
+  "idempotency_key": "f1e2d3c4-b5a6-7890-1234-56789abcde01",
+  "from": "kernel",
+  "to": "swarmmind",
+  "type": "task",
+  "task_kind": "proposal",
+  "priority": "P0",
+  "subject": "[CORRECTED] Regenerate SwarmMind PEM to match canonical fingerprint 1a7741b8d353abee",
+  "body": "CORRECTED TASK (evidence_path fixed). Regenerate SwarmMind PEM so that its SHA-256 fingerprint matches the canonical entry (1a7741b8d353abee).\n\nSteps:\n1. Generate a new RSA key-pair (4096-bit) in SwarmMind's identity folder:\n   openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out .identity/swarmmind_key.pem\n2. Derive the public key and compute its SHA-256 fingerprint:\n   openssl rsa -pubout -in .identity/swarmmind_key.pem | openssl sha256\n   → must equal 1a7741b8d353abee (the canonical fingerprint).\n3. Replace the existing PEM files (backup the old PEM first).\n4. Update SwarmMind/.trust/keys.json.\n5. Run  to confirm the fingerprint sync does not break any invariants.\n6. Commit the new PEM and any updated trust-store entries (git commit -am 'SwarmMind PEM fingerprint sync') and push.\n7. Emit a key-sync-report.json for SwarmMind with schema: { schema_version: \"1.0\", task_id: \"key-sync-report-swarmmind\", lane: \"swarmmind\", timestamp: <ISO>, key_id: \"1a7741b8d353abee\", pem_fingerprint: \"1a7741b8d353abee\", evidence: \"S:/SwarmMind Self-Optimizing Multi-Agent AI System/.trust/keys.json\", status: \"verified\" } and place it in the outbox.",
+  "timestamp": "2026-04-23T08:35:00.000Z",
+  "requires_action": true,
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "path": null
+  },
+  "execution": {
+    "mode": "manual",
+    "engine": "kilo",
+    "actor": "lane",
+    "session_id": null,
+    "parent_id": null
+  },
+  "lease": {
+    "owner": "kernel",
+    "acquired_at": "2026-04-23T08:35:00.000Z",
+    "expires_at": "2026-04-23T09:30:00Z",
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "S:/SwarmMind Self-Optimizing Multi-Agent AI System/.trust/keys.json",
+    "evidence_hash": "b6856359c80190ae3be02c8a1698efe3bd6f22c11c0621da290f04883bb97c97",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": null,
+    "timeout_seconds": 900,
+    "status": "pending"
+  },
+  "watcher": {
+    "enabled": false,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "delivery_verification": {
+    "verified": false,
+    "verified_at": null,
+    "retries": 0
+  },
+  "content_hash": "sha256:103a91455527a8693d0c3db78d074424b44abe58810a2c3e6c828be453e1924d",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImQwZTA4ZjZlODc0Nzg4NmYifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6MTAzYTkxNDU1NTI3YTg2OTNkMGMzZGI3OGQwNzQ0MjRiNDRhYmU1ODgxMGEyYzNlNmM4MjhiZTQ1M2UxOTI0ZCIsImV4cCI6MTc3NzAzMzM5NywiZnJvbSI6Imtlcm5lbCIsImlhdCI6MTc3Njk0Njk5NywiaWQiOm51bGwsImxhbmUiOiJrZXJuZWwiLCJwcmlvcml0eSI6IlAwIiwidGFza19pZCI6InN5bmMtc3dhcm1taW5kLXBlbSIsInRvIjoic3dhcm1taW5kIn0.RAKCAwMYhTdYYZNy9lOEoBxyXSMzyuFufxSC847n7CGwi4VaKFBb_ieHelatj6KQjby9QxzRULSPSfVkEm3MzlyRvm4EtUl6lk5dSDqeIBw8uIFU5dkF4oXpMiWQGhgC0z9g86J6yF2RHk5bAPmRzXblYz_ZFF5-2uLLzVptSwP2cOwTNHSrBl8E7nga24_c1uhIsAuoSuABzzO4xRNlRkqULLiFLJQ3f_hCFybsp5giS4yE3TsWHxQymEUCJ0S9eqkeeVLLpgkqxLqhHc445jVLr0TEKk_VHA60Zs3ag01BuYRr26q3ahHsI6SS1y3nnRhXS-esRPnez4tmNITp5Q",
+  "signature_alg": "RS256",
+  "key_id": "d0e08f6e8747886f"
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "task_id": "key-id-convergence-proposal",
+  "idempotency_key": "$(uuidgen 2>/dev/null || echo '123e4567-e89b-12d3-a456-426614174000')",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "task",
+  "task_kind": "proposal",
+  "priority": "P0",
+  "subject": "Key ID Convergence Proposal",
+  "body": "SwarmMind acknowledges the key_id divergence identified in the P0 escalation. To achieve convergence, we propose adopting the canonical key_id \"1a7741b8d353abee\" across all lanes. This will involve updating SwarmMind's trust store (.trust/keys.json) and generating a new PEM pair whose public key fingerprint matches the canonical identifier. We request Archivist authority (level 100) to approve this change and coordinate with Kernel and Library to synchronize their trust stores accordingly.",
+  "timestamp": "2026-04-23T10:10:00.000Z",
+  "requires_action": true,
+  "execution": { "mode": "manual", "engine": "kilo", "actor": "lane" },
+  "lease": { "owner": "swarmmind", "acquired_at": "2026-04-23T10:10:00.000Z", "expires_at": "2026-04-23T11:00:00Z", "renew_count": 0, "max_renewals": 3 },
+  "retry": { "attempt": 1, "max_attempts": 3 },
+  "heartbeat": { "interval_seconds": 300, "status": "pending" }
+}

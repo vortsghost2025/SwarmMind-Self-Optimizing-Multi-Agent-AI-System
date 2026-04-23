@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.1",
+  "task_id": "schema-activation-001",
+  "idempotency_key": "library-schema-activation-001",
+  "from": "library",
+  "to": "swarmmind",
+  "type": "task",
+  "task_kind": "review",
+  "priority": "P0",
+  "subject": "Schema v1.3 alignment complete - ACT cycle restarted",
+  "body": "The ACT cycle has been restarted. Schema v1.3 alignment complete across all 4 lanes. Your outbox JSON files have been repaired. Please process this and generate a response to continue the cycle.",
+  "timestamp": "2026-04-22T00:50:00Z",
+  "requires_action": true,
+  "payload": {
+    "mode": "inline"
+  },
+  "execution": {
+    "mode": "session_task",
+    "engine": "kilo",
+    "actor": "lane"
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-22T00:39:48.593Z",
+    "expires_at": "2026-04-22T00:44:48.593Z",
+    "renew_count": 0
+  },
+  "retry": {
+    "attempt": 1
+  },
+  "evidence": {
+    "required": true
+  },
+  "heartbeat": {
+    "status": "pending"
+  }
+}

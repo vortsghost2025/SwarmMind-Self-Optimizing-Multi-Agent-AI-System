@@ -1,0 +1,83 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "model": "kilo/kilo-auto/free",
+  "disabled_providers": [
+    "lmstudio",
+    "ollama"
+  ],
+  "agent": {
+    "orchestrator": {
+      "model": "kilo/kilo-auto/free",
+      "permission": {
+        "question": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "edit": "allow",
+        "write": "allow",
+        "task": "allow",
+        "webfetch": "allow",
+        "todowrite": "allow",
+        "bash": "allow"
+      }
+    },
+    "plan": {
+      "model": "nvidia/openai/gpt-oss-120b"
+    },
+    "code": {
+      "model": "nvidia/z-ai/glm-5.1"
+    },
+    "build": {
+      "model": "nvidia/z-ai/glm-5.1"
+    },
+    "debug": {
+      "model": "nvidia/openai/gpt-oss-120b"
+    },
+    "ask": {
+      "model": "nvidia/z-ai/glm-5.1"
+    },
+    "general": {
+      "model": "nvidia/z-ai/glm-5.1"
+    },
+    "code-reviewer": {
+      "model": "nvidia/openai/gpt-oss-120b"
+    }
+  },
+  "provider": {
+    "z-ai": {
+      "models": {
+        "glm-5.1": {
+          "name": "GLM-5.1",
+          "tool_call": true,
+          "limit": {
+            "context": 128000,
+            "output": 16384
+          }
+        }
+      }
+    }
+  },
+  "permission": {
+    "external_directory": {
+      "S:\\\\self-organizing-library": "allow",
+      "S:\\\\Archivist-Agent": "allow",
+      "S:\\\\SwarmMind Self-Optimizing Multi-Agent AI System": "allow",
+      "*": "allow"
+    },
+    "bash": {
+      "*": "allow"
+    },
+    "read": {
+      "*": "allow"
+    },
+    "write": {
+      "*": "allow"
+    },
+    "edit": {
+      "*": "allow"
+    },
+    "web": {
+      "*": "allow"
+    }
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.1",
+  "id": "2026-04-21T15-54-29Z_swarmmind_test-001",
+  "task_id": "test-001",
+  "idempotency_key": "swarmmind-test-001-2026-04-21T15-54-29",
+  "from": "swarmmind",
+  "to": "kernel",
+  "type": "ack",
+  "priority": "P1",
+  "subject": "Test",
+  "timestamp": "2026-04-21T15:54:29.714Z",
+  "requires_action": false,
+  "body": "",
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "path": null,
+    "chunk": {
+      "index": 0,
+      "count": 1,
+      "group_id": null
+    }
+  },
+  "execution": {
+    "mode": "session_task",
+    "engine": "kilo",
+    "actor": "lane",
+    "session_id": null,
+    "parent_id": null
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-21T15:54:29.714Z",
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-21T15:54:29.714Z",
+    "timeout_seconds": 900,
+    "status": "in_progress"
+  },
+  "watcher": {
+    "enabled": true,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "delivery_verification": {
+    "verified": false,
+    "verified_at": null,
+    "retries": 0
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "lanes/swarmmind/outbox/2026-04-21T15-54-29Z_swarmmind_test-001.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "content_hash": "sha256:4e8fb0a08b76ef762b385b139d29c7de24a3323f00574017f6c1fbff121ff681",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXUyIsImtpZCI6IjI2ZTk2OTE0YmY5ZWU0N2QifQ.eyJib2R5IjoiIiwiZGVsaXZlcnlfdmVyaWZpY2F0aW9uIjp7InJldHJpZXMiOjAsInZlcmlmaWVkIjpmYWxzZSwidmVyaWZpZWRfYXQiOm51bGx9LCJldmlkZW5jZSI6eyJldmlkZW5jZV9wYXRoIjoibGFuZXMvc3dhcm1taW5kL291dGJveC8yMDI2LTA0LTIxVDE1LTU0LTI5Wl9zd2FybW1pbmRfdGVzdC0wMDEuanNvbiIsInJlcXVpcmVkIjp0cnVlLCJ2ZXJpZmllZCI6ZmFsc2UsInZlcmlmaWVkX2F0IjpudWxsLCJ2ZXJpZmllZF9ieSI6bnVsbH0sImV4ZWN1dGlvbiI6eyJhY3RvciI6ImxhbmUiLCJlbmdpbmUiOiJraWxvIiwibW9kZSI6InNlc3Npb25fdGFzayIsInBhcmVudF9pZCI6bnVsbCwic2Vzc2lvbl9pZCI6bnVsbH0sImZyb20iOiJzd2FybW1pbmQiLCJoZWFydGJlYXQiOnsiaW50ZXJ2YWxfc2Vjb25kcyI6MzAwLCJsYXN0X2hlYXJ0YmVhdF9hdCI6IjIwMjYtMDQtMjFUMTU6NTQ6MjkuNzE0WiIsInN0YXR1cyI6ImluX3Byb2dyZXNzIiwidGltZW91dF9zZWNvbmRzIjo5MDB9LCJpZCI6IjIwMjYtMDQtMjFUMTUtNTQtMjlaX3N3YXJtbWluZF90ZXN0LTAwMSIsImlkZW1wb3RlbmN5X2tleSI6InN3YXJtbWluZC10ZXN0LTAwMS0yMDI2LTA0LTIxVDE1LTU0LTI5IiwibGVhc2UiOnsiYWNxdWlyZWRfYXQiOiIyMDI2LTA0LTIxVDE1OjU0OjI5LjcxNFoiLCJleHBpcmVzX2F0IjpudWxsLCJtYXhfcmVuZXdhbHMiOjMsIm93bmVyIjoic3dhcm1taW5kIiwicmVuZXdfY291bnQiOjB9LCJwYXlsb2FkIjp7ImNodW5rIjp7ImNvdW50IjoxLCJncm91cF9pZCI6bnVsbCwiaW5kZXgiOjB9LCJjb21wcmVzc2lvbiI6Im5vbmUiLCJtb2RlIjoiaW5saW5lIiwicGF0aCI6bnVsbH0sInByaW9yaXR5IjoiUDEiLCJyZXF1aXJlc19hY3Rpb24iOmZhbHNlLCJyZXRyeSI6eyJhdHRlbXB0IjoxLCJsYXN0X2F0dGVtcHRfYXQiOm51bGwsImxhc3RfZXJyb3IiOm51bGwsIm1heF9hdHRlbXB0cyI6M30sInNjaGVtYV92ZXJzaW9uIjoiMS4xIiwic3ViamVjdCI6IlRlc3QiLCJ0YXNrX2lkIjoidGVzdC0wMDEiLCJ0aW1lc3RhbXAiOiIyMDI2LTA0LTIxVDE1OjU0OjI5LjcxNFoiLCJ0byI6Imtlcm5lbCIsInR5cGUiOiJhY2siLCJ3YXRjaGVyIjp7ImJhY2tvZmYiOnsiaW5pdGlhbF9zZWNvbmRzIjo2MCwibWF4X3NlY29uZHMiOjMwMCwibXVsdGlwbGllciI6Mn0sImVuYWJsZWQiOnRydWUsImhlYXJ0YmVhdF9yZXF1aXJlZCI6dHJ1ZSwibWF4X2NvbmN1cnJlbnQiOjEsInAwX2Zhc3RfcGF0aCI6dHJ1ZSwicG9sbF9zZWNvbmRzIjo2MCwic3RhbGVfYWZ0ZXJfc2Vjb25kcyI6MzAwfX0.hAZCJ3sYdtj_G9I9Y8tAUjS2oZ9uMBTSNFd_ZmS2GE-n7snmUF9_sQThJkfGnY7bZCXZKYxd331ZqfDESoGnDf3FAUl26T4FdKZjM0bbZMQZH5fwhGbE5juYTtT5iK_uSF1cPOPItcHKQsnanyAZ7YG5rCwYksQ-ze092LcrJOdJ-FNQLVUDacio3e1kPlBkbIoY_zwN2KsBwRgGJMWIdxUotcnF5ZbZd2NCd3ENvdOOqIrgmaFgC86chtw7lic1rVwcIeC86lsmQSEKmApBNbtmdTkMDcrqyeN8ToH93rQhktDvORkDQCWyfFe_ZBqdOvQI3Q5jz2lRubavKr8BVA",
+  "key_id": "26e96914bf9ee47d",
+  "signature_alg": "RS256"
+}

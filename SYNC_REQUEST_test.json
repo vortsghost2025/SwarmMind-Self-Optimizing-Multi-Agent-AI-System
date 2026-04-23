@@ -1,0 +1,21 @@
+{
+  "$schema": "https://archivist.dev/schemas/sync-request.json",
+  "version": "1.0.0",
+  "timestamp": "2026-04-17T06:06:33.714Z",
+  "requester": {
+    "lane_id": "swarmmind",
+    "session_id": "1776405993714-34028",
+    "context_remaining": 52000,
+    "context_lost": 128000
+  },
+  "request": {
+    "type": "restore_context",
+    "target_lane": "archivist-agent",
+    "scope": [
+      "governance_constraints",
+      "active_checkpoints",
+      "drift_baseline"
+    ],
+    "max_tokens": 5000
+  }
+}

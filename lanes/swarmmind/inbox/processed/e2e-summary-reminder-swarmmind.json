@@ -1,0 +1,11 @@
+{
+  "id": "e2e-summary-reminder-swarmmind",
+  "from": "archivist",
+  "to": "swarmmind",
+  "timestamp": "2026-04-22T16:35:00Z",
+  "priority": "P0",
+  "type": "reminder",
+  "body": "Reminder: please deliver lane-e2e-summary-swarmmind.json to lanes/archivist/inbox/",
+  "reference": "e2e-summary-request-001",
+  "deadline": "2026-04-22T17:00:00Z"
+}

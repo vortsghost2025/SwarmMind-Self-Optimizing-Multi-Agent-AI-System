@@ -1,0 +1,101 @@
+/**
+ * constants.js - Phase 4.3/4.4 Canonical Attestation Constants
+ *
+ * COPIED FROM: Archivist-Agent/src/attestation/constants.js
+ * VERSION: 1.0
+ * LAST_SYNC: 2026-04-19
+ *
+ * Shared across all three lanes (Archivist, SwarmMind, Library).
+ * DO NOT MODIFY - changes must be synced from Archivist.
+ */
+
+const path = require('path');
+
+/**
+ * Production must always use the broadcast trust-store.
+ * Test environments may override the location via
+ * ATTESTATION_TRUST_STORE.
+ */
+const isTestMode =
+	process.env.SWARM_TEST_MODE === '1' || process.env.NODE_ENV === 'test';
+
+const TRUST_STORE_PATH = isTestMode
+	? (process.env.ATTESTATION_TRUST_STORE ||
+		path.join(
+			'S:',
+			'SwarmMind Self-Optimizing Multi-Agent AI System',
+			'lanes',
+			'broadcast',
+			'trust-store.json'
+		))
+	: path.join(
+		'S:',
+		'SwarmMind Self-Optimizing Multi-Agent AI System',
+		'lanes',
+		'broadcast',
+		'trust-store.json'
+	);
+
+const TRUST_STORE_VERSION = '1.0';
+
+const MIGRATION_MODE = {
+	DUAL: 'dual',
+	HMAC_ONLY: 'hmac-only',
+	RSA_ONLY: 'rsa-only'
+};
+
+const VERIFY_REASON = {
+	VERIFIED: 'VERIFIED',
+	SCHEMA_MISMATCH: 'SCHEMA_MISMATCH',
+	TRUST_STORE_MISSING: 'TRUST_STORE_MISSING',
+	UNKNOWN_LANE: 'UNKNOWN_LANE',
+	KEY_NOT_FOUND: 'KEY_NOT_FOUND',
+	KEY_ID_MISMATCH: 'KEY_ID_MISMATCH',
+	KEY_REVOKED: 'KEY_REVOKED',
+	INVALID_KEY: 'INVALID_KEY',
+	UNSUPPORTED_ALGORITHM: 'UNSUPPORTED_ALGORITHM',
+	MISSING_SIGNATURE: 'MISSING_SIGNATURE',
+	MISSING_LANE: 'MISSING_LANE',
+	MISSING_HMAC: 'MISSING_HMAC',
+	SIGNATURE_MISMATCH: 'SIGNATURE_MISMATCH',
+	LANE_MISMATCH: 'LANE_MISMATCH',
+	DEPRECATED_HMAC: 'DEPRECATED_HMAC',
+	MIGRATION_HMAC_ONLY: 'MIGRATION_HMAC_ONLY',
+	VERIFICATION_ERROR: 'VERIFICATION_ERROR',
+	QUARANTINED: 'QUARANTINED',
+	QUARANTINE_RELEASED: 'QUARANTINE_RELEASED',
+  QUARANTINE_MAX_RETRIES: 'QUARANTINE_MAX_RETRIES',
+  CONTENT_HASH_MISMATCH: 'CONTENT_HASH_MISMATCH',
+  SCHEMA_VALIDATION_FAILED: 'SCHEMA_VALIDATION_FAILED',
+  TIMESTAMP_STALE: 'TIMESTAMP_STALE',
+  ROUTING_MISMATCH: 'ROUTING_MISMATCH',
+  UNKNOWN_SENDER_LANE: 'UNKNOWN_SENDER_LANE',
+  UNSIGNED_MESSAGE: 'UNSIGNED_MESSAGE',
+  INBOX_VERIFIED: 'INBOX_VERIFIED'
+};
+
+const ALG_MAP = {
+	'rsa-sha256': 'RSA-SHA256',
+	'RS256': 'RSA-SHA256',
+	'rsa_sha256': 'RSA-SHA256'
+};
+
+const QUARANTINE_MAX_RETRIES = 3;
+const QUARANTINE_BACKOFF_MS = 5000;
+const QUARANTINE_LOG_PATH = path.join('S:', 'Archivist-Agent', 'logs', 'quarantine.log');
+const VALID_LANES = new Set(['archivist', 'library', 'swarmmind', 'kernel']);
+
+const HANDOFF_SIGNAL_FILE = 'AGENT_HANDOFF_REQUIRED.md';
+
+module.exports = {
+	TRUST_STORE_PATH,
+	TRUST_STORE_VERSION,
+	MIGRATION_MODE,
+	VERIFY_REASON,
+	ALG_MAP,
+	QUARANTINE_MAX_RETRIES,
+	QUARANTINE_BACKOFF_MS,
+	QUARANTINE_LOG_PATH,
+  HANDOFF_SIGNAL_FILE,
+  VALID_LANES
+};

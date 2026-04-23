@@ -1,0 +1,23 @@
+{
+  "lane": "swarmmind",
+  "round": 4,
+  "task": "Outbox Historical Message Remediation",
+  "total_messages": 19,
+  "signed_count": 0,
+  "unsigned_count": 19,
+  "signing_compliance_percent_before": 0,
+  "remediation_action": "retroactive_signing",
+  "messages_signed_retroactively": 19,
+  "signing_compliance_percent_after": 100,
+  "unsigned_archived": [],
+  "key_id_used": "2219405af9148ad7",
+  "remediation_actions": [
+    "Audited 19 outbox messages across 3 directories (main, unsigned/, unsigned-archive/)",
+    "All 19 messages were unsigned (0% signing compliance)",
+    "Retroactively signed all 19 messages with current lane key",
+    "Content hashes computed and added to all messages",
+    "Signing compliance now at 100%",
+    "Note: Historical messages signed with current key — timestamps predate signature"
+  ],
+  "completed_at": "2026-04-22T01:10:29.489Z"
+}

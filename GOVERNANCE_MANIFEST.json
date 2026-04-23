@@ -1,0 +1,109 @@
+{
+  "$schema": "https://swarmmind.dev/schemas/governance-manifest.json",
+  "project": {
+    "name": "SwarmMind",
+    "version": "1.0.0",
+    "description": "Self-Optimizing Multi-Agent AI System",
+    "type": "core",
+    "repository": "https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System"
+  },
+  "governance": {
+    "inherits_from": "S:\\Archivist-Agent",
+    "bootstrap_path": "S:\\Archivist-Agent\\BOOTSTRAP.md",
+    "relationship": "integration-target",
+    "extension_path": "S:\\Archivist-Agent\\swarmmind-governance-extension",
+    "registry_path": "S:\\Archivist-Agent\\registry\\PROJECT_REGISTRY.md",
+    "derivation_chain": ["papers", "Archivist-Agent", "SwarmMind"],
+    "role": "trace-mediated verification surface"
+  },
+  "runtime": {
+    "mode": "governed-standalone",
+    "modes": {
+      "governed-standalone": {
+        "description": "Archivist-governed child project",
+        "governance_active": true,
+        "external_lane_enabled": true,
+        "claim_limit": "full"
+      },
+      "standalone-lattice": {
+        "description": "Runs alone + exports to external verifier (constraint-lattice-only)",
+        "governance_active": false,
+        "external_lane_enabled": true,
+        "claim_limit": "annotation-only"
+      },
+      "isolated-demo": {
+        "description": "Local SwarmMind only, no governance, no external lanes",
+        "governance_active": false,
+        "external_lane_enabled": false,
+        "claim_limit": "none"
+      }
+    },
+    "fallback": "isolated-demo",
+    "startup_sequence": [
+      "check_manifest",
+      "determine_mode",
+      "resolve_parent_governance",
+      "verify_bootstrap_exists",
+      "load_governance_context",
+      "register_extension_hooks",
+      "setup_external_lane",
+      "continue_startup"
+    ],
+    "required_files": {
+      "governed-standalone": ["BOOTSTRAP.md", "SESSION_INIT.md", "AGENTS.md"],
+      "standalone-lattice": [],
+      "isolated-demo": []
+    },
+    "mode_selection": {
+      "cli_flag": "--mode",
+      "env_var": "SWARMIND_MODE",
+      "auto_detect": true
+    }
+  },
+  "integration": {
+    "governance_extension": {
+      "enabled": true,
+      "mode": "Mode1-manual",
+      "cli_path": "S:\\Archivist-Agent\\swarmmind-governance-extension\\bin\\governance-trace.js",
+      "schema_path": "S:\\Archivist-Agent\\swarmmind-governance-extension\\lib\\trace-schema.js",
+      "fields_added": [
+        "source",
+        "claim",
+        "evidence",
+        "governance_check",
+        "drift_signal",
+        "branch"
+      ]
+    },
+    "verification_lanes": {
+      "L_lane": "implementation",
+      "R_lane": "review",
+      "external_lane": "human-validation"
+    }
+  },
+  "constraints": {
+    "single_entry_point": true,
+    "structure_over_identity": true,
+    "correction_mandatory": true,
+    "agent_evaluates_WE": true,
+    "agent_not_part_of_WE": true,
+    "no_truth_claims": true,
+    "trace_layer_not_oracle": true
+  },
+  "validation": {
+    "bootstrap_must_exist": true,
+    "registry_must_list_project": true,
+    "extension_must_be_functional": true,
+    "on_failure": "emit_warning_continue_isolated"
+  },
+  "metadata": {
+    "created": "2026-04-16",
+    "created_by": "Governance Architecture Fix",
+    "purpose": "Make project relationship machine-discoverable at runtime",
+    "references": [
+      "S:\\Archivist-Agent\\SESSION_STATE_2026-04-16_COMPACT.md",
+      "S:\\Archivist-Agent\\.artifacts\\SWARMIND_INTEGRATION_SPEC.md",
+      "S:\\Archivist-Agent\\.artifacts\\SWARMIND_GOVERNANCE_EXTENSION_STATUS.md"
+    ]
+  }
+}
