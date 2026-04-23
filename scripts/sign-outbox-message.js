@@ -53,7 +53,7 @@ function base64UrlEncode(input) {
 const LANE_IDENTITY_DIRS = {
   archivist: 'S:/Archivist-Agent/.identity',
   library: 'S:/self-organizing-library/.identity',
-  swarmmind: 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/.identity',
+  swarmmind: 'S:/SwarmMind/.identity',
   kernel: 'S:/kernel-lane/.identity',
 };
 
@@ -100,7 +100,8 @@ function loadKeyMaterial(identityDir, lane, passphrase) {
     throw new Error(`PRIVATE_KEY_DECRYPT_FAILED for lane ${lane}: ${err.message}`);
   }
 
-  const keyId = crypto.createHash('sha256').update(publicPem).digest('hex').slice(0, 16);
+  const { deriveKeyId } = require("./.global/deriveKeyId.js");
+  const keyId = deriveKeyId(publicPem);
   return { privateKey, keyId };
 }
 

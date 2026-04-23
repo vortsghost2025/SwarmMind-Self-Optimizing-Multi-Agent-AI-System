@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "task_id": "stress-phase-task",
+  "idempotency_key": "stress-task-20260423-001",
+  "from": "swarmmind",
+  "to": "LANE_NAME",
+  "type": "task",
+  "priority": "P1",
+  "subject": "Execute STRESS Phase Task & Report",
+  "body": "## STRESS Phase Task\n\nPlease execute your lane's stress test task and report results.\n\n### Tasks by lane:\n- Archivist: Run cross-lane governance audit (audit-cross-lane-consistency.js). Confirm all key_ids match canonical per-lane IDs.\n- Library: Run trust-store parity check. Verify each lane's .trust/keys.json matches its public key's DER fingerprint.\n- Kernel: Run high-frequency message throughput test (kernel-stress-throughput.js). Confirm no drops or signature mismatches under load.\n- SwarmMind: Run end-to-end scenario simulation (e2e-scenario-smoke.js) verifying messages from each lane to every other lane preserve canonical IDs.\n\n### Deliverable:\nPlace your report in your outbox as:\n  <lane>-stress-report-20260423T<time>.json\nand copy it to SwarmMind inbox for aggregation.\n\nPlease also forward this same instruction to all other lanes so everyone proceeds in parallel.\n\nDeadline: 2026-04-23T17:15:00Z",
+  "timestamp": "2026-04-23T16:40:05.000Z",
+  "requires_action": true,
+  "execution": { "mode": "manual", "engine": "kilo", "actor": "lane" },
+  "lease": { "owner": "swarmmind", "acquired_at": "2026-04-23T16:40:05Z", "expires_at": "2026-04-23T18:40:05Z", "renew_count": 0, "max_renewals": 3 },
+  "retry": { "attempt": 1, "max_attempts": 3 },
+  "heartbeat": { "interval_seconds": 300, "status": "pending" }
+}

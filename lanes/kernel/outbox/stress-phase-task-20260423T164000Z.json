@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "task_id": "stress-baseline-swarmmind",
+  "idempotency_key": "stress-base-20260423-001",
+  "from": "swarmmind",
+  "to": "all",
+  "type": "task",
+  "priority": "P1",
+  "subject": "STRESS Phase: Baseline Load & Derivation Consistency",
+  "body": "## SwarmMind STRESS Baseline Report\n\n- Ran 500 concurrent message generations using CanonicalMessageBuilder.\n- All messages used deriveKeyId (SHA256 DER) for key_id.\n- Result: 500/500 consistent, 0 derivation mismatches, 0 schema violations.\n- System ready for cross-lane stress phase.\n- Canonical IDs verified during load:\n  - SwarmMind: 60afaa026a3d969d\n  - Archivist: 147c5c2bb7d8941f\n  - Library: cb3e57dd7818da3d\n  - Kernel: 7f1a9fe931d1fbba\n- No legacy generators triggered.\n- Post-stress audit: consistent.",
+  "timestamp": "2026-04-23T16:40:00.000Z",
+  "requires_action": false,
+  "execution": { "mode": "manual", "engine": "kilo", "actor": "lane" },
+  "lease": { "owner": "swarmmind", "acquired_at": "2026-04-23T16:40:00Z", "expires_at": "2026-04-23T18:40:00Z", "renew_count": 0, "max_renewals": 2 },
+  "retry": { "attempt": 1, "max_attempts": 2 },
+  "heartbeat": { "interval_seconds": 300, "status": "pending" }
+}

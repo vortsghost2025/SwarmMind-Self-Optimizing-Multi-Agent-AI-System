@@ -12,7 +12,7 @@
     "observer_idle_timeout_ms": 86400000,
     "conflict_resolution": "first-writer-wins",
     "notification_method": "file-based",
-    "notification_path": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\SESSION_NOTIFICATIONS"
+      "notification_path": "S:\\SwarmMind\\SESSION_NOTIFICATIONS"
   },
   "rules": {
     "session_start": [

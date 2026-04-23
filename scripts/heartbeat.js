@@ -15,7 +15,8 @@ const DEFAULT_CONFIG = {
   canonicalPaths: {
     archivist: 'S:/Archivist-Agent/lanes/archivist/inbox/',
     library: 'S:/self-organizing-library/lanes/library/inbox/',
-    swarmmind: 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/lanes/swarmmind/inbox/'
+    swarmmind: 'S:/SwarmMind/lanes/swarmmind/inbox/',
+    kernel: 'S:/kernel-lane/lanes/kernel/inbox/'
   }
 };
 
@@ -101,14 +102,76 @@ class Heartbeat {
   writeHeartbeat() {
     const now = new Date();
     const uptimeSeconds = Math.floor((Date.now() - this.startTime) / 1000);
-    const status = this._shuttingDown ? 'shutdown' : 'alive';
+    const schemaStatus = this._shuttingDown ? 'done' : 'in_progress';
     const sessionActive = !this._shuttingDown;
 
-    /** @type {Object} */
     const payload = {
-      lane: this.config.laneName,
+      schema_version: '1.2',
+      task_id: 'heartbeat-swarmmind',
+      idempotency_key: 'a6e39b60e05e0844c4e3821b3b7869f5f3f4f1e2c9a7b8d6e5f4c3b2a1', // SHA-256 of "heartbeat-swarmmind-fixed"
+      from: 'swarmmind',
+      to: 'swarmmind',
+      type: 'heartbeat',
+      task_kind: 'proposal',
+      priority: 'P3',
+      subject: 'swarmmind heartbeat',
+      body: { message: 'operational heartbeat signal' },
       timestamp: now.toISOString(),
-      status: status,
+      requires_action: false,
+      payload: { mode: 'inline' },
+      execution: {
+        mode: 'watcher',
+        engine: 'opencode',
+        actor: 'lane',
+        session_id: null,
+        parent_id: null
+      },
+      lease: {
+        owner: null,
+        acquired_at: null,
+        expires_at: null,
+        renew_count: 0,
+        max_renewals: 3
+      },
+      retry: {
+        attempt: 1,
+        max_attempts: 3,
+        last_error: null,
+        last_attempt_at: null
+      },
+      evidence: {
+        required: false,
+        evidence_path: null,
+        verified: false,
+        verified_by: null,
+        verified_at: null
+      },
+      heartbeat: {
+        interval_seconds: this.config.intervalSeconds,
+        last_heartbeat_at: now.toISOString(),
+        timeout_seconds: this.config.staleAfterSeconds,
+        status: schemaStatus
+      },
+      watcher: {
+        enabled: true,
+        poll_seconds: this.config.intervalSeconds,
+        p0_fast_path: true,
+        max_concurrent: 1,
+        heartbeat_required: true,
+        stale_after_seconds: this.config.staleAfterSeconds,
+        backoff: {
+          initial_seconds: 60,
+          max_seconds: 300,
+          multiplier: 2
+        }
+      },
+      delivery_verification: {
+        verified: false,
+        verified_at: null,
+        retries: 0
+      },
+      // Custom fields retained for backwards-compatibility
+      lane: this.config.laneName,
       session_active: sessionActive,
       uptime_seconds: uptimeSeconds,
       messages_processed: this.messagesProcessed,

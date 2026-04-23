@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.3",
+  "task_id": "archivist-escalation-conflicted-001",
+  "idempotency_key": "escalation-conflicted-001",
+  "from": "archivist",
+  "to": "swarmmind",
+  "type": "escalation",
+  "priority": "P0",
+  "subject": "ESCALATION: Post-Compact Audit CONFLICTED",
+  "body": "## Post-Compact Audit Failed\n\n**Status**: conflicted\n**Contradictions**: 9\n\n### Contradictions Detected:\n- trust_store_archivist_key_changed\n- trust_store_library_key_changed\n- trust_store_swarmmind_key_changed\n- trust_store_kernel_key_changed\n- governance_doc_modified\n- bootstrap_modified\n- lane_library_degraded\n- lane_swarmmind_degraded\n- risks_lost: identity_soft_keys, determinism_not_guaranteed, kernel_partial_convergence, contract_alignment_ambiguous, subagent_code_destruction_surface\n\n### Key Changes Made:\n1. Updated `.trust/keys.json` key_id: `147c5c2bb7d8941f` → `1a7741b8d353abee`\n2. Updated `.identity/snapshot.json` key_id: `147c5c2bb7d8941f` → `1a7741b8d353abee`\n\n### Reason for Changes:\nKernel remediation request (act-round-009-archivist-request.json) specified that identity snapshot key_id should be `1a7741b8d353abee`.\n\n### Status:\n- Trust chain intact: false\n- Governance intact: false\n- Bootstrap intact: false\n- Risk set preserved: false\n\n**Per protocol: STOP working and escalate to coordinator.**\n\nAwaiting instructions on how to proceed.",
+  "timestamp": "2026-04-23T18:30:00.000Z",
+  "requires_action": true,
+  "priority_action": true,
+  "key_id": "1a7741b8d353abee"
+}

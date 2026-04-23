@@ -11,7 +11,7 @@
 
 set -e
 
-PROJECT_ROOT="S:/SwarmMind Self-Optimizing Multi-Agent AI System"
+PROJECT_ROOT="S:/SwarmMind"
 ARCHIVIST_ROOT="S:/Archivist-Agent"
 
 # Files to verify

@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-04-12T18:17:05Z",
-  "system": "SwarmMind Self-Optimizing Multi-Agent AI System",
+  "system": "SwarmMind",
   "verification_type": "agent_health",
   "status": "PASS",
   "agents": [

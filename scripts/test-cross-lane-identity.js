@@ -17,8 +17,8 @@ const crypto = require('crypto');
 const TRUST_STORE_PATH = 'S:/Archivist-Agent/.trust/keys.json';
 const ARCHIVIST_IDENTITY = 'S:/Archivist-Agent/.identity/snapshot.json';
 const ARCHIVIST_JWS = 'S:/Archivist-Agent/.identity/snapshot.jws';
-const SWARMMIND_IDENTITY = 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/.identity/snapshot.json';
-const SWARMMIND_JWS = 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/.identity/snapshot.jws';
+const SWARMMIND_IDENTITY = 'S:/SwarmMind/.identity/snapshot.json';
+const SWARMMIND_JWS = 'S:/SwarmMind/.identity/snapshot.jws';
 const LIBRARY_IDENTITY = 'S:/self-organizing-library/.identity/snapshot.json';
 const LIBRARY_JWS = 'S:/self-organizing-library/.identity/snapshot.jws';
 

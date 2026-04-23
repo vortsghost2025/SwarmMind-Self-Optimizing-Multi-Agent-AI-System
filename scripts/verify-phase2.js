@@ -10,7 +10,7 @@ const path = require('path');
 console.log('\n🔍 Phase 2 Implementation Verification\n');
 console.log('='.repeat(60));
 
-const projectRoot = 'S:\\SwarmMind Self-Optimizing Multi-Agent AI System';
+const projectRoot = 'S:\\SwarmMind';
 const governanceRoot = 'S:\\Archivist-Agent';
 
 let errors = 0;

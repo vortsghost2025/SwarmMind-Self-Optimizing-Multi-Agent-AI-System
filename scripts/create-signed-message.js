@@ -16,7 +16,7 @@ const PASSFILE = 'S:/Archivist-Agent/.runtime/lane-passphrases.json';
 const LANE_IDENTITY_DIRS = {
   archivist: 'S:/Archivist-Agent/.identity',
   library: 'S:/self-organizing-library/.identity',
-  swarmmind: 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/.identity',
+  swarmmind: 'S:/SwarmMind/.identity',
   kernel: 'S:/kernel-lane/.identity',
 };
 
@@ -73,7 +73,8 @@ function createSignedMessage(msg, laneId) {
     throw new Error(`PRIVATE_KEY_DECRYPT_FAILED for ${laneId}: ${e.message}`);
   }
 
-  const keyId = crypto.createHash('sha256').update(publicPem).digest('hex').substring(0, 16);
+  const { deriveKeyId } = require("./.global/deriveKeyId.js");
+  const keyId = deriveKeyId(publicPem);
   const from = msg.from || msg.from_lane || laneId;
   const to = msg.to || msg.to_lane || null;
   const contentHash = 'sha256:' + crypto.createHash('sha256')

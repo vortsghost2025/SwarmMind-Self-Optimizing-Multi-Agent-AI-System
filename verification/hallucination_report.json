@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-04-12T18:17:30Z",
-  "system": "SwarmMind Self-Optimizing Multi-Agent AI System",
+  "system": "SwarmMind",
   "verification_type": "hallucination_report",
   "note": "As a deterministic rule-based multi-agent system (not an LLM generator), traditional hallucination does not apply. This report measures logical consistency and reasoning accuracy instead.",
   "status": "PASS",

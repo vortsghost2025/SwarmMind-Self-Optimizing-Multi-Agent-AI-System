@@ -9,14 +9,14 @@ const KEY_SIZE = 2048;
 const PASSFILE_SEARCH = [
   'S:/Archivist-Agent/.runtime/lane-passphrases.json',
   'S:/self-organizing-library/.runtime/lane-passphrases.json',
-  'S:/SwarmMind Self-Optimizing Multi-Agent AI System/.runtime/lane-passphrases.json',
+  'S:/SwarmMind/.runtime/lane-passphrases.json',
   'S:/kernel-lane/.runtime/lane-passphrases.json',
 ];
 
 const LANE_IDENTITY_DIRS = {
   archivist: 'S:/Archivist-Agent/.identity',
   library: 'S:/self-organizing-library/.identity',
-  swarmmind: 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/.identity',
+  swarmmind: 'S:/SwarmMind/.identity',
   kernel: 'S:/kernel-lane/.identity',
 };
 
@@ -52,7 +52,8 @@ class IdentitySelfHealing {
   if (result.keysPresent) {
     try {
       const pub = fs.readFileSync(pubPath, 'utf8');
-      result.keyId = crypto.createHash('sha256').update(pub).digest('hex').substring(0, 16);
+      const { deriveKeyId } = require("./.global/deriveKeyId.js");
+      result.keyId = deriveKeyId(pub);
       // Verify keys are decryptable with known passphrase — don't regenerate if they work
       const passphrase = this._findPassphrase();
       if (passphrase) {
@@ -116,7 +117,8 @@ class IdentitySelfHealing {
 
       fs.writeFileSync(path.join(this.identityDir, 'public.pem'), publicKey);
       fs.writeFileSync(path.join(this.identityDir, 'private.pem'), privateKey);
-
+      const { deriveKeyId } = require("./.global/deriveKeyId.js");
+      const keyId = deriveKeyId(publicKey);
       const keyId = crypto.createHash('sha256').update(publicKey).digest('hex').substring(0, 16);
 
       const meta = {
@@ -299,7 +301,7 @@ class IdentitySelfHealing {
       'S:/kernel-lane/lanes/broadcast',
     ];
     if (this.identityDir.includes('SwarmMind')) {
-      trustStoreDirs.push('S:/SwarmMind Self-Optimizing Multi-Agent AI System/lanes/broadcast');
+      trustStoreDirs.push('S:/SwarmMind/lanes/broadcast');
     }
 
     let updated = 0;

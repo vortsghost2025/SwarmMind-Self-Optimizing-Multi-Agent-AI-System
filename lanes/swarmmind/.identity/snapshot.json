@@ -1,6 +1,12 @@
 {
-  "lane_id": "swarmmind",
-  "key_id": "1cafe10a2bad6f03",
-  "algorithm": "RS256",
-  "registered_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  "lane": "swarmmind",
+  "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAm+Mkk1MdXnvQdqDufYSp\n9J/0wMBGQ3rILc1IZRPo6qmQidu1+YXOeCV3uWbcnyzYh7K8NntlPhUYIAjBfB2\ndy9VDzapo08SJYdnZ/QuPqYjcDHNG7OE50JDYcZj6Q8KLgmJ2mtXLc1CawQoV+8a\nmp0bAAZbDJXZKZa/g/HssSBAxuR0B8wkxVjXxyOBh+X523N1zsJ/hbLMPdy02/hv\nETPw8TyGhRnVfGuS34ikw36SHVGHlx+54fuPmgqNo1LbqJTOcJLpRxi07syWv8BE\nwTrL1BuyLyUWYeQ2aS7by+Qv+dqOmWOMuhiqgZb5Tmc2kkSYYX/+Al9uTEuieZQ4\nSwIDAQAB\n-----END PUBLIC KEY-----\n",
+  "key_id": "60afaa026a3d969d",
+  "created_at": "2026-04-22T23:11:22.052Z",
+  "expires_at": null,
+  "metadata": {
+    "version": "1.0",
+    "authority": 60,
+    "role": "experimental-horizon"
+  }
 }

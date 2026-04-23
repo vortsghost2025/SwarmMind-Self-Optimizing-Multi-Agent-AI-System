@@ -23,15 +23,15 @@ const TRUST_STORE_PATH = isTestMode
 	? (process.env.ATTESTATION_TRUST_STORE ||
 		path.join(
 			'S:',
-			'SwarmMind Self-Optimizing Multi-Agent AI System',
+			'SwarmMind',
 			'lanes',
 			'broadcast',
 			'trust-store.json'
 		))
 	: path.join(
-		'S:',
-		'SwarmMind Self-Optimizing Multi-Agent AI System',
-		'lanes',
+			'S:',
+			'SwarmMind',
+			'lanes',
 		'broadcast',
 		'trust-store.json'
 	);

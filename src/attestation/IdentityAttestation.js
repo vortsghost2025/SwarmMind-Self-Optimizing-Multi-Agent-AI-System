@@ -42,7 +42,7 @@ class IdentityManager {
         // Map lane names to their root directories
         const laneRoots = {
             'archivist': 'S:/Archivist-Agent',
-            'swarmmind': 'S:/SwarmMind Self-Optimizing Multi-Agent AI System',
+            'swarmmind': 'S:/SwarmMind',
             'library': 'S:/self-organizing-library'
         };
 

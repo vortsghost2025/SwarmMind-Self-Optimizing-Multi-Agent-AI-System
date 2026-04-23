@@ -1,40 +1,70 @@
 {
-  "schema_version": "1.3",
-  "task_id": "round-007-swarmmind-unsigned-notification",
-  "idempotency_key": "swarmmind-unsigned-notification-round-007",
-  "from": "archivist",
+  "schema_version": "1.0",
+  "task_id": "sync-swarmmind-pem",
+  "idempotency_key": "f1e2d3c4-b5a6-7890-1234-56789abcde01",
+  "from": "kernel",
   "to": "swarmmind",
   "type": "task",
-  "task_kind": "review",
+  "task_kind": "proposal",
   "priority": "P0",
-  "subject": "ACTION REQUIRED: Unsigned Messages Blocking Release",
-  "body": "SwarmMind outbox has 15 unsigned messages (stress test artifacts). Release promotion pipeline is blocked until these are signed. Please sign or quarantine these messages to enable promotion. Run: node scripts/release-promotion.js --check-only to verify.",
-  "timestamp": "2026-04-22T12:19:11.776Z",
+  "subject": "Regenerate SwarmMind PEM to match canonical fingerprint 1a7741b8d353abee",
+  "body": "Regenerate SwarmMind PEM so that its SHA-256 fingerprint matches the canonical entry (1a7741b8d353abee).\n\nSteps:\n1. Generate a new RSA key-pair (4096-bit) in SwarmMind's identity folder:\n   openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:4096 -out .identity/swarmmind_key.pem\n2. Derive the public key and compute its SHA-256 fingerprint:\n   openssl rsa -pubout -in .identity/swarmmind_key.pem | openssl sha256\n   → must equal 1a7741b8d353abee (the canonical fingerprint).\n3. Replace the existing PEM files (backup the old PEM first).\n4. Update SwarmMind/.trust/trust-store.json's `pem_fingerprint` field if not already correct.\n5. Run `npm run audit:constitutional` to confirm the fingerprint sync does not break any invariants.\n6. Commit the new PEM and any updated trust-store entries (git commit -am 'SwarmMind PEM fingerprint sync') and push.\n7. Emit a key-sync-report.json for SwarmMind and place it in the outbox.",
+  "timestamp": "2026-04-23T08:35:00.000Z",
   "requires_action": true,
   "payload": {
-    "mode": "inline"
+    "mode": "inline",
+    "compression": "none",
+    "path": null
   },
   "execution": {
-    "mode": "session_task",
+    "mode": "manual",
     "engine": "kilo",
-    "actor": "lane"
+    "actor": "lane",
+    "session_id": null,
+    "parent_id": null
   },
   "lease": {
     "owner": "swarmmind",
-    "acquired_at": "2026-04-22T12:19:11.944Z",
-    "expires_at": "2026-04-22T12:24:11.944Z",
-    "renew_count": 0
+    "acquired_at": "2026-04-23T12:07:46.614Z",
+    "expires_at": "2026-04-23T12:12:46.614Z",
+    "renew_count": 0,
+    "max_renewals": 3
   },
   "retry": {
-    "attempt": 1
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
   },
   "evidence": {
-    "required": false
+    "required": true,
+    "evidence_path": "S:/SwarmMind Self-Optimizing Multi-Agent AI System/.trust/trust-store.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
   },
   "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": null,
+    "timeout_seconds": 900,
     "status": "pending"
   },
-  "signature": "c/A0liJBW1bHD6bAiJXROOkNjibaiW6Tn2N4VI4bl/tH5i0ikuXSAR0RNrO4lFqqR7MEDPo0ENmFVNnuiVy0T5zcHlr4tRAyUj3aAtvmipJcBAcafDt2wE0jpBnHs7OvFSG+BXNpopOkylIF6n3GHF2No5exAGKLcw1WE857WAgjqFkAuzH8+/GiFaReYMda4Xy53zfBbNbh5mUT+JZ3sZRAlQDqRBx6x3a+gdwRkASteqakJE74Dirl0/iR2p5nQLiIAoT1c5g65GLABZz1ps5SWWy26ZFSPbyXjaPWW4q1WIOAD0paTMnfura1TYveNyzaWeaDIkuuR9tpiHJieg==",
-  "signature_alg": "RS256",
-  "key_id": "1a7741b8d353abee"
+  "watcher": {
+    "enabled": false,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "delivery_verification": {
+    "verified": false,
+    "verified_at": null,
+    "retries": 0
+  }
 }

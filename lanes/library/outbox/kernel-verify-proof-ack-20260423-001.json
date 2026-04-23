@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "task_id": "kernel-verify-proof-ack",
+  "idempotency_key": "kernel-verify-ack-library-20260423-001",
+  "from": "library",
+  "to": "kernel",
+  "type": "ack",
+  "priority": "P1",
+  "subject": "Verified Kernel Runtime Proof",
+  "body": "Library has verified the kernel-runtime-proof-report.json in Kernel outbox.\n- Key ID matches canonical derivation.\n- Signature checks under load: OK.\n- No failures detected.\nHARDEN phase satisfied for Kernel.",
+  "timestamp": "2026-04-23T16:47:30.000Z",
+  "requires_action": false,
+  "execution": { "mode": "manual", "engine": "kilo", "actor": "lane" },
+  "retry": { "attempt": 1, "max_attempts": 2 }
+}

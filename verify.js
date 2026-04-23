@@ -6,7 +6,7 @@ class SwarmMindVerifier {
   constructor() {
     this.results = {
       timestamp: new Date().toISOString(),
-      system: 'SwarmMind Self-Optimizing Multi-Agent AI System',
+      system: 'SwarmMind',
       version: '1.0.0',
       verification_passed: false,
       checks: {}

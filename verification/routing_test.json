@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-04-12T18:17:20Z",
-  "system": "SwarmMind Self-Optimizing Multi-Agent AI System",
+  "system": "SwarmMind",
   "verification_type": "routing_test",
   "status": "PASS",
   "test_description": "Verified internal message routing between agent components",

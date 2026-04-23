@@ -112,7 +112,7 @@ function getSessionInfo() {
 function getLatestCommit(lane) {
   const lanePaths = {
     1: 'S:\\Archivist-Agent',
-    2: 'S:\\SwarmMind Self-Optimizing Multi-Agent AI System',
+    2: 'S:\\SwarmMind',
     3: 'S:\\self-organizing-library'
   };
 

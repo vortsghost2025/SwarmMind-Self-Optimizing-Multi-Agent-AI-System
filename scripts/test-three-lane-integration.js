@@ -18,8 +18,8 @@ const crypto = require('crypto');
 const ARCHIVIST_TRUST_STORE = 'S:/Archivist-Agent/.trust/keys.json';
 const ARCHIVIST_SNAPSHOT = 'S:/Archivist-Agent/.identity/snapshot.json';
 const ARCHIVIST_SNAPSHOT_JWS = 'S:/Archivist-Agent/.identity/snapshot.jws';
-const SWARMMIND_QUEUE = 'S:/SwarmMind Self-Optimizing Multi-Agent AI System/queue/library.log';
-const SWARMMIND_APP = 'S:/SwarmMind Self-Optimizing Multi-Agent AI System';
+const SWARMMIND_QUEUE = 'S:/SwarmMind/queue/library.log';
+const SWARMMIND_APP = 'S:/SwarmMind';
 
 function skip(message) {
   console.log(`SKIP: ${message}`);

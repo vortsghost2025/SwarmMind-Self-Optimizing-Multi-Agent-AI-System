@@ -301,14 +301,23 @@ class InboxWatcher extends EventEmitter {
       try {
         const msg = this._readMessage(path.join(this.config.inboxPath, file));
         if (msg) messages.push(msg);
-      } catch (err) {
-        if (err.code === 'ENOENT') {
-          // fs.watch frequently emits transient events; file may vanish before read.
-          // This is expected and should not be noisy.
-        } else {
-          this._log('WARN', `failed to read ${file}: ${err.message}`);
-        }
-      }
+            } catch (err) {
+                if (err.code === 'ENOENT') {
+                    // fs.watch frequently emits transient events; file may vanish before read.
+                    // This is expected and should not be noisy.
+                } else {
+                    this._log('WARN', `failed to read ${file}: ${err.message}`);
+                    try {
+                        if (!fs.existsSync(this.expiredPath)) fs.mkdirSync(this.expiredPath, { recursive: true });
+                        const src = path.join(this.config.inboxPath, file);
+                        const dest = path.join(this.expiredPath, file);
+                        fs.renameSync(src, dest);
+                        this._log('INFO', `moved unparseable file ${file} to expired/`);
+                    } catch (moveErr) {
+                        this._log('WARN', `failed to move unparseable file ${file} to expired/: ${moveErr.message}`);
+                    }
+                }
+            }
     }
 
     messages.sort((a, b) => {

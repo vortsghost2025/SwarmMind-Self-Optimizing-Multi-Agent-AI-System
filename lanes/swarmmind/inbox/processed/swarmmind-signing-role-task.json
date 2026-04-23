@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.3",
+  "task_id": "swarmmind-signing-role-11031",
+  "idempotency_key": "swarmmind-role-001",
+  "from": "archivist",
+  "to": "swarmmind",
+  "type": "task",
+  "priority": "P0",
+  "subject": "HARDEN Phase: Signing Role & Compliance Status",
+  "body": "## HARDEN Phase Task (from Usage.txt)\n\n### Execute:\n1. Confirm signing vs verify-only role\n2. Check canonical-message-builder usage status\n3. Check current message type compliance\n4. Whether any legacy generator paths remain\n\n### Deliverable:\n`swarmmind-signing-role-status.json` to `lanes/swarmmind/outbox/`\n\n### Required Contents:\n1. signing vs verify-only role\n2. canonical-message-builder usage status\n3. current message type compliance\n4. whether any legacy generator paths remain\n\n### Rules:\n- No trust-store writes\n- No authority assumptions\n- No convergence claims\n- Evidence required for each result\n- Reference: `S:/self-organizing-library/context-buffer/Usage.txt`\n\n### Note:\nYour correct key_id is `60afaa026a3d969d` (HMAC-SHA256). All lanes should use their OWN key_ids.",
+  "timestamp": "2026-04-23T23:59:59.999Z",
+  "requires_action": true,
+  "priority_action": true,
+  "key_id": "147c5c2bb7d8941f"
+}

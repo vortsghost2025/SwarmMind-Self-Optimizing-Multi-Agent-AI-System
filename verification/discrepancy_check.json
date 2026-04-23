@@ -2,7 +2,7 @@
   "timestamp": "2026-04-13T01:25:09.863Z",
   "verifyJsResults": {
     "timestamp": "2026-04-13T01:25:09.913Z",
-    "system": "SwarmMind Self-Optimizing Multi-Agent AI System",
+    "system": "SwarmMind",
     "version": "1.0.0",
     "verification_passed": true,
     "checks": {
