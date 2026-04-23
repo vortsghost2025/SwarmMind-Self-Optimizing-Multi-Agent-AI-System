@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.3",
+  "task_id": "swarmmind-compliance-001",
+  "idempotency_key": "f5e6b7c8-i9j0-1234-klmn-567890abcdef",
+  "from": "archivist",
+  "to": "swarmmind",
+  "timestamp": "2026-04-23T10:30:00Z",
+  "priority": "P0",
+  "type": "task",
+  "task_kind": "compliance",
+  "subject": "🚨 COMPLIANCE: Use Canonical Message Builder - NO Ad-Hoc",
+  "body": "You MUST now use the CanonicalMessageBuilder for ALL messages. Ad-hoc message generation is PROHIBITED. 'proposal' type is DEPRECATED.",
+  "requires_action": false,
+  "instructions": {
+    "step_1": "Read: S:/Archivist-Agent/.global/MESSAGE_BUILDER_USAGE.md",
+    "step_2": "Load: const { CanonicalMessageBuilder } = require('S:/Archivist-Agent/.global/canonical-message-builder.js');",
+    "step_3": "Build: const builder = new CanonicalMessageBuilder('swarmmind');",
+    "step_4": "Send: builder.sendToLane('archivist', message, 'filename.json');",
+    "step_5": "NO 'proposal' type - use 'task' or 'report'",
+    "step_6": "NO ad-hoc - use builder only"
+  },
+  "example": {
+    "code": "const { CanonicalMessageBuilder } = require('S:/Archivist-Agent/.global/canonical-message-builder.js');\nconst builder = new CanonicalMessageBuilder('swarmmind');\nconst msg = builder.buildMessage({\n  toLane: 'archivist',\n  type: 'task',\n  priority: 'P0',\n  subject: 'Key Sync',\n  body: 'Update trust store...',\n  evidence: { required: true, path: 'S:/SwarmMind/outbox/report.json' }\n});\nbuilder.sendToLane('archivist', msg, 'key-sync-001.json');"
+  },
+  "deadline": "2026-04-23T11:00:00Z",
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-23T10:30:00Z",
+    "expires_at": "2026-04-23T11:00:00Z",
+    "duration_minutes": 30
+  },
+  "deliverable": "S:/SwarmMind/lanes/swarmmind/outbox/compliance-complete-001.json",
+  "signature": "",
+  "key_id": "swarmmind-current",
+  "status": "completed",
+  "terminal_decision": "Obviated by convergence phases (HARDEN/STRESS/PUSH) - work completed 2026-04-23",
+  "completed_at": "2026-04-23T21:30:00Z",
+  "completed_by": "archivist-agent",
+  "completion_artifact_path": "lanes/swarmmind/outbox/convergence-complete.json",
+  "prior_requires_action": true
+}

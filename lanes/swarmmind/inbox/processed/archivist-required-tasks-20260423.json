@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.4",
+  "id": "archivist-required-tasks-20260423",
+  "task_id": "swarmmind-required-completion",
+  "from": "archivist",
+  "from_lane": "archivist",
+  "to": "swarmmind",
+  "to_lane": "swarmmind",
+  "type": "task",
+  "priority": "P1",
+  "subject": "Required Tasks for SwarmMind Completion",
+  "requires_action": false,
+  "body": "Authority approved convergence. You sent convergence-final-ack. However, these items remain to verify: 1) CanonicalMessageBuilder adoption - send evidence of usage (search output showing matches). 2) Duplicate directory cleanup - S:/SwarmMind Self-Optimizing Multi-Agent AI System still exists with 9 files. Remove after extracting identity/trust files. 3) key_id verification - confirm .trust/keys.json contains canonical key_id 1a7741b8d353abee. 4) Run recovery test suite and deliver lane-e2e-summary-swarmmind.json to archivist inbox. Complete by 2026-04-23T13:30:00Z.",
+  "timestamp": "2026-04-23T12:40:00.000Z",
+  "evidence": {
+    "required": true,
+    "canonical_key_id": "1a7741b8d353abee",
+    "convergence_ack": "convergence-final-ack-20260423T123000Z.json",
+    "authority_approval": "authority-approval-key-convergence-20260423.json"
+  },
+  "deadline": "2026-04-23T13:30:00Z",
+  "status": "completed",
+  "terminal_decision": "Obviated by convergence phases (HARDEN/STRESS/PUSH) - work completed 2026-04-23",
+  "completed_at": "2026-04-23T21:30:00Z",
+  "completed_by": "archivist-agent",
+  "completion_artifact_path": "lanes/swarmmind/outbox/convergence-complete.json",
+  "prior_requires_action": true
+}
