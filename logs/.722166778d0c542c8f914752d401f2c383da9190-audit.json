@@ -1,0 +1,45 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\.722166778d0c542c8f914752d401f2c383da9190-audit.json",
+    "files": [
+        {
+            "date": 1776023468067,
+            "name": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\mcp-puppeteer-2026-04-12.log",
+            "hash": "264a0566e8b20b0ec302e8b7c80a90b4e18fa9eb92ce40da58b396251b7d285d"
+        },
+        {
+            "date": 1776098854249,
+            "name": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\mcp-puppeteer-2026-04-13.log",
+            "hash": "8452b2e0193e0e2b418e2a8ce5155f244996427fb82e7c6fbf370ed6d101d8cf"
+        },
+        {
+            "date": 1776270582033,
+            "name": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\mcp-puppeteer-2026-04-15.log",
+            "hash": "1e5109ece1ce7f84f82648365d92e1d546d91c64a9964d5c093f4ee7067777cf"
+        },
+        {
+            "date": 1776385733386,
+            "name": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\mcp-puppeteer-2026-04-16.log",
+            "hash": "0dc7ff8f8e8a0f322eafcb3446dd5e367ae992f7c568dd8c49abf86e94f41136"
+        },
+        {
+            "date": 1776707811093,
+            "name": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\mcp-puppeteer-2026-04-20.log",
+            "hash": "df48f0b66edcdae5cd3f3736138209794256c85faf3e336bd941d329ecf9e2a3"
+        },
+        {
+            "date": 1776775180747,
+            "name": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\mcp-puppeteer-2026-04-21.log",
+            "hash": "5b334a55c83e08e029cffa6d6176cbd1c2420c01ed68438d195ca1585ef74795"
+        },
+        {
+            "date": 1776871253791,
+            "name": "S:\\SwarmMind Self-Optimizing Multi-Agent AI System\\logs\\mcp-puppeteer-2026-04-22.log",
+            "hash": "c4a43f86506371be55c943cc8494eefd21a1297605ab2c9d9a7201f43a0e9d89"
+        }
+    ],
+    "hashType": "sha256"
+}

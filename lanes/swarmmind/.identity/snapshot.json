@@ -1,0 +1,6 @@
+{
+  "lane_id": "swarmmind",
+  "key_id": "1cafe10a2bad6f03",
+  "algorithm": "RS256",
+  "registered_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
