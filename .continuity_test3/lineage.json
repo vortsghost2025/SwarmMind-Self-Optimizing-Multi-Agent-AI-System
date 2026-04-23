@@ -1,0 +1,16 @@
+{
+  "last_session": null,
+  "current_session": {
+    "started_at": "2026-04-23T17:29:22.251Z",
+    "fingerprint": "8108eae50484b1d456876ede44a0bc6a15a6aa3d11fe49a4959980a571c73782",
+    "recovery_classification": "transient"
+  },
+  "drift_history": [
+    {
+      "timestamp": "2026-04-23T17:29:22.251Z",
+      "fingerprint": "8108eae50484b1d456876ede44a0bc6a15a6aa3d11fe49a4959980a571c73782",
+      "classification": "transient"
+    }
+  ],
+  "lane": "swarmmind"
+}

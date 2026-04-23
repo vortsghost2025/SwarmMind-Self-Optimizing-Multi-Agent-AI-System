@@ -1,0 +1,15 @@
+{
+  "id": "crashtest-06",
+  "idempotency_key": "crashtest-06-key",
+  "from": "crash-test",
+  "to": "swarmmind",
+  "priority": "P1",
+  "type": "task",
+  "body": "crash integrity probe",
+  "lease": {
+    "owner": "swarmmind-crashtest",
+    "acquired_at": "2026-04-21T06:27:02.888Z",
+    "expires_at": "2026-04-21T06:32:02.888Z",
+    "renew_count": 0
+  }
+}

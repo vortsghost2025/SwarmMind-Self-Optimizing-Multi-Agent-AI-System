@@ -1,0 +1,10 @@
+{
+  "lane_id": "swarmmind",
+  "created_at": "2026-04-23T17:29:22.252Z",
+  "last_updated": "2026-04-23T17:29:22.252Z",
+  "current_classification": "lane_degradation",
+  "consecutive_failures": 1,
+  "recent_events": [],
+  "quarantine_until": "2026-04-23T18:29:22.252Z",
+  "needs_operator": true
+}
