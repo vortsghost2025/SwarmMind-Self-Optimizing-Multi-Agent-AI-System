@@ -38,14 +38,14 @@
     "No active agent session reading from deprecated path",
     "Authority explicit deletion approval"
   ],
-  "deletion_status": "pending_authority_approval",
+  "deletion_status": "completed",
+  "deletion_approved_by": "authority",
+  "deletion_executed_at": "2026-04-24T14:12:00Z",
+  "deletion_verified": true,
   "evidence": {
-    "canonical_file_count": 1034,
-    "canonical_script_count": 24,
-    "canonical_git_commits": 6,
-    "deprecated_file_count": 9,
-    "deprecated_script_count": 1,
-    "deprecated_git_commits": 1,
-    "deprecated_git_status": "stale_initial_commit_only"
+    "canonical_root": "S:/SwarmMind",
+    "canonical_git_commits": 7,
+    "deprecated_path_exists": false,
+    "deprecated_path_verified_gone": true
   }
 }

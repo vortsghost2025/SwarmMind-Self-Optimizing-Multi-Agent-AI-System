@@ -1,0 +1,19 @@
+{
+  "type": "path_authority_lock",
+  "created_at": "2026-04-24T18:29:29Z",
+  "canonical_root": "S:/SwarmMind",
+  "deprecated_paths": [
+    {
+      "path": "S:/SwarmMind",
+      "reason": "Deprecated per PATH AUTHORITY LOCK directive",
+      "status": "read-only",
+      "deletion_pending": true
+    }
+  ],
+  "rules": [
+    "No agent may read from deprecated path",
+    "No onboarding may reference deprecated path",
+    "Deprecated path is read-only until deletion",
+    "All scripts and tests must resolve relative to S:/SwarmMind"
+  ]
+}
