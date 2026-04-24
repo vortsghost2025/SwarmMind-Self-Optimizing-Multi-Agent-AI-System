@@ -23,9 +23,7 @@ const active = contradictions.filter(c => c.status === 'active');
 // Hard invariant: block claims of consistent/aligned while active contradictions exist
 if ((state.system_status === 'consistent' || state.system_status === 'aligned') && active.length > 0) {
   console.error('[invariant] CONSISTENCY/ALIGNMENT VIOLATION – active contradictions present:', active.map(a => a.id));
-  // optional: downgrade state
-  state.system_status = 'degraded';
-  fs.writeFileSync(SYS_STATE_PATH, JSON.stringify(state, null, 2));
+  console.error('[invariant] INVARIANT: Only heartbeat.js may write system_state.json. No auto-fix applied. Heartbeat will correct on next cycle.');
   process.exit(1);
 }
 
