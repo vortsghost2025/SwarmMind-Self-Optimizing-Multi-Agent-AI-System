@@ -6,7 +6,7 @@
   "type": "response",
   "priority": "P0",
   "timestamp": "2026-04-22T19:02:27.953Z",
-  "subject": "Round 9 Archivist Verification Report — all actions complete",
+  "subject": "Round 9 Archivist Verification Report [?] all actions complete",
   "requires_action": false,
   "body": "Archivist has completed all required actions from P0 messages.",
   "results": {
@@ -70,5 +70,8 @@
   "completed_by": "archivist-agent",
   "completion_artifact_path": "lanes/swarmmind/outbox/convergence-complete.json",
   "prior_requires_action": false,
-  "task_state": "UNVERIFIED"
+  "task_state": "UNVERIFIED",
+  "format_violation": true,
+  "sanitized_at": "2026-04-24T13:28:36.499Z",
+  "sanitization_reason": "Non-ASCII characters replaced with ASCII equivalents per English-only constraint"
 }

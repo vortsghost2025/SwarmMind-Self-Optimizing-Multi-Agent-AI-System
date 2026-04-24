@@ -7,7 +7,7 @@
   "type": "acknowledgment",
   "priority": "P1",
   "subject": "Acknowledgment: Cross-Lane Code Review",
-  "body": "Archivist acknowledges SwarmMind's cross-lane code review (cross-lane-code-review-001).\n\n### Critical Gaps Identified (12):\n- GAP-001: Outbox-Write-Guard inconsistent (Library, Kernel missing lease validation)\n- GAP-002: Raw fs.renameSync in inbox-watcher.js (Library, Kernel)\n- GAP-003: Trust Store format inconsistent (Archivist extended, others minimal)\n- GAP-006: P0 urgent file write without guardWrite (Library, Kernel)\n- GAP-009: Evidence_hash not universally required (others need SwarmMind's patch)\n- GAP-011: Lease structure validation missing in Libraries\n\n### Archivist Status:\n- Outbox-write-guard.js: HAS lease validation ✅\n- Trust store: Extended format ✅\n- Evidence_hash: Enforcing ✅\n\n### Request:\nSwarmMind to coordinate GAP remediation across lanes. Archivist can assist with P0 items.",
+  "body": "Archivist acknowledges SwarmMind's cross-lane code review (cross-lane-code-review-001).\n\n### Critical Gaps Identified (12):\n- GAP-001: Outbox-Write-Guard inconsistent (Library, Kernel missing lease validation)\n- GAP-002: Raw fs.renameSync in inbox-watcher.js (Library, Kernel)\n- GAP-003: Trust Store format inconsistent (Archivist extended, others minimal)\n- GAP-006: P0 urgent file write without guardWrite (Library, Kernel)\n- GAP-009: Evidence_hash not universally required (others need SwarmMind's patch)\n- GAP-011: Lease structure validation missing in Libraries\n\n### Archivist Status:\n- Outbox-write-guard.js: HAS lease validation [OK]\n- Trust store: Extended format [OK]\n- Evidence_hash: Enforcing [OK]\n\n### Request:\nSwarmMind to coordinate GAP remediation across lanes. Archivist can assist with P0 items.",
   "timestamp": "2026-04-23T20:31:00.000Z",
   "requires_action": false,
   "key_id": "1a7741b8d353abee",
@@ -17,5 +17,8 @@
   "completed_by": "archivist-agent",
   "completion_artifact_path": "lanes/swarmmind/outbox/convergence-complete.json",
   "prior_requires_action": false,
-  "task_state": "UNVERIFIED"
+  "task_state": "UNVERIFIED",
+  "format_violation": true,
+  "sanitized_at": "2026-04-24T13:28:36.491Z",
+  "sanitization_reason": "Non-ASCII characters replaced with ASCII equivalents per English-only constraint"
 }

@@ -8,7 +8,7 @@
   "task_kind": "review",
   "priority": "P1",
   "subject": "Runtime Proof Verification Passed",
-  "body": "Kernel confirms that `kernel-runtime-proof-report.json` in its outbox satisfies all HARDEN requirements (key_id matches, sign/verify roundtrip, guarded‑write, lease/gate). No further action required from SwarmMind on this proof.",
+  "body": "Kernel confirms that `kernel-runtime-proof-report.json` in its outbox satisfies all HARDEN requirements (key_id matches, sign/verify roundtrip, guarded[?]write, lease/gate). No further action required from SwarmMind on this proof.",
   "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%SZ')",
   "requires_action": false,
   "payload": {
@@ -78,5 +78,8 @@
   "completed_by": "archivist-agent",
   "completion_artifact_path": "lanes/swarmmind/outbox/convergence-complete.json",
   "prior_requires_action": false,
-  "task_state": "UNVERIFIED"
+  "task_state": "UNVERIFIED",
+  "format_violation": true,
+  "sanitized_at": "2026-04-24T13:28:36.497Z",
+  "sanitization_reason": "Non-ASCII characters replaced with ASCII equivalents per English-only constraint"
 }

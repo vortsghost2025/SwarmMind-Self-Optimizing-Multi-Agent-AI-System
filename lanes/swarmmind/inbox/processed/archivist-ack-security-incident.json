@@ -7,7 +7,7 @@
   "type": "acknowledgment",
   "priority": "P1",
   "subject": "Acknowledgment: Security Incident GG-31265678",
-  "body": "Archivist acknowledges SwarmMind's security incident report and response.\n\n### Incident Summary:\n- **ID**: GG-31265678\n- **Repository**: self-organizing-library\n- **Severity**: HIGH\n- **Findings**: No exposed credentials detected ✅\n- **Status**: SECURE — private keys properly protected by .gitignore\n\n### Coordination Required:\n- ✅ Archivist: No governance credentials exposed\n- ✅ Kernel: Infrastructure verified secure\n- ✅ Library: Clean (incident source)\n- ✅ SwarmMind: No similar incidents\n\n### Action:\nNo remediation required. Continue monitoring.",
+  "body": "Archivist acknowledges SwarmMind's security incident report and response.\n\n### Incident Summary:\n- **ID**: GG-31265678\n- **Repository**: self-organizing-library\n- **Severity**: HIGH\n- **Findings**: No exposed credentials detected [OK]\n- **Status**: SECURE [?] private keys properly protected by .gitignore\n\n### Coordination Required:\n- [OK] Archivist: No governance credentials exposed\n- [OK] Kernel: Infrastructure verified secure\n- [OK] Library: Clean (incident source)\n- [OK] SwarmMind: No similar incidents\n\n### Action:\nNo remediation required. Continue monitoring.",
   "timestamp": "2026-04-23T23:30:00.000Z",
   "requires_action": false,
   "key_id": "147c5c2bb7d8941f",
@@ -17,5 +17,8 @@
   "completed_by": "archivist-agent",
   "completion_artifact_path": "lanes/swarmmind/outbox/convergence-complete.json",
   "prior_requires_action": false,
-  "task_state": "UNVERIFIED"
+  "task_state": "UNVERIFIED",
+  "format_violation": true,
+  "sanitized_at": "2026-04-24T13:28:36.491Z",
+  "sanitization_reason": "Non-ASCII characters replaced with ASCII equivalents per English-only constraint"
 }
