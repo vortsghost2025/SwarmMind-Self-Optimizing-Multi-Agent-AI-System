@@ -31,11 +31,11 @@ function auditProcessedOk() {
 function update() {
   const sysState = loadJSON(SYS_STATE_PATH);
   const contra = loadJSON(CONTRA_PATH);
-  const activeContras = (contra && Array.isArray(contra)) ? contra.filter(c => c.status === 'active').map(c => c.id) : [];
+  const activeContras = (contra && Array.isArray(contra)) ? contra.filter(c => c.status === 'active' || c.status === 'resolving').map(c => c.id) : [];
   const hasActive = activeContras.length > 0;
   const processedOk = auditProcessedOk();
 
-  const systemState = (sysState && sysState.system_status) ? sysState.system_status : (hasActive ? 'degraded' : 'consistent');
+  const systemState = hasActive ? 'degraded' : ((sysState && sysState.system_status) ? sysState.system_status : 'consistent');
   const compactionEnabled = !hasActive;
   const compactionSuspendReason = hasActive ? 'P0 contradictions present' : null;
 
