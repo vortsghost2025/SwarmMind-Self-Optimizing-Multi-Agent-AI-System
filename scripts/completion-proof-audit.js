@@ -90,7 +90,7 @@ function main() {
     if (!result.ok) results.overall_ok = false;
   }
   
-  const reportPath = path.join('S:/Archivist-Agent', 'docs', 'autonomous-cycle-test', 'completion-proof-audit.json');
+  const reportPath = path.join('S:/SwarmMind', 'docs', 'autonomous-cycle-test', 'completion-proof-audit.json');
   fs.mkdirSync(path.dirname(reportPath), { recursive: true });
   fs.writeFileSync(reportPath, JSON.stringify(results, null, 2), 'utf8');
   

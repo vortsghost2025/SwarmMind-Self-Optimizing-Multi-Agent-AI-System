@@ -76,10 +76,10 @@ function walk(dir) {
 }
 
 const LANES = [
+  'S:/SwarmMind/lanes',
   'S:/Archivist-Agent/lanes',
   'S:/kernel-lane/lanes',
   'S:/self-organizing-library/lanes',
-  'S:/SwarmMind/lanes',
 ];
 
 let sanitizedCount = 0;

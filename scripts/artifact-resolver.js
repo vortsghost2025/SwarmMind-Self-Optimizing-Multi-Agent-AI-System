@@ -5,10 +5,10 @@ const fs = require('fs');
 const path = require('path');
 
 const DEFAULT_ALLOWED_ROOTS = [
+  'S:/SwarmMind',
   'S:/Archivist-Agent',
   'S:/kernel-lane',
   'S:/self-organizing-library',
-  'S:/SwarmMind',
 ];
 
 const TRAVERSAL_PATTERNS = /\.\./;

@@ -7,10 +7,10 @@ const path = require('path');
 const { ArtifactResolver } = require('./artifact-resolver');
 
 const DEFAULT_ALLOWED_ROOTS = [
+  'S:/SwarmMind',
   'S:/Archivist-Agent',
   'S:/kernel-lane',
   'S:/self-organizing-library',
-  'S:/SwarmMind',
 ];
 
 const COMPLETION_WINDOW_MS = 5 * 60 * 1000;

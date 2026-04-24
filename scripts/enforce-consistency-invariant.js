@@ -16,7 +16,7 @@ const LANE_ROOTS = {
   swarmmind: 'S:/SwarmMind'
 };
 
-const BROADCAT_PATH = 'S:/Archivist-Agent/lanes/broadcast';
+const BROADCAT_PATH = 'S:/SwarmMind/lanes/broadcast';
 
 function loadJSON(p) {
   try { return JSON.parse(fs.readFileSync(p, 'utf8')); }
