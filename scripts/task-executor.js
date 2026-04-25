@@ -222,7 +222,7 @@ if (require.main === module) {
   const result = executor.run();
 
   console.log(`[task-executor] dry_run=${!args.apply} scanned=${result.scanned} executed=${result.executed} errors=${result.errors.length}`);
-  for (const d of result.details) {
+  for (const d of (result.details || [])) {
     console.log(`  ${d.action}: ${d.task_id} "${d.subject}" ${d.delivered_to ? '-> ' + d.delivered_to : ''}`);
   }
   for (const e of result.errors) {
