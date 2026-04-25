@@ -5,10 +5,10 @@ const fs = require('fs');
 const path = require('path');
 
 const DEFAULT_ALLOWED_ROOTS = [
-  'S:/SwarmMind',
   'S:/Archivist-Agent',
   'S:/kernel-lane',
   'S:/self-organizing-library',
+  'S:/SwarmMind',
 ];
 
 const TRAVERSAL_PATTERNS = /\.\./;
@@ -61,6 +61,21 @@ class ArtifactResolver {
     return false;
   }
 
+  resolveRelativePath(artifactPath) {
+    if (!artifactPath || typeof artifactPath !== 'string') return null;
+    if (path.isAbsolute(artifactPath)) return artifactPath;
+    if (this.hasPathTraversal(artifactPath)) return null;
+
+    for (const root of this.allowedRoots) {
+      const candidate = path.join(root, artifactPath);
+      const normalized = normalizePath(candidate);
+      if (normalized.startsWith(root.toLowerCase())) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
   resolveExists(artifactPath) {
     if (!artifactPath || typeof artifactPath !== 'string') {
       return { exists: false, reason: 'EMPTY_PATH' };
@@ -70,23 +85,26 @@ class ArtifactResolver {
       return { exists: false, reason: 'PATH_TRAVERSAL_REJECTED' };
     }
 
-    const checkPath = path.isAbsolute(artifactPath)
-      ? artifactPath
-      : path.resolve(process.cwd(), artifactPath);
-
-    if (!this.isWithinAllowedRoots(checkPath)) {
+    let resolvedPath = artifactPath;
+    if (!path.isAbsolute(artifactPath)) {
+      const resolved = this.resolveRelativePath(artifactPath);
+      if (!resolved) {
+        return { exists: false, reason: 'OUTSIDE_ALLOWED_ROOTS' };
+      }
+      resolvedPath = resolved;
+    } else if (!this.isWithinAllowedRoots(artifactPath)) {
       return { exists: false, reason: 'OUTSIDE_ALLOWED_ROOTS' };
     }
 
     if (this.dryRun) {
-      return { exists: true, reason: 'DRY_RUN_SKIP_FS_CHECK', path: checkPath };
+      return { exists: true, reason: 'DRY_RUN_SKIP_FS_CHECK', path: resolvedPath };
     }
 
     try {
-      const stat = fs.statSync(checkPath);
-      return { exists: true, reason: 'FILE_EXISTS', path: checkPath, isFile: stat.isFile() };
+      const stat = fs.statSync(resolvedPath);
+      return { exists: true, reason: 'FILE_EXISTS', path: resolvedPath, isFile: stat.isFile() };
     } catch (_) {
-      return { exists: false, reason: 'FILE_NOT_FOUND', path: checkPath };
+      return { exists: false, reason: 'FILE_NOT_FOUND', path: resolvedPath };
     }
   }
 
