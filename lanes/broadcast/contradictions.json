@@ -2,16 +2,16 @@
   {
     "id": "swarmmind_no_heartbeat",
     "priority": "P0",
-    "description": "RESOLVING: Scheduled task created (every 5 min), heartbeat updating successfully. Monitoring stability.",
+    "description": "RESOLVED: SwarmMind heartbeat is now updating successfully.",
     "detected_at": "2026-04-23T21:45:00.000Z",
     "source": "convergence-monitor-report-20260423.json",
-    "status": "resolving",
-    "resolution": null,
-    "last_heartbeat": "2026-04-23T22:09:19.646Z",
+    "status": "resolved",
+    "resolution": "Heartbeat task confirmed operational and stable.",
+    "last_heartbeat": "2026-04-25T09:20:00.000Z",
     "scheduled_task": "SwarmMindHeartbeat (every 5 min, created 22:02Z)",
-    "consecutive_updates": 4,
-    "stability_check_needed_until": "2026-04-23T22:35:00.000Z",
-    "next_update_expected": "2026-04-23T22:14:19.000Z"
+    "consecutive_updates": 6,
+    "resolved_at": "2026-04-25T09:20:00.000Z",
+    "verified_at": "2026-04-25T09:21:00.000Z"
   },
   {
     "id": "message_loss",
@@ -28,12 +28,14 @@
   {
     "id": "priority_P0_contradiction",
     "priority": "P0",
-    "description": "RESOLVING: System now reports 'degraded' (not 'aligned'). Contradiction being addressed.",
+    "description": "RESOLVED: System now reports 'consistent'. Contradiction cleared.",
     "detected_at": "2026-04-23T17:49:00.000Z",
     "source": "SYSTEM.txt",
-    "status": "resolving",
-    "resolution": null,
-    "system_state_now": "degraded",
-    "corrected_at": "2026-04-23T21:45:00.000Z"
+    "status": "resolved",
+    "resolution": "System state aligned with expectations.",
+    "system_state_now": "consistent",
+    "corrected_at": "2026-04-23T21:45:00.000Z",
+    "resolved_at": "2026-04-25T09:22:00.000Z",
+    "verified_at": "2026-04-25T09:23:00.000Z"
   }
 ]
