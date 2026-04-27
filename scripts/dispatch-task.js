@@ -38,62 +38,59 @@ function dispatchTask(options) {
   const taskId = generateId();
   const now = new Date().toISOString();
 
-  const msg = {
-    schema_version: '1.3',
-    task_id: taskId,
-    idempotency_key: crypto.createHash('sha256').update(taskId + from + to + now).digest('hex').slice(0, 64),
-    from,
-    to,
-    type,
-    task_kind: taskKind,
-    priority,
-    subject,
-    body: body || '',
-    timestamp: now,
-    requires_action: requiresAction,
-    payload: { mode: 'inline', compression: 'none', ...payload },
-    execution: { mode: 'manual', engine: 'opencode', actor: 'lane' },
-    lease: { owner: to, acquired_at: now },
-    retry: { attempt: 1, max_attempts: 3 },
-    evidence: { required: true, verified: false },
-    evidence_exchange: artifactPath ? {
-      artifact_path: artifactPath,
-      artifact_type: 'log',
-      delivered_at: now,
-    } : {
-      artifact_path: `lanes/${to}/outbox/response-${taskId}.json`,
-      artifact_type: 'response',
-      delivered_at: now,
-    },
-    heartbeat: {
-      status: 'pending',
-      last_heartbeat_at: now,
-      interval_seconds: 300,
-      timeout_seconds: 3600,
-    },
-  };
-
   // Sign
   try {
-    const { createSignedMessage } = require(path.join(REPO_ROOT, 'scripts', 'create-signed-message.js'));
+    const { createSignedMessage, buildCanonicalMessage } = require(path.join(REPO_ROOT, 'scripts', 'create-signed-message.js'));
+    const msg = buildCanonicalMessage({
+      profile: requiresAction ? 'control_actionable_pre_execution' : 'default',
+      task_id: taskId,
+      idempotency_key: crypto.createHash('sha256').update(taskId + from + to + now).digest('hex').slice(0, 64),
+      from,
+      to,
+      type,
+      task_kind: taskKind,
+      priority,
+      subject,
+      body: body || '',
+      requires_action: requiresAction,
+      payload: { ...payload },
+      execution: { mode: 'manual', engine: 'opencode', actor: 'lane' },
+      lease: { owner: to, acquired_at: now },
+      retry: { attempt: 1, max_attempts: 3 },
+      evidence: requiresAction ? { required: false, verified: false } : { required: false, verified: false },
+      evidence_exchange: artifactPath ? {
+        artifact_path: artifactPath,
+        artifact_type: 'log',
+        delivered_at: now,
+      } : (requiresAction ? {} : {
+        artifact_path: `lanes/${to}/outbox/response-${taskId}.json`,
+        artifact_type: 'response',
+        delivered_at: now,
+      }),
+      heartbeat: {
+        status: 'pending',
+        last_heartbeat_at: now,
+        interval_seconds: 300,
+        timeout_seconds: 3600,
+      },
+    });
     const signed = createSignedMessage(msg, from);
-    Object.assign(msg, signed);
+    // Deliver
+    const targetInbox = LANE_REGISTRY[to].inbox;
+    if (!fs.existsSync(targetInbox)) fs.mkdirSync(targetInbox, { recursive: true });
+    const outPath = path.join(targetInbox, `${taskId}.json`);
+    fs.writeFileSync(outPath, JSON.stringify(signed, null, 2), 'utf8');
+
+    // Log to own outbox
+    const ownOutbox = path.join(LANE_REGISTRY[from].inbox, '..', 'outbox');
+    if (!fs.existsSync(ownOutbox)) fs.mkdirSync(ownOutbox, { recursive: true });
+    fs.writeFileSync(path.join(ownOutbox, `${taskId}.json`), JSON.stringify(signed, null, 2), 'utf8');
+
+    return { task_id: taskId, delivered_to: outPath, signed: !!signed.signature };
   } catch (e) {
     console.error(`[dispatch] Signing failed: ${e.message}, dispatching unsigned`);
+    throw e;
   }
-
-  // Deliver
-  const targetInbox = LANE_REGISTRY[to].inbox;
-  if (!fs.existsSync(targetInbox)) fs.mkdirSync(targetInbox, { recursive: true });
-  const outPath = path.join(targetInbox, `${taskId}.json`);
-  fs.writeFileSync(outPath, JSON.stringify(msg, null, 2), 'utf8');
-
-  // Log to own outbox
-  const ownOutbox = path.join(LANE_REGISTRY[from].inbox, '..', 'outbox');
-  if (!fs.existsSync(ownOutbox)) fs.mkdirSync(ownOutbox, { recursive: true });
-  fs.writeFileSync(path.join(ownOutbox, `${taskId}.json`), JSON.stringify(msg, null, 2), 'utf8');
-
-  return { task_id: taskId, delivered_to: outPath, signed: !!msg.signature };
 }
 
 function parseArgs(argv) {

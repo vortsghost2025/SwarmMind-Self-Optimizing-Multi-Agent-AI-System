@@ -116,6 +116,80 @@ function safeReadJson(filePath) {
   }
 }
 
+const REMEDIATABLE_DEFAULT_FIELDS = new Set([
+  'timestamp',
+  'payload',
+  'execution',
+  'lease',
+  'retry',
+  'evidence',
+  'evidence_exchange',
+  'heartbeat',
+]);
+
+function parseMissingRequiredFields(errors) {
+  const out = [];
+  for (const err of errors || []) {
+    const m = String(err).match(/^Missing required field:\s*(.+)$/);
+    if (m && m[1]) out.push(m[1].trim());
+    else return null;
+  }
+  return out;
+}
+
+function applySchemaDefaults(msg, lane, missingFields) {
+  const now = nowIso();
+  const remediated = { ...msg };
+  const applied = [];
+
+  for (const field of missingFields) {
+    if (!REMEDIATABLE_DEFAULT_FIELDS.has(field)) continue;
+    switch (field) {
+      case 'timestamp':
+        remediated.timestamp = now;
+        applied.push('timestamp');
+        break;
+      case 'payload':
+        remediated.payload = { mode: 'inline', compression: 'none' };
+        applied.push('payload');
+        break;
+      case 'execution':
+        remediated.execution = { mode: 'manual', engine: 'pipeline', actor: 'lane' };
+        applied.push('execution');
+        break;
+      case 'lease':
+        remediated.lease = { owner: remediated.to || lane, acquired_at: now };
+        applied.push('lease');
+        break;
+      case 'retry':
+        remediated.retry = { attempt: 1, max_attempts: 3 };
+        applied.push('retry');
+        break;
+      case 'evidence':
+        remediated.evidence = { required: false, verified: false };
+        applied.push('evidence');
+        break;
+      case 'evidence_exchange':
+        remediated.evidence_exchange = {};
+        applied.push('evidence_exchange');
+        break;
+      case 'heartbeat':
+        remediated.heartbeat = {
+          status: 'pending',
+          last_heartbeat_at: now,
+          interval_seconds: 300,
+          timeout_seconds: 900,
+        };
+        applied.push('heartbeat');
+        break;
+      default:
+        break;
+    }
+  }
+
+  return { remediated, applied };
+}
+
 function isActionable(msg) {
   const type = String(msg && msg.type ? msg.type : '').toLowerCase();
   return !!(
@@ -368,7 +442,7 @@ class LaneWorker {
     return { queue: 'processed', reason: gate.reason, detail: gate.detail, execution_verified: cp.hasCompletionProof(msg), execution_would_verify: cp.hasCompletionProof(msg) };
   }
 
-  _writeWithMetadata(targetPath, msg, decision, schemaResult, signatureResult) {
+  _writeWithMetadata(targetPath, msg, decision, schemaResult, signatureResult, remediation) {
     const enriched = {
       ...msg,
       execution_verified: decision.execution_verified !== undefined ? decision.execution_verified : false,
@@ -385,6 +459,7 @@ class LaneWorker {
         english_only: isEnglishOnly(msg),
         execution_verified: decision.execution_verified !== undefined ? decision.execution_verified : false,
         would_verify: decision.execution_would_verify === true,
+        schema_remediation: remediation || null,
       },
     };
     if (decision.reason === 'FORMAT_VIOLATION_NON_ASCII') {
@@ -406,9 +481,27 @@ class LaneWorker {
       });
     }
 
-    const msg = rawRead.value;
-    const schemaResult = this.schemaValidator(msg);
+    let msg = rawRead.value;
+    let schemaResult = this.schemaValidator(msg);
     const signatureResult = this.signatureValidator(msg);
+    let remediation = null;
+
+    if (!schemaResult.valid && signatureResult.valid) {
+      const missingFields = parseMissingRequiredFields(schemaResult.errors || []);
+      if (missingFields && missingFields.length > 0) {
+        const patched = applySchemaDefaults(msg, this.lane, missingFields);
+        if (patched.applied.length > 0) {
+          msg = patched.remediated;
+          schemaResult = this.schemaValidator(msg);
+          remediation = {
+            attempted: true,
+            applied_fields: patched.applied,
+            success: schemaResult.valid,
+          };
+        }
+      }
+    }
+
     const decision = this.decideRoute(msg, schemaResult, signatureResult);
     const targetDir = this.config.queues[decision.queue];
     const targetPath = uniquePath(path.join(targetDir, filename));
@@ -427,11 +520,12 @@ class LaneWorker {
       has_completion_proof: cp.hasCompletionProof(msg),
       execution_verified: decision.execution_verified !== undefined ? decision.execution_verified : false,
       would_verify: decision.execution_would_verify === true,
+      schema_remediation: remediation,
       dry_run: this.dryRun,
     };
 
     if (!this.dryRun) {
-      this._writeWithMetadata(targetPath, msg, decision, schemaResult, signatureResult);
+      this._writeWithMetadata(targetPath, msg, decision, schemaResult, signatureResult, remediation);
       fs.unlinkSync(filePath);
     }
 
@@ -496,7 +590,21 @@ class LaneWorker {
       },
       execution_verified_count: routes.filter((r) => r.execution_verified === true).length,
       execution_failed_count: routes.filter((r) => r.execution_verified === false && r.reason === 'EXECUTION_NOT_VERIFIED').length,
-      liveness: this.executionGate.checkLiveness(this.config.queues.processed),
+      liveness: (() => {
+        const base = this.executionGate.checkLiveness(this.config.queues.processed);
+        const routedActions = routes.filter(
+          (r) => r.target_queue === 'actionRequired' || r.target_queue === 'inProgress' || r.target_queue === 'processed'
+        ).length;
+        const routedCompletions = routes.filter((r) => r.target_queue === 'processed').length;
+        const activeByRouting = routedActions > 0;
+        return {
+          ...base,
+          routed_actions_last_run: routedActions,
+          routed_completions_last_run: routedCompletions,
+          alert: base.alert && !activeByRouting,
+          alert_reason: base.alert && !activeByRouting ? base.alert_reason : null,
+        };
+      })(),
       routes,
       timestamp: nowIso(),
     };
