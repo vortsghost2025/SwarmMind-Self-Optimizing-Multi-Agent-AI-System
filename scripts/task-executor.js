@@ -12,9 +12,14 @@ const IN_PROGRESS_DIR = path.join(REPO_ROOT, 'lanes', LANE, 'inbox', 'in-progres
 const PROCESSED_DIR = path.join(REPO_ROOT, 'lanes', LANE, 'inbox', 'processed');
 const OUTBOX_DIR = path.join(REPO_ROOT, 'lanes', LANE, 'outbox');
 
-const ARCHIVIST_INBOX = 'S:/Archivist-Agent/lanes/archivist/inbox/';
 const LOCAL_LOOP_MODE = process.env.SWARM_ROLE_LOCAL_LOOP === '1';
 const LOCAL_LOOP_INBOX = path.join(REPO_ROOT, 'lanes', LANE, 'inbox');
+const LANE_INBOX = {
+  archivist: 'S:/Archivist-Agent/lanes/archivist/inbox/',
+  library: 'S:/self-organizing-library/lanes/library/inbox/',
+  kernel: 'S:/kernel-lane/lanes/kernel/inbox/',
+  swarmmind: 'S:/SwarmMind/lanes/swarmmind/inbox/',
+};
 
 function nowIso() { return new Date().toISOString(); }
 
@@ -74,6 +79,12 @@ function executeTask(msg) {
   };
 }
 
+function resolveTargetInbox(response) {
+  if (LOCAL_LOOP_MODE) return LOCAL_LOOP_INBOX;
+  const lane = String(response.to || '').toLowerCase();
+  return LANE_INBOX[lane] || LANE_INBOX.archivist;
+}
+
 function createResponse(originalMsg, executionResult) {
   return {
     schema_version: '1.3',
@@ -113,7 +124,7 @@ function signAndDeliver(response) {
     ensureDir(OUTBOX_DIR);
     fs.writeFileSync(outPath, JSON.stringify(signed, null, 2), 'utf8');
 
-    const targetDir = LOCAL_LOOP_MODE ? LOCAL_LOOP_INBOX : ARCHIVIST_INBOX;
+    const targetDir = resolveTargetInbox(signed);
     ensureDir(targetDir);
     const targetPath = path.join(targetDir, `${response.task_id}.json`);
     fs.writeFileSync(targetPath, JSON.stringify(signed, null, 2), 'utf8');
@@ -124,7 +135,7 @@ function signAndDeliver(response) {
     const outPath = path.join(OUTBOX_DIR, `${response.task_id}.json`);
     fs.writeFileSync(outPath, JSON.stringify(response, null, 2), 'utf8');
 
-    const targetDir = LOCAL_LOOP_MODE ? LOCAL_LOOP_INBOX : ARCHIVIST_INBOX;
+    const targetDir = resolveTargetInbox(response);
     ensureDir(targetDir);
     const targetPath = path.join(targetDir, `${response.task_id}.json`);
     fs.writeFileSync(targetPath, JSON.stringify(response, null, 2), 'utf8');
