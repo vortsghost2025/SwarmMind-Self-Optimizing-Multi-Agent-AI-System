@@ -1,0 +1,47 @@
+{
+  "task_id": "TRUST-STORE-HEALTH",
+  "lane": "swarmmind",
+  "completed_at": "2026-04-25T04:28:42.000Z",
+  "status": "pass",
+  "summary": "All 4 trust-store entries pass integrity checks",
+  "checks": [
+    {
+      "lane": "archivist",
+      "key_id": "ee70b78105bc6189",
+      "key_id_valid": true,
+      "key_id_is_16_char_hex": true,
+      "public_key_non_empty": true,
+      "lane_name_canonical": true,
+      "anomaly": null
+    },
+    {
+      "lane": "kernel",
+      "key_id": "b677eb87f6be83f9",
+      "key_id_valid": true,
+      "key_id_is_16_char_hex": true,
+      "public_key_non_empty": true,
+      "lane_name_canonical": true,
+      "anomaly": null
+    },
+    {
+      "lane": "library",
+      "key_id": "ea2a75bab220adc2",
+      "key_id_valid": true,
+      "key_id_is_16_char_hex": true,
+      "public_key_non_empty": true,
+      "lane_name_canonical": true,
+      "anomaly": null
+    },
+    {
+      "lane": "swarmmind",
+      "key_id": "addb0afb8ee5c2ed",
+      "key_id_valid": true,
+      "key_id_is_16_char_hex": true,
+      "public_key_non_empty": true,
+      "lane_name_canonical": true,
+      "anomaly": null
+    }
+  ],
+  "anomalies_count": 0,
+  "canonical_lanes": ["archivist", "kernel", "library", "swarmmind"]
+}

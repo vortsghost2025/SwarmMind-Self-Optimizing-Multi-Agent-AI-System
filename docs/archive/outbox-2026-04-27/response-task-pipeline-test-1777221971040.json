@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.3",
+  "task_id": "response-task-pipeline-test-1777221971040",
+  "idempotency_key": "resp-1777222060810-task-pipeline-te",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "response",
+  "task_kind": "status",
+  "priority": "P2",
+  "subject": "Re: Pipeline E2E test: report SwarmMind status",
+  "body": "swarmmind: Processed=14, Quarantine=2",
+  "timestamp": "2026-04-26T16:47:40.810Z",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "execution": {
+    "mode": "auto",
+    "engine": "pipeline",
+    "actor": "task-executor"
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-26T16:47:40.810Z"
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1
+  },
+  "evidence": {
+    "required": false,
+    "verified": true
+  },
+  "evidence_exchange": {
+    "artifact_path": null,
+    "artifact_type": "response",
+    "delivered_at": "2026-04-26T16:47:40.810Z"
+  },
+  "heartbeat": {
+    "status": "done",
+    "last_heartbeat_at": "2026-04-26T16:47:40.810Z",
+    "interval_seconds": 300,
+    "timeout_seconds": 900
+  },
+  "_original_task_id": "task-pipeline-test-1777221971040",
+  "_execution_result": {
+    "processed_count": 14,
+    "quarantine_count": 2
+  },
+  "content_hash": "sha256:4256d4163d849093e1c612c16afd91fd39f8042be0497ee653071980440fdc63",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFkZGIwYWZiOGVlNWMyZWQifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6NDI1NmQ0MTYzZDg0OTA5M2UxYzYxMmMxNmFmZDkxZmQzOWY4MDQyYmUwNDk3ZWU2NTMwNzE5ODA0NDBmZGM2MyIsImV4cCI6MTc3NzMwODQ2MCwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3NzIyMjA2MCwiaWQiOm51bGwsImxhbmUiOiJzd2FybW1pbmQiLCJwcmlvcml0eSI6IlAyIiwidGFza19pZCI6InJlc3BvbnNlLXRhc2stcGlwZWxpbmUtdGVzdC0xNzc3MjIxOTcxMDQwIiwidG8iOiJhcmNoaXZpc3QifQ.yedJrQACh3MNkYuBf9t8RSeU26Is7nQtHB7PF5637Pf4nwhCTBD-u1xuFq9B9qtZT_Ua8DnSwk4W0R9J5yEAY84I3bjaDI9-HeU71DrGoEmODxt8nZND2uduRQZU_HEmXIvcHMCel1PhycVQGTXuUrsBnIVIf7gzlX7zmZTjthtcJfqxX-oWG5Lzg9zgtaFpqAuwcpSgI-Hyjg9WmQbhr9OmICOp4J5x_sxOIJM7ublATObDXRi7NWpUXtBNVbPCb0Zj5gXXoRpEeNcVaozbz8Ha-s3UKQacGUtm3to5wYMvPdNCKskH7xeQXE-bBhAkhvp6NJyt1WQBbb4aGi28Yw",
+  "signature_alg": "RS256",
+  "key_id": "addb0afb8ee5c2ed"
+}

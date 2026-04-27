@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.3",
+  "task_id": "response-swarm-rerun-status-1",
+  "idempotency_key": "resp-1777314215063-swarm-rerun-stat",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "response",
+  "task_kind": "ack",
+  "priority": "P2",
+  "subject": "Re: swarm rerun status",
+  "body": "Acknowledged task: swarm rerun status",
+  "timestamp": "2026-04-27T18:23:35.063Z",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "execution": {
+    "mode": "auto",
+    "engine": "pipeline",
+    "actor": "task-executor"
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-27T18:23:35.063Z"
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1
+  },
+  "evidence": {
+    "required": false,
+    "verified": true
+  },
+  "evidence_exchange": {
+    "artifact_path": null,
+    "artifact_type": "response",
+    "delivered_at": "2026-04-27T18:23:35.063Z"
+  },
+  "heartbeat": {
+    "status": "done",
+    "last_heartbeat_at": "2026-04-27T18:23:35.063Z",
+    "interval_seconds": 300,
+    "timeout_seconds": 900
+  },
+  "_original_task_id": "swarm-rerun-status-1",
+  "_execution_result": {
+    "acknowledged": true,
+    "note": "Task type not recognized. Supported: status, \"read file <path>\", \"run script <name>\", \"git status/log/diff\", \"grep <pattern> in <path>\", \"write file <path>\\n<content>\", \"list dir <path>\", \"hash file <path>\", \"diff <file1> <file2>\", \"count \\\"pattern\\\" in <path>\", \"consistency check\" — or use natural language (e.g. \"check if trust store is consistent\")",
+    "_routing": {
+      "source": "fallback",
+      "verb": "ack",
+      "confidence": 0
+    },
+    "_timing": {
+      "ms": 1,
+      "verb": "ack",
+      "source": "fallback"
+    }
+  },
+  "_governance": {
+    "executor_version": "3.1.0",
+    "content_hash": "sha256:162481d6451f594f0e046d01bf4c943206a3d1697128cbb3f00059c382f6a635",
+    "timestamp": "2026-04-27T18:23:35.063Z"
+  },
+  "content_hash": "sha256:624d07aee503a183992cc6d8aa52c7e5cae4e28cb0fb9533ed635f847aba1f33",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFkZGIwYWZiOGVlNWMyZWQifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6NjI0ZDA3YWVlNTAzYTE4Mzk5MmNjNmQ4YWE1MmM3ZTVjYWU0ZTI4Y2IwZmI5NTMzZWQ2MzVmODQ3YWJhMWYzMyIsImV4cCI6MTc3NzQwMDYxNSwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3NzMxNDIxNSwiaWQiOm51bGwsImxhbmUiOiJzd2FybW1pbmQiLCJwcmlvcml0eSI6IlAyIiwidGFza19pZCI6InJlc3BvbnNlLXN3YXJtLXJlcnVuLXN0YXR1cy0xIiwidG8iOiJhcmNoaXZpc3QifQ.X_swWIBk0ZlLsnB1HuFk9aqsAQvNOk5PRaPSyvwMcslAxe11xK3adksjmaNa9WAFbubUmE_FwZHZaUuSZj2ZzzzQ1upwzLUt4KiWRvQ1s1muS39KhXdHcDmZwqGzRgMgVHonjNPsrHFv0mAJFTMGWcYnAvgBZ_yOKAk5kHORDAEi0vMA4E567iI5G_qAis3Yy1GPu_fIDjGMrgdL03tVtv3REowFQ1Tm8KhbUxktVOVmOmJYkV4bhcRWKlA2lGd2VqenpqlmHM6ymKvIYM9ERW5kWuRg4h4oSO28Rixr_dGYOJoJvDX286148DEyf4xlF66HuoJA3LiLRZOVvKkA_g",
+  "signature_alg": "RS256",
+  "key_id": "addb0afb8ee5c2ed"
+}

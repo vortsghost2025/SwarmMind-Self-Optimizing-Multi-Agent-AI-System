@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.3",
+  "task_id": "response-task-1777310127530-31aa7519",
+  "idempotency_key": "resp-1777310141038-task-17773101275",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "response",
+  "task_kind": "ack",
+  "priority": "P2",
+  "subject": "Re: probe: unsupported",
+  "body": "Acknowledged task: probe: unsupported",
+  "timestamp": "2026-04-27T17:15:41.038Z",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "execution": {
+    "mode": "auto",
+    "engine": "pipeline",
+    "actor": "task-executor"
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-27T17:15:41.038Z"
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1
+  },
+  "evidence": {
+    "required": false,
+    "verified": true
+  },
+  "evidence_exchange": {
+    "artifact_path": null,
+    "artifact_type": "response",
+    "delivered_at": "2026-04-27T17:15:41.038Z"
+  },
+  "heartbeat": {
+    "status": "done",
+    "last_heartbeat_at": "2026-04-27T17:15:41.038Z",
+    "interval_seconds": 300,
+    "timeout_seconds": 900
+  },
+  "_original_task_id": "task-1777310127530-31aa7519",
+  "_execution_result": {
+    "acknowledged": true,
+    "note": "Task type not recognized. Supported: status, \"read file <path>\", \"run script <name>\", \"git status/log/diff\", \"grep <pattern> in <path>\", \"write file <path>\\n<content>\", \"list dir <path>\", \"hash file <path>\", \"diff <file1> <file2>\", \"count \\\"pattern\\\" in <path>\", \"consistency check\" — or use natural language (e.g. \"check if trust store is consistent\")",
+    "_routing": {
+      "source": "fallback",
+      "verb": "ack",
+      "confidence": 0
+    },
+    "_timing": {
+      "ms": 1,
+      "verb": "ack",
+      "source": "fallback"
+    }
+  },
+  "_governance": {
+    "executor_version": "3.1.0",
+    "content_hash": "sha256:162481d6451f594f0e046d01bf4c943206a3d1697128cbb3f00059c382f6a635",
+    "timestamp": "2026-04-27T17:15:41.038Z"
+  },
+  "content_hash": "sha256:0dfae66404fae1564c371959ba0a5b6b3b0929b0d9334bf27a1837749ff745c6",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFkZGIwYWZiOGVlNWMyZWQifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6MGRmYWU2NjQwNGZhZTE1NjRjMzcxOTU5YmEwYTViNmIzYjA5MjliMGQ5MzM0YmYyN2ExODM3NzQ5ZmY3NDVjNiIsImV4cCI6MTc3NzM5NjU0MSwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3NzMxMDE0MSwiaWQiOm51bGwsImxhbmUiOiJzd2FybW1pbmQiLCJwcmlvcml0eSI6IlAyIiwidGFza19pZCI6InJlc3BvbnNlLXRhc2stMTc3NzMxMDEyNzUzMC0zMWFhNzUxOSIsInRvIjoiYXJjaGl2aXN0In0.lPh2GWiVugPvTuBYSZsfP0cl7MRHVhwDdbez9xmk3P_XalgHUWc4WusuK5i_4Cx-DEnD3SPY2n0390jwotKaMTT-NOHDeyhSw5feAFblSl6FHY6NllyP4dBSDmQJDgTol_UmcDZOP2QjoqcON2J3L8l-qenguY-2f4Gh7ACLBBIb5UvsreAE-XnspDvowXMui5uOG-X7iCMWFBjL1jkhJd1usvvr-rcdUznaOGGJ6SxNybJOOuufoD8izQwnl2-efcmJmF74L-E9Wlf2DiXLAjQTyU04C_YAylA20Zh916avJzSJMHgVlLUYu8ivu2_LYFKGMKz8mvqIY8zSIFmhoA",
+  "signature_alg": "RS256",
+  "key_id": "addb0afb8ee5c2ed"
+}

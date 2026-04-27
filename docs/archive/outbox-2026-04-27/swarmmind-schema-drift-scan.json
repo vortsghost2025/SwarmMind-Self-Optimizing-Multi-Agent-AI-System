@@ -1,0 +1,34 @@
+{
+  "task_id": "SCHEMA-DRIFT-SCAN",
+  "lane": "swarmmind",
+  "completed_at": "2026-04-25T04:28:42.000Z",
+  "status": "drift_detected",
+  "summary": "Schema drift found: library lane has extended task_kind enum and missing evidence_exchange block",
+  "schemas_compared": ["archivist", "swarmmind", "kernel", "library"],
+  "drifts": [
+    {
+      "field": "properties.task_kind.enum",
+      "archivist": ["proposal", "review", "amendment", "ratification", "ack", "alert", "notification", "heartbeat"],
+      "swarmmind": ["proposal", "review", "amendment", "ratification", "ack", "alert", "notification", "heartbeat"],
+      "kernel": ["proposal", "review", "amendment", "ratification", "ack", "alert", "notification", "heartbeat"],
+      "library": ["proposal", "review", "amendment", "ratification", "ack", "alert", "notification", "heartbeat", "done", "status", "report", "handoff"],
+      "description": "Library lane adds 4 extra task_kind values: 'done', 'status', 'report', 'handoff'"
+    },
+    {
+      "field": "properties.evidence_exchange",
+      "archivist": "present",
+      "swarmmind": "present",
+      "kernel": "present",
+      "library": "missing",
+      "description": "Library lane schema is missing the evidence_exchange property block (v1.3 addition)"
+    }
+  ],
+  "required_fields_comparison": {
+    "all_lanes_identical": true,
+    "required": ["schema_version", "task_id", "idempotency_key", "from", "to", "type", "priority", "subject", "body", "timestamp", "requires_action", "payload", "execution", "lease", "retry", "evidence", "heartbeat", "signature", "key_id"]
+  },
+  "allOf_conditional": {
+    "all_lanes_identical": true,
+    "note": "All lanes require task_kind when type is task/response/escalation/handoff"
+  }
+}

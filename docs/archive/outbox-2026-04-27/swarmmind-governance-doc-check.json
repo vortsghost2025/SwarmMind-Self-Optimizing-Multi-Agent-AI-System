@@ -1,0 +1,38 @@
+{
+  "task_id": "GOVERNANCE-DOC-CHECK",
+  "lane": "swarmmind",
+  "completed_at": "2026-04-25T04:28:42.000Z",
+  "status": "pass",
+  "summary": "All governance docs exist and are non-empty across all 4 lanes",
+  "results": [
+    {
+      "lane": "archivist",
+      "root": "S:/Archivist-Agent",
+      "BOOTSTRAP.md": { "exists": true, "size_bytes": 22853 },
+      "GOVERNANCE.md": { "exists": true, "size_bytes": 10638 },
+      "COVENANT.md": { "exists": true, "size_bytes": 4059 }
+    },
+    {
+      "lane": "swarmmind",
+      "root": "S:/SwarmMind",
+      "BOOTSTRAP.md": { "exists": true, "size_bytes": 22853 },
+      "GOVERNANCE.md": { "exists": true, "size_bytes": 10638 },
+      "COVENANT.md": { "exists": true, "size_bytes": 4059 }
+    },
+    {
+      "lane": "kernel",
+      "root": "S:/kernel-lane",
+      "BOOTSTRAP.md": { "exists": true, "size_bytes": 22853 },
+      "GOVERNANCE.md": { "exists": true, "size_bytes": 10638 },
+      "COVENANT.md": { "exists": true, "size_bytes": 4059 }
+    },
+    {
+      "lane": "library",
+      "root": "S:/self-organizing-library",
+      "BOOTSTRAP.md": { "exists": true, "size_bytes": 22853 },
+      "GOVERNANCE.md": { "exists": true, "size_bytes": 10638 },
+      "COVENANT.md": { "exists": true, "size_bytes": 4059 }
+    }
+  ],
+  "anomalies": []
+}

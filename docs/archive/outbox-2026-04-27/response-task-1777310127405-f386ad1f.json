@@ -1,0 +1,72 @@
+{
+  "schema_version": "1.3",
+  "task_id": "response-task-1777310127405-f386ad1f",
+  "idempotency_key": "resp-1777310141030-task-17773101274",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "response",
+  "task_kind": "report",
+  "priority": "P2",
+  "subject": "Re: probe: hash",
+  "body": "SHA256 S:\\SwarmMind\\scripts\\lane-worker.js: 1b27de56e0f5c460... (29545 bytes)",
+  "timestamp": "2026-04-27T17:15:41.030Z",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "execution": {
+    "mode": "auto",
+    "engine": "pipeline",
+    "actor": "task-executor"
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-27T17:15:41.030Z"
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1
+  },
+  "evidence": {
+    "required": false,
+    "verified": true
+  },
+  "evidence_exchange": {
+    "artifact_path": null,
+    "artifact_type": "response",
+    "delivered_at": "2026-04-27T17:15:41.030Z"
+  },
+  "heartbeat": {
+    "status": "done",
+    "last_heartbeat_at": "2026-04-27T17:15:41.030Z",
+    "interval_seconds": 300,
+    "timeout_seconds": 900
+  },
+  "_original_task_id": "task-1777310127405-f386ad1f",
+  "_execution_result": {
+    "path": "S:\\SwarmMind\\scripts\\lane-worker.js",
+    "size": 29545,
+    "sha256": "1b27de56e0f5c4601f3e8ebae64fd9a8da0c49db4f1e5bb383e73a8cd0bf31b1",
+    "modified": "2026-04-27T16:34:24.534Z",
+    "_routing": {
+      "source": "explicit",
+      "verb": "hash file",
+      "confidence": 1
+    },
+    "_timing": {
+      "ms": 0,
+      "verb": "hash file",
+      "source": "explicit"
+    }
+  },
+  "_governance": {
+    "executor_version": "3.1.0",
+    "content_hash": "sha256:e837053b21276158018c931dd6ad0b0a31ef830650995f8dd1368f7b44361220",
+    "timestamp": "2026-04-27T17:15:41.030Z"
+  },
+  "content_hash": "sha256:5558e116b7469552d0b3a72bdbc73e3ebfd75d7d8e0dff1ba96ec610b1e1a4bd",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFkZGIwYWZiOGVlNWMyZWQifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6NTU1OGUxMTZiNzQ2OTU1MmQwYjNhNzJiZGJjNzNlM2ViZmQ3NWQ3ZDhlMGRmZjFiYTk2ZWM2MTBiMWUxYTRiZCIsImV4cCI6MTc3NzM5NjU0MSwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3NzMxMDE0MSwiaWQiOm51bGwsImxhbmUiOiJzd2FybW1pbmQiLCJwcmlvcml0eSI6IlAyIiwidGFza19pZCI6InJlc3BvbnNlLXRhc2stMTc3NzMxMDEyNzQwNS1mMzg2YWQxZiIsInRvIjoiYXJjaGl2aXN0In0.CfyUYQt4nXCeyMuQcyniUm6Fdth_l494aN85zMUPAK_iFkiUX4dsny6_c_IAnZwRYpij1DATw2W6KeJmToxQSPKgRP_S_1Yl7uGjVoMVahHQn6EGePBEbqg6SLzlnF-Ypq1QvbJnSpwXdSHTNWdo11dzAZzMZa3UadQOUelDlIcTocTCCwaSOpqSAgMoDkB99oARno8OhLUvch2UT4JHe4PFCwQzZsAZKNajL5mHEyUIaFkHLB8DnnayiBgdDgEd171pt2bJZj32Ggg-Onk665GaReZw6-sAPobanVpR6gv_Uf27o5fcPry-RScrug0_cHdEWyjJGVzk_6NE33f3Vw",
+  "signature_alg": "RS256",
+  "key_id": "addb0afb8ee5c2ed"
+}

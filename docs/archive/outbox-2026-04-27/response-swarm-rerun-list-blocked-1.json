@@ -1,0 +1,96 @@
+{
+  "schema_version": "1.3",
+  "task_id": "response-swarm-rerun-list-blocked-1",
+  "idempotency_key": "resp-1777314215058-swarm-rerun-list",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "response",
+  "task_kind": "report",
+  "priority": "P2",
+  "subject": "Re: swarm rerun list blocked",
+  "body": "Directory S:\\SwarmMind\\lanes\\swarmmind\\inbox\\blocked: 4 entries",
+  "timestamp": "2026-04-27T18:23:35.058Z",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "execution": {
+    "mode": "auto",
+    "engine": "pipeline",
+    "actor": "task-executor"
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-27T18:23:35.058Z"
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1
+  },
+  "evidence": {
+    "required": false,
+    "verified": true
+  },
+  "evidence_exchange": {
+    "artifact_path": null,
+    "artifact_type": "response",
+    "delivered_at": "2026-04-27T18:23:35.058Z"
+  },
+  "heartbeat": {
+    "status": "done",
+    "last_heartbeat_at": "2026-04-27T18:23:35.058Z",
+    "interval_seconds": 300,
+    "timeout_seconds": 900
+  },
+  "_original_task_id": "swarm-rerun-list-blocked-1",
+  "_execution_result": {
+    "path": "S:\\SwarmMind\\lanes\\swarmmind\\inbox\\blocked",
+    "entries": [
+      {
+        "name": "domain-gate-proof-1777310351613-swarmmind.json",
+        "type": "FILE",
+        "size": 4126,
+        "modified": "2026-04-27T18:22:18.595Z"
+      },
+      {
+        "name": "swarm-live-e2e-1777296129796.json",
+        "type": "FILE",
+        "size": 2464,
+        "modified": "2026-04-27T13:22:18.157Z"
+      },
+      {
+        "name": "task-1777303532574-aea86a83.json",
+        "type": "FILE",
+        "size": 3007,
+        "modified": "2026-04-27T15:25:50.692Z"
+      },
+      {
+        "name": "task-1777303541866-05c93b05.json",
+        "type": "FILE",
+        "size": 2666,
+        "modified": "2026-04-27T15:25:50.695Z"
+      }
+    ],
+    "count": 4,
+    "_routing": {
+      "source": "explicit",
+      "verb": "list dir",
+      "confidence": 1
+    },
+    "_timing": {
+      "ms": 0,
+      "verb": "list dir",
+      "source": "explicit"
+    }
+  },
+  "_governance": {
+    "executor_version": "3.1.0",
+    "content_hash": "sha256:a426362073e432ad1170112d862b661d1b18864cd1dac8e6099cfa9cf27652ac",
+    "timestamp": "2026-04-27T18:23:35.058Z"
+  },
+  "content_hash": "sha256:6b18f051431adaa39ff11a6abb1839c62c71fc397d5f7319e15f9b0b3147b8fd",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFkZGIwYWZiOGVlNWMyZWQifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6NmIxOGYwNTE0MzFhZGFhMzlmZjExYTZhYmIxODM5YzYyYzcxZmMzOTdkNWY3MzE5ZTE1ZjliMGIzMTQ3YjhmZCIsImV4cCI6MTc3NzQwMDYxNSwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3NzMxNDIxNSwiaWQiOm51bGwsImxhbmUiOiJzd2FybW1pbmQiLCJwcmlvcml0eSI6IlAyIiwidGFza19pZCI6InJlc3BvbnNlLXN3YXJtLXJlcnVuLWxpc3QtYmxvY2tlZC0xIiwidG8iOiJhcmNoaXZpc3QifQ.xm9CXi9UKOeNRhDtBU6GqmcaoJWWDPrOZxRPcoNiL5-W-ZoD3kLZpCvt2OhRzKenDvuaIbmXEwmYB5_f9kn0zB4FhqiEbESZnaL-ovKHJCAUtzrbquiVfViijn8Nu29gRu-RXZ4EmjFAyGU6Rzn8PMz1oevUnvSmR9VEVjvw54JzkdBeLb-dDYi9nQmgy4cvJnugF-1y1OQJJCgFOreRvYebJNM7oeaTFn-vEFeUbooZP-xyH79HaqK-LrUkzLhySi1j8a20HSBt7mGLyZCD7FemquvEH01BCeqTqazDCVqHadxLPsNf9rFdBFpWmvmIKlvi7pJMAOLlxEI5NQIqLA",
+  "signature_alg": "RS256",
+  "key_id": "addb0afb8ee5c2ed"
+}

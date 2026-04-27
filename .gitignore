@@ -21,3 +21,6 @@ lanes/*/broadcast/trust-store.json
 
 # Env
 .env*
+
+# Local git worktrees
+worktrees/
