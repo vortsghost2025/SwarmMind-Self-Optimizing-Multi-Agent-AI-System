@@ -1,0 +1,67 @@
+{
+  "id": "task-task-1777227262664",
+  "task_id": "task-task-1777227262664",
+  "idempotency_key": "task-1777227262664",
+  "from": "archivist",
+  "to": "swarmmind",
+  "timestamp": "2026-04-26T18:14:22.664Z",
+  "priority": "P2",
+  "type": "task",
+  "subject": "Subagent test: run script",
+  "schema_version": "1.3",
+  "task_kind": "task",
+  "requires_action": true,
+  "body": "Run script recovery-test-suite.js",
+  "execution": {
+    "mode": "session_task",
+    "engine": "opencode",
+    "actor": "archivist"
+  },
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "lease": {
+    "owner": "archivist",
+    "acquired_at": "2026-04-26T18:14:22.664Z"
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1
+  },
+  "evidence": {
+    "required": false,
+    "verified": true,
+    "artifact_type": "report"
+  },
+  "evidence_exchange": {
+    "artifact_path": null,
+    "artifact_type": "report",
+    "delivered_at": null
+  },
+  "heartbeat": {
+    "status": "pending",
+    "last_heartbeat_at": "2026-04-26T18:14:22.664Z",
+    "interval_seconds": 300,
+    "timeout_seconds": 900
+  },
+  "content_hash": "sha256:3a9d57a3d487a9cf40a997efcc3423502d2f5798b4094d43841f04072a194452",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVlNzBiNzgxMDViYzYxODkifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6M2E5ZDU3YTNkNDg3YTljZjQwYTk5N2VmY2MzNDIzNTAyZDJmNTc5OGI0MDk0ZDQzODQxZjA0MDcyYTE5NDQ1MiIsImV4cCI6MTc3NzMxMzY2MiwiZnJvbSI6ImFyY2hpdmlzdCIsImlhdCI6MTc3NzIyNzI2MiwiaWQiOiJ0YXNrLXRhc2stMTc3NzIyNzI2MjY2NCIsImxhbmUiOiJhcmNoaXZpc3QiLCJwcmlvcml0eSI6IlAyIiwidGFza19pZCI6InRhc2stdGFzay0xNzc3MjI3MjYyNjY0IiwidG8iOiJzd2FybW1pbmQifQ.tMWceHC3vxpax7-xSPQyXSo_YgbSp-nQ7l8olV_axEaWMzChABumWLY46cQiwVVoX8KKvrubTvt6zQmmcL6ZOcwqAgUZW3NdweaQl2UQcEu7O0gJ6smP4nJLmtuZqVIQGrjOW-HJVHNhQPQjopkkYufa6-DcDBXI_QHyNoRG5GpqW1NbZMKbxMbtcDb16niXFGnx8OxiVLTe6kRp_oAryqwigRbbyzGmcLb6jEKfJ3tf01QFdI5-KGUVZWkBiw5CCGB3ey_IuQ_brGJfokK8y9jmLScQ3YHh9eDjIKtigTW2XvngBQG0Tca4j_3Kqd1pegnWgGwRf_wlXGC7Qb3kEg",
+  "signature_alg": "RS256",
+  "key_id": "ee70b78105bc6189",
+  "execution_verified": false,
+  "would_verify": false,
+  "_lane_worker": {
+    "lane": "swarmmind",
+    "routed_at": "2026-04-26T18:15:00.420Z",
+    "dry_run": false,
+    "route": "quarantine",
+    "reason": "SCHEMA_INVALID",
+    "detail": "Field \"task_kind\" value \"task\" not in allowed values: proposal, review, amendment, ratification, ack, done, status, report, handoff, alert, notification, heartbeat",
+    "schema_valid": false,
+    "signature_valid": true,
+    "english_only": true,
+    "execution_verified": false,
+    "would_verify": false
+  }
+}

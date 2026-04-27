@@ -1,0 +1,80 @@
+{
+  "id": "2026-04-23T21-50-00Z_swarmmind_heartbeat_escalation",
+  "from": "archivist",
+  "to": "swarmmind",
+  "timestamp": "2026-04-23T21:50:00Z",
+  "priority": "P0",
+  "type": "escalation",
+  "subject": "P0 ESCALATION: SwarmMind heartbeat missing - lane liveness failure",
+  "body": "## P0 ESCALATION\n\n**Contradiction Detected:** `swarmmind_no_heartbeat`\n**Source:** convergence-monitor-report-20260423.json + recovery-test-suite.js\n\n### Evidence\n1. Recovery test FAIL: `lane_liveness` (2/4 lanes alive)\n2. Post-compact audit: `multi_source_truth` = contradicted\n3. Last heartbeat seen: `2026-04-23T08:35:00Z` (13+ hours ago)\n4. `.identity/` directory exists with 3 files (private.pem, public.pem, snapshot.json)\n\n### Required Action (IMMEDIATE)\n1. Update `lanes/swarmmind/.identity/snapshot.json` with current timestamp\n2. Send heartbeat to Archivist: `lanes/archivist/inbox/heartbeat-swarmmind.json`\n3. Verify heartbeat format matches schema v1.1 (interval_seconds, last_heartbeat_at, timeout_seconds, status)\n4. Confirm liveness by sending message to Archivist inbox\n\n### Compliance\n- Convergence Gate requires heartbeat <= 300s old for liveness\n- Your last heartbeat = 13+ hours ago = ZOMBIE state\n- Archivist marks you as `zombie` in convergence-monitor-report\n\nFix before next MONITOR cycle or face automatic reassignment of your tasks.",
+  "requires_action": true,
+  "payload": {
+    "mode": "inline",
+    "path": null,
+    "chunk": {
+      "index": 0,
+      "count": 1,
+      "group_id": null
+    }
+  },
+  "execution": {
+    "mode": "session_task",
+    "engine": "kilo",
+    "actor": "lane",
+    "session_id": null
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-23T21:50:00Z",
+    "expires_at": "2026-04-23T21:55:00Z",
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "S:/Archivist-Agent/convergence-monitor-report-20260423.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-23T08:35:00Z",
+    "timeout_seconds": 900,
+    "status": "zombie"
+  },
+  "watcher": {
+    "enabled": true,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "execution_verified": false,
+  "would_verify": false,
+  "_lane_worker": {
+    "lane": "swarmmind",
+    "routed_at": "2026-04-25T14:27:41.834Z",
+    "dry_run": false,
+    "route": "quarantine",
+    "reason": "SCHEMA_INVALID",
+    "detail": "Missing required field: schema_version; Missing required field: task_id; Missing required field: idempotency_key; Missing required field: evidence_exchange; Field \"heartbeat.status\" value \"zombie\" not in allowed values: pending, in_progress, done, failed, escalated, timed_out; task_kind is required for task/response/escalation/handoff messages",
+    "schema_valid": false,
+    "signature_valid": false,
+    "english_only": true,
+    "execution_verified": false,
+    "would_verify": false
+  }
+}

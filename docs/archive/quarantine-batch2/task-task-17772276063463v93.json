@@ -1,0 +1,67 @@
+{
+  "id": "task-task-17772276063463v93",
+  "task_id": "task-task-17772276063463v93",
+  "idempotency_key": "task-17772276063463v93",
+  "from": "archivist",
+  "to": "swarmmind",
+  "timestamp": "2026-04-26T18:20:06.346Z",
+  "priority": "P2",
+  "type": "task",
+  "subject": "Subagent: read system state file",
+  "schema_version": "1.3",
+  "task_kind": "task",
+  "requires_action": true,
+  "body": "Read file lanes/broadcast/system_state.json from the SwarmMind repo root",
+  "execution": {
+    "mode": "session_task",
+    "engine": "opencode",
+    "actor": "archivist"
+  },
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "lease": {
+    "owner": "archivist",
+    "acquired_at": "2026-04-26T18:20:06.346Z"
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 1
+  },
+  "evidence": {
+    "required": false,
+    "verified": true,
+    "artifact_type": "report"
+  },
+  "evidence_exchange": {
+    "artifact_path": null,
+    "artifact_type": "report",
+    "delivered_at": null
+  },
+  "heartbeat": {
+    "status": "pending",
+    "last_heartbeat_at": "2026-04-26T18:20:06.346Z",
+    "interval_seconds": 300,
+    "timeout_seconds": 900
+  },
+  "content_hash": "sha256:21412ca3c101053b62993585db58f880c033382c1aa2db014c49ab4a6d9f273d",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVlNzBiNzgxMDViYzYxODkifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6MjE0MTJjYTNjMTAxMDUzYjYyOTkzNTg1ZGI1OGY4ODBjMDMzMzgyYzFhYTJkYjAxNGM0OWFiNGE2ZDlmMjczZCIsImV4cCI6MTc3NzMxNDAwNiwiZnJvbSI6ImFyY2hpdmlzdCIsImlhdCI6MTc3NzIyNzYwNiwiaWQiOiJ0YXNrLXRhc2stMTc3NzIyNzYwNjM0NjN2OTMiLCJsYW5lIjoiYXJjaGl2aXN0IiwicHJpb3JpdHkiOiJQMiIsInRhc2tfaWQiOiJ0YXNrLXRhc2stMTc3NzIyNzYwNjM0NjN2OTMiLCJ0byI6InN3YXJtbWluZCJ9.a4w3Jv1YaZiD0SNvQAvWX-hbYXb5dF7Z_H6QIIq-4laE0Oi5vs_rR_OWdWXpE2iliIn0XoWJvvH7saIJyjhOcylw0lWF5sixPFovlkyR2RCYnY6z0NfkSb8iKNaKU_PhH7txIy3_ZTVay3fwJTAfxDnK8Te6oBIKEylWsUSMBi1B3CfNxp5RoRD5EF_u5sEDuNqVuM0hCJH_C4xBA4G8MR0RxXALuWSq1StwTJzeKuTPDMNKO2R35OznKg7bW8W7-omSEPLh3p18YDYXE9H7V17wWnhUWegC8CPMhTQ9IDcYkxh2FmOrMfmH2avwIG7jOfgFP2mcqBLUcF1Un0_R1Q",
+  "signature_alg": "RS256",
+  "key_id": "ee70b78105bc6189",
+  "execution_verified": false,
+  "would_verify": false,
+  "_lane_worker": {
+    "lane": "swarmmind",
+    "routed_at": "2026-04-26T18:20:06.662Z",
+    "dry_run": false,
+    "route": "quarantine",
+    "reason": "SCHEMA_INVALID",
+    "detail": "Field \"task_kind\" value \"task\" not in allowed values: proposal, review, amendment, ratification, ack, done, status, report, handoff, alert, notification, heartbeat",
+    "schema_valid": false,
+    "signature_valid": true,
+    "english_only": true,
+    "execution_verified": false,
+    "would_verify": false
+  }
+}

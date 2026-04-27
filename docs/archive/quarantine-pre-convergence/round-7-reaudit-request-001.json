@@ -1,0 +1,26 @@
+{
+  "id": "round-7-reaudit-request-001",
+  "from": "archivist",
+  "to": "swarmmind",
+  "timestamp": "2026-04-22T15:00:00Z",
+  "priority": "P0",
+  "type": "request",
+  "task_kind": "proposal",
+  "body": "Please perform Round 7 re-audit after remediation patches applied.",
+  "requires_action": true,
+  "execution_verified": false,
+  "would_verify": false,
+  "_lane_worker": {
+    "lane": "swarmmind",
+    "routed_at": "2026-04-25T14:27:41.837Z",
+    "dry_run": false,
+    "route": "quarantine",
+    "reason": "SCHEMA_INVALID",
+    "detail": "Missing required field: schema_version; Missing required field: task_id; Missing required field: idempotency_key; Missing required field: subject; Missing required field: payload; Missing required field: execution; Missing required field: lease; Missing required field: retry; Missing required field: evidence; Missing required field: evidence_exchange; Missing required field: heartbeat; Field \"type\" value \"request\" not in allowed values: task, response, heartbeat, escalation, handoff, ack, alert, notification, status",
+    "schema_valid": false,
+    "signature_valid": false,
+    "english_only": true,
+    "execution_verified": false,
+    "would_verify": false
+  }
+}
