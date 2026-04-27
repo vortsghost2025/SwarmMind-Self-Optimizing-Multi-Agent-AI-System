@@ -14,11 +14,13 @@ const FEATURE_FLAGS = {
   diff_size_limit: true,
 };
 
+const { LaneDiscovery } = require('S:/Archivist-Agent/.global/lane-discovery');
+const _laneDiscovery = new LaneDiscovery();
 const LANE_REGISTRY = {
-  archivist: { root: 'S:/Archivist-Agent', inbox_target: 'S:/Archivist-Agent/lanes/archivist/inbox' },
-  kernel: { root: 'S:/kernel-lane', inbox_target: 'S:/Archivist-Agent/lanes/archivist/inbox' },
-  library: { root: 'S:/self-organizing-library', inbox_target: 'S:/Archivist-Agent/lanes/archivist/inbox' },
-  swarmmind: { root: 'S:/SwarmMind', inbox_target: 'S:/Archivist-Agent/lanes/archivist/inbox' },
+  archivist: { root: _laneDiscovery.getLocalPath('archivist'), inbox_target: _laneDiscovery.getInbox('archivist') },
+  kernel: { root: _laneDiscovery.getLocalPath('kernel'), inbox_target: _laneDiscovery.getInbox('kernel') },
+  library: { root: _laneDiscovery.getLocalPath('library'), inbox_target: _laneDiscovery.getInbox('library') },
+  swarmmind: { root: _laneDiscovery.getLocalPath('swarmmind'), inbox_target: _laneDiscovery.getInbox('swarmmind') },
 };
 
 function nowIso() { return new Date().toISOString(); }
