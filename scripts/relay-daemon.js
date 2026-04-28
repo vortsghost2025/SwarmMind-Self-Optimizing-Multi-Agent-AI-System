@@ -20,6 +20,32 @@ const LANE_ROOTS = {
 
 function nowIso() { return new Date().toISOString(); }
 
+function safeNumber(n, fallback = 0) {
+  if (typeof n !== 'number' || !Number.isFinite(n)) {
+    return fallback;
+  }
+  return n;
+}
+
+function sanitizeNumbers(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizeNumbers);
+  } else if (obj && typeof obj === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (typeof v === 'number') {
+        out[k] = Number.isFinite(v) ? v : 0;
+      } else if (typeof v === 'object' && v !== null) {
+        out[k] = sanitizeNumbers(v);
+      } else {
+        out[k] = v;
+      }
+    }
+    return out;
+  }
+  return obj;
+}
+
 function parseArgs(argv) {
   const out = { lane: null, apply: false, pollSeconds: 20, json: false };
   for (let i = 0; i < argv.length; i++) {
@@ -47,6 +73,13 @@ function safeReadJson(filePath) {
   } catch (err) {
     return { ok: false, error: err.message };
   }
+}
+
+function isRelayEnvelope(msg) {
+  if (!msg || typeof msg !== 'object') return false;
+  // ACK/artifact documents are valid JSON but not lane-message envelopes.
+  if (msg.ack_for && !msg.to) return false;
+  return typeof msg.to === 'string' && msg.to.length > 0;
 }
 
 class RelayDaemon {
@@ -77,6 +110,11 @@ class RelayDaemon {
       }
 
       const msg = read.value;
+      if (!isRelayEnvelope(msg)) {
+        // Keep local artifacts in outbox without retry noise.
+        results.details.push({ file: ent.name, skipped: true, reason: 'NON_MESSAGE_ARTIFACT' });
+        continue;
+      }
       const targetLane = msg.to;
       if (!targetLane || !CANONICAL_INBOX[targetLane]) {
         results.errors.push({ file: ent.name, error: `Unknown target lane: ${targetLane}` });
@@ -87,20 +125,21 @@ class RelayDaemon {
       const targetPath = path.join(targetDir, ent.name);
 
       if (!this.dryRun) {
-        try {
-          if (!fs.existsSync(targetDir)) {
-            fs.mkdirSync(targetDir, { recursive: true });
+          try {
+            if (!fs.existsSync(targetDir)) {
+              fs.mkdirSync(targetDir, { recursive: true });
+            }
+            const cleaned = sanitizeNumbers(msg);
+            fs.writeFileSync(targetPath, JSON.stringify(cleaned, null, 2), 'utf8');
+            fs.unlinkSync(filePath);
+            results.delivered++;
+            results.details.push({ file: ent.name, from: this.lane, to: targetLane, target: targetPath });
+          } catch (err) {
+            results.errors.push({ file: ent.name, error: err.message });
           }
-          fs.writeFileSync(targetPath, JSON.stringify(msg, null, 2), 'utf8');
-          fs.unlinkSync(filePath);
-          results.delivered++;
-          results.details.push({ file: ent.name, from: this.lane, to: targetLane, target: targetPath });
-        } catch (err) {
-          results.errors.push({ file: ent.name, error: err.message });
+        } else {
+          results.details.push({ file: ent.name, from: this.lane, to: targetLane, target: targetPath, dry_run: true });
         }
-      } else {
-        results.details.push({ file: ent.name, from: this.lane, to: targetLane, target: targetPath, dry_run: true });
-      }
     }
 
     return results;
@@ -128,12 +167,13 @@ class RelayDaemon {
         const targetDir = CANONICAL_INBOX[this.lane];
         const targetPath = path.join(targetDir, ent.name);
 
-        if (!this.dryRun) {
+         if (!this.dryRun) {
           try {
             if (!fs.existsSync(targetDir)) {
               fs.mkdirSync(targetDir, { recursive: true });
             }
-            fs.writeFileSync(targetPath, JSON.stringify(msg, null, 2), 'utf8');
+            const cleaned = sanitizeNumbers(msg);
+            fs.writeFileSync(targetPath, JSON.stringify(cleaned, null, 2), 'utf8');
             fs.unlinkSync(filePath);
             results.collected++;
             results.details.push({ file: ent.name, from: otherLane, to: this.lane, target: targetPath });
