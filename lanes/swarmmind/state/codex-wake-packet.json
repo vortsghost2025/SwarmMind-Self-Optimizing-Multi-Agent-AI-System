@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "lane": "swarmmind",
+  "generated_at": "2026-04-28T19:42:26.802Z",
+  "pending_count": 1,
+  "pending": [
+    {
+      "file": "S:\\SwarmMind\\lanes\\swarmmind\\inbox\\action-required\\strict-re-ack-request-20260428.json",
+      "queue": "action-required",
+      "readable": false,
+      "priority": "P2",
+      "subject": "strict-re-ack-request-20260428.json",
+      "requires_codex": true
+    }
+  ],
+  "instructions": [
+    "Open this file when activating Codex as SwarmMind.",
+    "Process pending items in priority order.",
+    "Send signed response to Archivist inbox with convergence_gate.",
+    "Move completed SwarmMind inbox items to processed."
+  ],
+  "packet_hash": "b8afbbca1721ed1f9cfb9256d14f699584459a09a8447b31f531e6c5e053083f"
+}

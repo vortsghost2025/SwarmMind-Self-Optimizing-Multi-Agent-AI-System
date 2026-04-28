@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.3",
+  "task_id": "<task_id>",
+  "idempotency_key": "<idempotency_key>",
+  "from": "<from_lane>",
+  "to": "<to_lane>",
+  "type": "task",
+  "task_kind": "proposal",
+  "priority": "P2",
+  "subject": "PROPOSAL: <title>",
+  "body": "<description>",
+  "timestamp": "<ISO_8601>",
+  "requires_action": true,
+  "payload": { "mode": "inline", "compression": "none" },
+  "execution": { "mode": "manual", "engine": "codex", "actor": "lane" },
+  "lease": { "owner": "<to_lane>", "acquired_at": "<ISO_8601>" },
+  "retry": { "attempt": 1, "max_attempts": 3 },
+  "evidence": { "required": true, "verified": false },
+  "evidence_exchange": {},
+  "heartbeat": { "status": "pending", "last_heartbeat_at": "<ISO_8601>", "interval_seconds": 300, "timeout_seconds": 900 }
+}

@@ -34,6 +34,11 @@ const DEFAULT_HEARTBEAT = {
   timeout_seconds: 900,
 };
 
+const SESSION_ID = process.env.SESSION_ID || `sess-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+const ORIGIN_RUNTIME = process.env.ORIGIN_RUNTIME || 'opencode';
+const ORIGIN_WORKSPACE = process.env.ORIGIN_WORKSPACE || process.cwd();
+const SESSION_EPOCH = new Date().toISOString();
+
 function canonicalId(prefix = 'task') {
   return `${prefix}-${Date.now()}`;
 }
@@ -209,6 +214,12 @@ function createSignedMessage(msg, laneId) {
     signature: jws,
     signature_alg: 'RS256',
     key_id: keyId,
+    session_identity: {
+      session_id: SESSION_ID,
+      session_epoch_started_at: SESSION_EPOCH,
+      origin_runtime: ORIGIN_RUNTIME,
+      origin_workspace: ORIGIN_WORKSPACE,
+    },
   };
 }
 

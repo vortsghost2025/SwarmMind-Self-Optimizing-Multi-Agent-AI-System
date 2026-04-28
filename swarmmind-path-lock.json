@@ -4,7 +4,7 @@
   "canonical_root": "S:/SwarmMind",
   "deprecated_paths": [
     {
-      "path": "S:/SwarmMind",
+      "path": "S:/SwarmMind Self-Optimizing Multi-Agent AI System",
       "reason": "Deprecated per PATH AUTHORITY LOCK directive",
       "status": "read-only",
       "deletion_pending": true

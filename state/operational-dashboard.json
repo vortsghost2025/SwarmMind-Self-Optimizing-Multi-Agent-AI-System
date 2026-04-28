@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-04-28T15:35:00.000Z",
+  "lanes": {
+    "archivist": { "queue_depth": 1, "blocked": 33, "quarantine": 166, "status": "active" },
+    "kernel": { "queue_depth": 1, "blocked": 12, "quarantine": 3, "status": "active" },
+    "library": { "queue_depth": 1, "blocked": 6, "quarantine": 4, "status": "active" },
+    "swarmmind": { "queue_depth": 1, "blocked": 10, "quarantine": 11, "status": "active" }
+  },
+  "notes": "Aggregated from latest heartbeats. Use scripts/ for refresh."
+}

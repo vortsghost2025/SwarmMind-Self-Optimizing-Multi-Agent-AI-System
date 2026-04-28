@@ -1,0 +1,15 @@
+{
+  "lane_id": "swarmmind",
+  "role": "optimization",
+  "canonical_name": "SwarmMind",
+  "local_path": "S:/SwarmMind",
+  "repo": "https://github.com/vortsghost2025/SwarmMind",
+  "branch": "master",
+  "mailboxes": {
+    "inbox": "S:/SwarmMind/lanes/swarmmind/inbox",
+    "outbox": "S:/SwarmMind/lanes/swarmmind/outbox",
+    "processed": "S:/SwarmMind/lanes/swarmmind/inbox/processed",
+    "quarantine": "S:/SwarmMind/lanes/swarmmind/inbox/quarantine"
+  },
+  "broadcast_access": "S:/Archivist-Agent/lanes/broadcast"
+}

@@ -3,6 +3,26 @@
 *.pem
 *.key
 keys.json
+.env
+.env.local
+.lane-passphrases.json
+.runtime/lane-passphrases.json
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+.DS_Store
+tmp/
+*.swp
+*.swo
+__pycache__/
+*.pyc
+.vscode/
+.idea/
+*.iml
+coverage/
+.nyc_output/
+dist/
+build/
 
 # Inbox hygiene
 lanes/*/inbox/

@@ -1,0 +1,11 @@
+# Codeowners for critical paths
+# Format: <path> <owner>
+
+/                     swarmmind
+/lanes/               swarmmind
+/scripts/             swarmmind
+/src/                swarmmind
+/docs/               swarmmind
+/archivist/           archivist
+/kernel/              kernel
+/library/             library
