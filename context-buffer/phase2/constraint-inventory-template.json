@@ -1,0 +1,37 @@
+{
+  "_template": true,
+  "_description": "Register discovered constraints for Phase 2 discovery workstream. Each constraint must have a unique id, owner lane, and evidence path.",
+  "generated_at": "2026-04-28T18:34:22-04:00",
+  "schema_version": "1.0",
+  "constraints": [
+    {
+      "id": "constraint-001",
+      "title": "Example: Missing checkpoint validation on delegation",
+      "lane": "swarmmind",
+      "category": "delegation_gap",
+      "severity": "P0",
+      "discovered_by": "swarmmind",
+      "discovery_date": "2026-04-28T18:00:00-04:00",
+      "evidence_path": "context-buffer/phase2/evidence/delegation-checkpoint-gap-001.md",
+      "status": "candidate",
+      "tags": ["checkpoint", "validation", "delegation"],
+      "notes": "Candidate for pilot if feasibility >= MEDIUM and impact HIGH."
+    }
+  ],
+  "required_fields": [
+    "id",
+    "title",
+    "lane",
+    "category",
+    "severity",
+    "discovered_by",
+    "discovery_date",
+    "evidence_path",
+    "status"
+  ],
+  "allowed": {
+    "category": ["delegation_gap", "checkpoint_gap", "schema_gap", "evidence_gap", "policy_gap"],
+    "severity": ["P0", "P1", "P2"],
+    "status": ["candidate", "selected", "in_progress", "validated", "rejected"]
+  }
+}

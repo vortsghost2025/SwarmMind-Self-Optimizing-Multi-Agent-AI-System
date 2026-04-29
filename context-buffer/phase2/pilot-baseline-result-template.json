@@ -1,0 +1,47 @@
+{
+  "_template": true,
+  "_description": "Baseline and result capture for each Phase 2 pilot. One document per pilot.",
+  "generated_at": "2026-04-28T18:34:22-04:00",
+  "schema_version": "1.0",
+  "pilot": {
+    "id": "pilot-001",
+    "title": "Delegation checkpoint validation pilot",
+    "constraint_ids": ["constraint-001"],
+    "owner_lane": "swarmmind",
+    "start_date": "2026-05-12T09:00:00-04:00",
+    "end_date": "2026-05-19T17:00:00-04:00",
+    "baseline": {
+      "metric": "delegation_success_rate",
+      "value": 0.82,
+      "sample_size": 120,
+      "window": "2026-04-21 to 2026-04-28",
+      "notes": "Current rate without additional validation; observed intermittent failures."
+    },
+    "config": {
+      "changes": [
+        "Add checkpoint validation on delegation receiver",
+        "Reject delegation if checkpoint hash missing or invalid"
+      ],
+      "rollback_plan": "Feature flag toggle to revert validation rules."
+    },
+    "result": {
+      "metric": "delegation_success_rate",
+      "value": 0.97,
+      "sample_size": 125,
+      "window": "2026-05-12 to 2026-05-19",
+      "delta": 0.15,
+      "significance": "improved",
+      "side_effects": ["slight increase in latency (2ms avg)"],
+      "outcome": "pass",
+      "notes": "Pilot successful; ready for phased rollout."
+    },
+    "acceptance_criteria": {
+      "min_success_rate": 0.95,
+      "max_latency_increase_ms": 5,
+      "must_pass": true
+    },
+    "artifacts": [
+      "context-buffer/phase2/pilots/pilot-001-report.md"
+    ]
+  }
+}

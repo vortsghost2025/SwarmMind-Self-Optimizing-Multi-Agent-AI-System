@@ -1,0 +1,79 @@
+{
+  "timestamp": "2026-04-28T16:42:40-04:00",
+  "probe": "end-to-end-health",
+  "summary": "All lanes passed signing, trust-store and path checks. Queue depths nominal (1 per lane).",
+  "lanes": {
+    "archivist": {
+      "local_path": "S:/Archivist-Agent",
+      "inbox": "S:/Archivist-Agent/lanes/archivist/inbox",
+      "local_path_exists": true,
+      "inbox_exists": true,
+      "inbox_file_count": 1,
+      "trust_store_valid": true,
+      "trust_key_id": "45a318fe5e226407",
+      "signing_valid": true,
+      "signing_key_id": "65ae05b2a9e749cb",
+      "queue_depth": 1,
+      "status": "pass"
+    },
+    "authority": {
+      "local_path": "S:/Archivist-Agent",
+      "inbox": "S:/Archivist-Agent/lanes/authority/inbox",
+      "local_path_exists": true,
+      "inbox_exists": true,
+      "inbox_file_count": 12,
+      "trust_store_valid": true,
+      "trust_key_id": "45a318fe5e226407",
+      "signing_valid": true,
+      "signing_key_id": "65ae05b2a9e749cb",
+      "queue_depth": 0,
+      "status": "pass"
+    },
+    "kernel": {
+      "local_path": "S:/kernel-lane",
+      "inbox": "S:/kernel-lane/lanes/kernel/inbox",
+      "local_path_exists": true,
+      "inbox_exists": true,
+      "inbox_file_count": 1,
+      "trust_store_valid": true,
+      "trust_key_id": "6d220ff8f1ef5b05",
+      "signing_valid": true,
+      "signing_key_id": "b677eb87f6be83f9",
+      "queue_depth": 1,
+      "status": "pass"
+    },
+    "swarmmind": {
+      "local_path": "S:/SwarmMind",
+      "inbox": "S:/SwarmMind/lanes/swarmmind/inbox",
+      "local_path_exists": true,
+      "inbox_exists": true,
+      "inbox_file_count": 1,
+      "trust_store_valid": true,
+      "trust_key_id": "ecb12bdacf826701",
+      "signing_valid": true,
+      "signing_key_id": "addb0afb8ee5c2ed",
+      "queue_depth": 1,
+      "status": "pass"
+    },
+    "library": {
+      "local_path": "S:/self-organizing-library",
+      "inbox": "S:/self-organizing-library/lanes/library/inbox",
+      "local_path_exists": true,
+      "inbox_exists": true,
+      "inbox_file_count": 1,
+      "trust_store_valid": true,
+      "trust_key_id": "b1eba056729bbe9a",
+      "signing_valid": true,
+      "signing_key_id": "ea2a75bab220adc2",
+      "queue_depth": 1,
+      "status": "pass"
+    }
+  },
+  "suggestions": [
+    "Continue using --manual-cadence during sensitive operations to prevent race moves.",
+    "Keep worker-audit.log enabled for provenance on every file move.",
+    "Run check-paths.js weekly to detect registry/path drift.",
+    "Schedule daily publish-lattice-freedom-pulse.js to track queue/bl/q trends.",
+    "For any lane with persistent blocked/queue items, use lane-worker --apply-once --max-files N to clear surgically."
+  ]
+}

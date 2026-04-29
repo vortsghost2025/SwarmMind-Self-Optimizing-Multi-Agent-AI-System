@@ -1,0 +1,28 @@
+{
+  "_template": true,
+  "_description": "Scoring matrix to rank constraints for Phase 2 pilot selection. Scores 1-5 (5 highest).",
+  "generated_at": "2026-04-28T18:34:22-04:00",
+  "schema_version": "1.0",
+  "matrix": [
+    {
+      "constraint_id": "constraint-001",
+      "impact": 5,
+      "feasibility": 4,
+      "risk": 3,
+      "urgency": 4,
+      "resource_estimate_person_days": 5,
+      "dependencies": [],
+      "composite_score": 4.0,
+      "selected_for_pilot": true,
+      "notes": "High impact, feasible within 1 week. Safe pilot candidate."
+    }
+  ],
+  "scoring_rules": {
+    "impact": "1=low, 5=critical to objectives",
+    "feasibility": "1=very hard, 5=straightforward",
+    "risk": "1=low risk/side effects, 5=high risk",
+    "urgency": "1=can defer, 5=must address now",
+    "composite_score": "(impact + feasibility + (5 - risk) + urgency) / 4"
+  },
+  "selection_threshold": 3.5
+}
