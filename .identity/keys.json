@@ -1,0 +1,20 @@
+{
+  "identity": {
+    "lane_id": "swarmmind",
+    "role": "emergent-intelligence-lane",
+    "position": 2,
+    "created": "2026-04-29T18:06:00.000Z",
+    "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA01VcBbmJZCtFcCL2SwBM\nAeA8A3X4F7yZP+d6aWBxoz7LwGMWNuUQBE0nnaUU4jrJ1Msmt1pIiOglaSEM+fEM\nQMq7cFeRN9pGH2csy2ih2xhRT3C/loWExugktiG+P/zvba3mHDTj2ut09Baq/cfC\nmruSXCqJiyzrUBkd2/ubXlor6STkK7ZZ1xte2EoX3CNVBSMGG48gK3r/MMgrJ78Y\nBo2TP0FLC1uCQMQegs2PcWAxvI+p9XW8x6QWGKWq32JlVajyrtUOHZKZXZ2jZsAx\nqOJjAnd+5Ud08juUOenmYEtGwAmDYDzoLKfTnb2vxo0TU/w/+6Sw8+gwFxnShBY5\nywIDAQAB\n-----END PUBLIC KEY-----\n",
+    "key_id": "ecb12bdacf826701",
+    "algorithm": "RS256",
+    "purpose": "Identity anchor for cross-lane message signing and verification",
+    "usage": {
+      "signing": "Cross-lane messages, convergence proposals, heartbeat attestations",
+      "verification": "Inbox message validation, trust store verification"
+    },
+    "constraints": {
+      "never_export_private_key": true,
+      "rotate_on_compromise_only": true
+    }
+  }
+}
