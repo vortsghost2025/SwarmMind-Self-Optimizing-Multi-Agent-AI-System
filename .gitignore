@@ -44,3 +44,4 @@ lanes/*/broadcast/trust-store.json
 
 # Local git worktrees
 worktrees/
+nul

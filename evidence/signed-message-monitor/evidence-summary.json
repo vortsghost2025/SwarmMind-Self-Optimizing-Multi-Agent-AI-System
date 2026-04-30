@@ -1,0 +1,13 @@
+{
+  "monitor_task": "task-swarmmind-monitor-20260429-001",
+  "proof_run_at": "2026-04-29T21:34:27.157Z",
+  "valid_message_generated": true,
+  "valid_message_path": "S:\\SwarmMind\\evidence\\signed-message-monitor\\valid-signed-message.json",
+  "invalid_message_generated": true,
+  "invalid_message_path": "S:\\SwarmMind\\evidence\\signed-message-monitor\\invalid-unsigned-message.json",
+  "p0_alert_generated": true,
+  "p0_alert_path": "S:\\SwarmMind\\evidence\\signed-message-monitor\\p0-alert-signature-failure.json",
+  "log_path": "S:\\SwarmMind\\logs\\cps_log.jsonl",
+  "signature_validation_works": true,
+  "evidence_package_complete": true
+}

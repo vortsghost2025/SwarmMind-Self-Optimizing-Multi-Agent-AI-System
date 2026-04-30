@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.3",
+  "task_id": "monitor-proof-invalid-1777498467153",
+  "idempotency_key": "monitor-proof-valid-8f01bd4f-0258-48d0-9488-a83480eeb1ed",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "response",
+  "task_kind": "report",
+  "priority": "P2",
+  "subject": "Monitor proof: INVALID signature test",
+  "body": "This message has a valid RS256 signature.",
+  "timestamp": "2026-04-29T21:34:27.148Z",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "execution": {
+    "mode": "manual",
+    "engine": "opencode",
+    "actor": "lane"
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-29T21:34:27.148Z",
+    "expires_at": null,
+    "renewal_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "evidence": {
+    "required": false,
+    "verified": false
+  },
+  "evidence_exchange": {
+    "artifact_type": "report",
+    "artifact_path": "inline",
+    "delivered_at": "2026-04-29T21:34:27.148Z"
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-29T21:34:27.148Z",
+    "timeout_seconds": 900,
+    "status": "done"
+  },
+  "convergence_gate": {
+    "claim": "Valid signed proof message generated",
+    "evidence": "S:\\SwarmMind\\evidence\\signed-message-monitor",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  }
+}

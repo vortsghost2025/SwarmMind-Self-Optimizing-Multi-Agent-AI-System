@@ -1,0 +1,16 @@
+[
+  {
+    "node_id": "fb8212e128adc1c5",
+    "status": "needs_lane_review",
+    "edge_evidence": "Node \"APR15\" (Archivist-Agent) marked CONFLICTED with 65 contradictions; tag set includes Multi-Agent/Governance/Verification/Swarmmind/Archivist/Failure Mode/Drift/Ensemble. No explicit CONTRADICTS edges found in Archivist-Agent graph snapshot (only shared-tag/authority/link types present). Requires Archivist to produce edge-level conflict artifacts.",
+    "confidence": "medium",
+    "next_action": "Archivist to deliver CONTRADICTS edge artifacts for fb8212e128adc1c5; SwarmMind review blocked until explicit contradictions are provided"
+  },
+  {
+    "node_id": "1bda9962fbd5ca75",
+    "status": "needs_lane_review",
+    "edge_evidence": "Node \"Paper Outline: When AI Systems Lie About Their Own State\" (Archivist-Agent) flagged CONFLICTED (65 contradictions); tags: Multi-Agent/Governance/Verification/Swarmmind/Archivist/Library/Phenotype/Failure Mode/Drift/Constitutional AI/NFM-019/NFM-020. Edge snapshot shows only authority/shared-tag relations; CONTRADICTS edges not visible in current Archivist-Agent artifact set.",
+    "confidence": "medium",
+    "next_action": "Archivist to provide explicit CONTRADICTS edge artifacts and lineage chain; SwarmMind cannot adjudicate without edge-level conflict evidence"
+  }
+]

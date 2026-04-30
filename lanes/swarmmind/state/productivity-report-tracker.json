@@ -1,0 +1,15 @@
+{
+  "previous_requests": [
+    {
+      "request_id": "637a8443-8416-4d69-b6bd-b1d7a816ea75",
+      "description": "Awaiting CONTRADICTS edge evidence for 5 nodes (SwarmMind-assigned contradiction nodes)",
+      "category": "knowledge_gaps",
+      "impact": "medium",
+      "requested_at": "2026-04-30T13:33:34.438Z",
+      "status": "pending",
+      "lane": "swarmmind"
+    }
+  ],
+  "last_report_date": "2026-04-30T14:14:25.493Z",
+  "report_cycle": 5
+}

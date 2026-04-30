@@ -1,0 +1,23 @@
+[
+  {
+    "node_id": "e2d590843468dbe7",
+    "status": "needs_lane_review",
+    "edge_evidence": "No explicit CONTRADICTS edges located for this node in Archivist-Agent graph snapshot. Node appears in contradiction hub with contradictionCount=65, status=CONFLICTED, tagged with Swarmmind/Governance/Verification/Failure Mode/Drift. Requires Archivist to provide explicit CONTRADICTS edge artifacts (source→target relationship IDs) demonstrating the semantic conflict.",
+    "confidence": "medium",
+    "next_action": "Archivist to supply CONTRADICTS edge provenance and lineage validation for Archivist-origin node e2d590843468dbe7"
+  },
+  {
+    "node_id": "f536c15cc2486eea",
+    "status": "needs_lane_review",
+    "edge_evidence": "Node \"Implementation Compass\" (Archivist-Agent) shows contradictionCount=65, status=CONFLICTED, tags: Governance/Swarmmind/Archivist/Library/Phenotype/Failure Mode/Covenant/Drift/Constraint Lattice/Rosetta Stone/Ensemble/WE4FREE. No direct CONTRADICTS edges in graph snapshot. Requires Archivist to specify which artifact-derived CONTRADICTS edges SwarmMind should validate.",
+    "confidence": "medium",
+    "next_action": "Archivist to provide explicit CONTRADICTS edge artifacts for f536c15cc2486eea; SwarmMind review deferred pending evidence"
+  },
+  {
+    "node_id": "3023460d99160a03",
+    "status": "needs_lane_review",
+    "edge_evidence": "Node appears in Archivist-Agent hub (contradictionCount=65, CONFLICTED). Interconnected with e2d590843468dbe7, f536c15cc2486eea via shared-tag network; no CONTRADICTS edges resolvable from current snapshot. Cross-lane validation requires explicit edge artifact from Archivist.",
+    "confidence": "medium",
+    "next_action": "Archivist to submit CONTRADICTS edge evidence for 3023460d99160a03; SwarmMind cannot classify without semantic conflict data"
+  }
+]

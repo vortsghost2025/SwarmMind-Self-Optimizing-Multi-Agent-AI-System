@@ -1,0 +1,5 @@
+{"event":"monitor_start","task_id":"task-swarmmind-monitor-20260429-001","timestamp":"2026-04-29T21:34:27.141Z"}
+{"event":"signature_verify","message_id":"monitor-proof-valid-1777498467148","signature_valid":true,"route":"processed","timestamp":"2026-04-29T21:34:27.153Z"}
+{"event":"signature_verify","message_id":"monitor-proof-invalid-1777498467153","signature_valid":false,"route":"blocked","reason":"SIGNATURE_INVALID","detail":"Missing signature fields","timestamp":"2026-04-29T21:34:27.154Z"}
+{"event":"p0_alert_raised","alert_id":"alert-signature-failure-1777498467154","reason":"SIGNATURE_INVALID","timestamp":"2026-04-29T21:34:27.157Z"}
+{"event":"monitor_complete","evidence":"S:\\SwarmMind\\evidence\\signed-message-monitor\\evidence-summary.json","outcome":"ACCEPTED","timestamp":"2026-04-29T21:34:27.157Z"}
