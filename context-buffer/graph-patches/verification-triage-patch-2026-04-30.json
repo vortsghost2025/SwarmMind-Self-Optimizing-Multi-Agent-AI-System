@@ -1,0 +1,3223 @@
+{
+  "analysis_type": "verification_triage",
+  "snapshot_id": "snapshot-2026-04-29-08-41-47",
+  "created_at": "2026-04-30T20:55:06.272Z",
+  "summary": {
+    "total_candidates": 330,
+    "by_category": {
+      "structural": 75,
+      "needs_verification": 25,
+      "ambiguous": 230
+    }
+  },
+  "proposed_tags": [
+    {
+      "node_id": "564e1d02561e7243",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "4e6ee4593d7bb180",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "80a27d34983899f5",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "42642844ba4227f8",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "7cd14bfa393bf304",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "092ca590ff391e8c",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "acf6082f46db3e15",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "6f61bcc16933d14d",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "304b32d1587a9a60",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "8be5a83a3e225694",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "79b290aef443ccc0",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "8321a240677da0a5",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "a9ff0e8b389b3b42",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "845754c5371ad7be",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "65446e22f21c93f0",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "6892c4c220926a8d",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "cb3754c653cda71f",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "8717eb7dcbd2b378",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "36baa4bc2b1ff7c4",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "4a7e20f91d7ed957",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "34194e553a5ea698",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "2b1b5a2d2b6e1ede",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "0bbc4717a0ffd968",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "24e03188ea8c69a8",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "be01618a0861d641",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "eb6944593155af05",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "eee5185a16629fcf",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "6bbbc9d79e518a8e",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "d755dc7432ba8d8e",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "e35e6e402ac93980",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "35676ffa2b9ed2d0",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "65d20032c3f2fbec",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "1884897da7f39ebf",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "e21522f9d2ba3137",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "e7bf35ec557869ef",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "2bf3ad11c043f159",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "1c458a40bdbe7fc7",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "8dc101ede8e3a8c7",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "13805c086a166ce4",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "746addb707af05bb",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "2bdf56ed3a8af4c3",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "52a6059813b5d508",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "3a00c877e34af17e",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "c956ad6963fa43ae",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "d19792d2721b68fa",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "ff699083e11645a6",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "865bcdca4a0ac401",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "85b25a834408e778",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "b257012f43a3df3f",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "8f94553ddf91942c",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "e3a1516eb404f446",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "d28abd04c4fafd89",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "a02e36442864899f",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "3ac5a8c67b124527",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "a2b0b03a2a3bc8ae",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "7b03da5fe92d0aed",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "45e2e7d266832fea",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "77d312d2dbca44ee",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "de25946074533390",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "b66e6ae71ad82e97",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "e28b394aab938d63",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "89fef7562089023c",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "9cb7fb9a950c56e5",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "a69b4a11d4078da6",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "133394492d0d5a28",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "f6301d870c30b7b9",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "108b3a0989d0e67d",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "36063df55c150fe2",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "1e81e19e2640834f",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "fb8c3d4eb2d46d3b",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "1f7c4c3db7dbb73e",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "9c56a0df5a16afd2",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "6d7b4d5e4fbb9a0e",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "2aadaeeb57be9241",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "1a7587eed3fbda65",
+      "tags_to_add": [
+        "verification_priority:low",
+        "auto_tagged:structural",
+        "triage_date:2026-04-30"
+      ],
+      "category": "structural"
+    },
+    {
+      "node_id": "981834ecc31a5111",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "a6e52e0d99f4958a",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "ee675c19fdbc0e15",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "39603b312b272cbe",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "0ed4148cd9826f1a",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "633798e34dd7d9ee",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "ad95c473f2fbba73",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "9aaac022862fbdc3",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "d55100fa5f645e1a",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "5b22ba3dc5337581",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "d4375f3e0816afd1",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "eff8de63a02db085",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "4aa8b932746cc168",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "dfd2675a526e61ab",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "cbdef5af527e8352",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "1908b5a1f995e03e",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "210683f4a537172f",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "dbeef05054943bec",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "ea2bc00e06c31e01",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "978d393da343051e",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "99a0306bbd2334c6",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "616162f92b0543be",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "be019522578f63af",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "9d1441bc3cb45385",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "9933ef4d89b0ccb9",
+      "tags_to_add": [
+        "verification_priority:high",
+        "auto_tagged:governance",
+        "triage_date:2026-04-30"
+      ],
+      "category": "needs_verification"
+    },
+    {
+      "node_id": "79b8c52a5a59542d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "19822afabc28e788",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "a944d6765469818d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "338ea1e9bf6c7caa",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "097837e749082ff8",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "6fbc80ca939d753d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8e9f2ea5abcf4b38",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "bb56a1a8d46885a5",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4b1ee45ab977dc0b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "79b40a375b095440",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4bdf87fa11031752",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d59c2442a60eea62",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "753bd5d8537ffb06",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "dfe7f968709f3a01",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1421c8d7b8289bd8",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2f1d629f06e375aa",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "30932183f27eda4c",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e83cfb37cd96e95f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "a041baa7b0056de4",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "30c8dbbc6ed879c6",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "971345ce2c47e09b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4fba566ffb0ee7f7",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e4fbf335e25a40cd",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "ed1355b01f426ef0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "ea574853ebaa1da4",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1ba8403ff35b69f5",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "ed3ce4f1b2ff6f30",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "26d6a2f82628ee49",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b883b06d1434b68f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4bc7480d5a2bfd6b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e96a0e9b32451b0e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "251ff1da54a0108a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "df9f33f817eee99f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f9e40ce01512ea8e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "998e60ee18958e4d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "167b6f386b1f65bf",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "6048a68abfeab0da",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "5eab8c847403e969",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f06a8c863b26045b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "28b78e1ccd7785a0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2d692b6af6e88efa",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "20477893106bdf61",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "51fb7d08f1d7e126",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2cbeaa790ff9cb5b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e97570814e8dacea",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d2d733fd1a5fb571",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8300e0c22286df09",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "0382033579d579a2",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "7e529b63089442c3",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "3bc0dac89d5cf291",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "184d59d93ae713ef",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "9d3125d1bd9e6e10",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "a7c7f3dfb1801afe",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "240a9ac23fe7020d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "7ff96083cd326a0f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b2925ee8d649e5d0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2d9b1c6394f42d0e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "0ceaf40c83ee7118",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e3d161fecd14c2e2",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "5f276ccb3566336f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "34a56f941a01923f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "ab39b453506ee9e2",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "20899965743c2edb",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8830b6b315efcfb2",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "654a25c255baaf2d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "5fec2cebd602dbea",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "9a5d2b4ceabe69a2",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "7214118a4ec5ddd9",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "53cfe7bc241e7200",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "64c0cec03e11b0c0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "6d521acf3a3e5c3a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e7a076873bd1366d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f9d3af370ebb92a7",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "624823f8919ce230",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1f4d4c081b45f38f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "c367f620bca04f21",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "98cde36ec2ea5865",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b2b072a5ad7b2466",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "0d15ef0a9c6c926c",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "13287f397294d4f2",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "9d49b1cf6182040c",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "055f8b050c8f0af6",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1513bf87ac6cd829",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4df951a1aedbf891",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "0a192bea3f269d42",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "988fb32779835bb7",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "62c0db2763da9ddf",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "136c6a082c8cac9d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "df2e0c9c16f9c9ef",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "c8576f52937d045e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "88bde3fe635c3cc8",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e253380d46ed8dac",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "6ef50a125b69c153",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "5f4a83a81ba0ef2c",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "fc79a23c0f809c4e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8a52430246fedcd3",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b8464fd2c4bcbb52",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "ccc352c151cd4150",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8bd4c5f2073bf04b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "bc9d4834db9c7189",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4e871fe85b737b60",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b5b6feb614f6e04f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "ae2c034ee216e51d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "39123fcbe9f78f3b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "33585f29f2734c07",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d80b594982274b8e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "a9f8344f4152ba29",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "73274eb1ff3bd617",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8778ea793547966e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1fcbf337b4321ab5",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e1c33c2357075c5e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8ab3276be37975c8",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "811893dfc6837385",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "3d7b23423a3fa9b1",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "33cf9062e7a10302",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "a645e9ce8da74eb3",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1b3d43603a13e485",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "c364bef47e7c5c25",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1818b0465a6723ee",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "37f16c53dae4cb53",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f4e9560578783d75",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "652c1da47e7ad6d2",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f618f9a03cc49b6a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "30834da08fc0be14",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4e85f92d5f29f10a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "0d539c09fc95691f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "35fcd73e4e4a2614",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "c01721651a1a600e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "7894a44aa0cbec99",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "ff03cb0385348ef1",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "85fec4d7591c5559",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "3185ac70c0a9bdad",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "041448821a98257f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2cbdb4069ea5b758",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "3375336d0e535354",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "c6ca247370ce4ed0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "0e963b7799d88f2f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2d8736fed82bbdd0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e025a99687a56199",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "594399c67d37225b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "14c43394fc46e739",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "092611c0569af868",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b341edcc7ad0d3a0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d121b191192adad6",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "53f18d4f7c709314",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "cc26d8374fc897c3",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "364b65b010d0fb04",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "074caf959d117407",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "67bfd39d4db0d6e3",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4ce23677f0f561a9",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "5041e7e47546ee57",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "696724231d1d2a99",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "fdae940edd37305c",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "78b57393862c385c",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8d72b982c5d2f360",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "df06d6020ede684a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2916af63d23b4d1d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "41919fddeffb1b47",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "35f916eeffb60b14",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "cbdb0ab83a77e276",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4f54fc52a05951b9",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "62814423324866e3",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d8d971d5510b97b0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "a7023204302471e1",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "c1c09d7ad6db5be3",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4d5bfea2ddbf3f46",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "059506c109c176f1",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "ed8ae43dd43b6ae7",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f918e9a640d9d797",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "19b666f9fd6e82b5",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "9b5c93937dc3adb1",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "007be7c6882bed62",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "e0118e2e3167ec62",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "3433dca460a94b67",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "4b7b631a502d6a30",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2fc7a010291cc0b9",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "db5e822652a338cf",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "186d110db45926ea",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d44a998be2bc5259",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "38ea286ff9f267a9",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b11c5691087a7e50",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "116a6cbfd80463f6",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "72ce8f4f18f6eeef",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "bd160b4f4db5d929",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d6cc883bd214309b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b132088d9f53fe6a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "3edb42ef4d5e4ca6",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b01351900809b931",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "51c02a93997592ab",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "8098abf42b287711",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d6bc39fffd5038eb",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b724384123e5937a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "822274107e280028",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "70d7743e5f681517",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "9a1e647fa2fe8968",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "346e64ed14d067ba",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1f589fffa70c2e31",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b9e69e68b7ee697a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "215a70d521a51699",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f51fc6e16b3f328a",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1417762a6cbffe28",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "957a47db5fe95f81",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "9f5117153d4d66d4",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "844e408498084fcc",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b19d10cd836778e0",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "a01e7e0c61d7794c",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "12efc079025f83ae",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f7efb705beb807b4",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "49744a6874052ca4",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "75f5db2c65a73c4d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "9c49cfcff5417cd4",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1c282499967d9c4d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f22f446210938ed6",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "7db12ca78bf821ab",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "95061958aa352732",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "cc388e09fb67415f",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "15a73e86e85f19e7",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "cd77f437ceb31f2e",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2da82ac94c5fe5b9",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "2ee2c0925046157d",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f817a57b24d579d1",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "1a8b5c47af6f6aa4",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "fa939598220b5ff4",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "f1b37e63442d41ed",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "b8712aa26df1737b",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "c2f3abe089cbb795",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "6650d3043817a173",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "d25d2a1ffc7f2fa1",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "0657c9d2ade3e815",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    },
+    {
+      "node_id": "dc9a8380e44ad9a5",
+      "tags_to_add": [
+        "verification_priority:medium",
+        "auto_tagged:ambiguous",
+        "needs_manual_review:true",
+        "triage_date:2026-04-30"
+      ],
+      "category": "ambiguous"
+    }
+  ],
+  "files_would_be_modified": [
+    "S:/self-organizing-library/context-buffer/graphs/graph-snapshot-self-organizing-library-2026-04-29-12-41-47-680.json"
+  ],
+  "projected_impact": {
+    "structural_nodes_auto_verified": 75,
+    "high_priority_verification_nodes": 25,
+    "remaining_ambiguous": 230
+  }
+}

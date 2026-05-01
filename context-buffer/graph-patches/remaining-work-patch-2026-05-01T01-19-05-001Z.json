@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-05-01T01:19:05.000Z",
+  "source": "process-remaining-work.js",
+  "fixes": {
+    "bridge_state_mismatch": 92,
+    "derives_without_verifies": 14,
+    "orphaned_ungoverned": 269
+  },
+  "total": 375
+}

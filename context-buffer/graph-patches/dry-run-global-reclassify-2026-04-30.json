@@ -1,0 +1,17 @@
+{
+  "snapshot_id": "snapshot-2026-04-30-10-25-58",
+  "created_at": "2026-04-30T17:38:59.626Z",
+  "dry_run": true,
+  "summary": {
+    "total_conflicted": 199,
+    "proposed": 75,
+    "excluded": 124
+  },
+  "would_modify": [
+    "C:/Users/seand/Downloads/graph-snapshot-2026-04-30-14-25-58-478.json"
+  ],
+  "projected_status": {
+    "conflicted": 124,
+    "unverified": 2973
+  }
+}
