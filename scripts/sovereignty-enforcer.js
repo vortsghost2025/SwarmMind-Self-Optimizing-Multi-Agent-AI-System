@@ -143,10 +143,19 @@ function scanDirectory(dirPath, baseDir) {
   return violations;
 }
 
+function resolveLaneName(input) {
+  const lower = input.toLowerCase();
+  for (const key of Object.keys(LANES)) {
+    if (key.toLowerCase() === lower) return key;
+  }
+  return input;
+}
+
 function scanLane(laneName) {
-  console.log(`🔍 Scanning ${laneName} lane...`);
-  
-  const scriptsDir = path.join(LANES[laneName], 'scripts');
+  const resolvedName = resolveLaneName(laneName);
+  console.log(`🔍 Scanning ${resolvedName} lane...`);
+
+  const scriptsDir = path.join(LANES[resolvedName], 'scripts');
   
   if (!fs.existsSync(scriptsDir)) {
     console.log(`   ❌ No scripts directory in ${laneName}\n`);

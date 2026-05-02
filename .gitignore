@@ -45,3 +45,13 @@ lanes/*/broadcast/trust-store.json
 # Local git worktrees
 worktrees/
 nul
+
+# Artifacts not meant for version control
+*.bak
+firebase-debug.log
+temp/
+evidence/
+logs/mcp-*.log
+logs/.*-audit.json
+SWARMMIND_SOVEREIGNTY_FIX_REPORT.md
+scripts/activate-watcher.ps1
