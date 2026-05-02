@@ -132,7 +132,7 @@ function buildBroadcastMessage(options) {
 }
 
 function signMessage(msg, laneId) {
-  const createSignedMessagePath = path.join(__dirname, '..', 'create-signed-message.js');
+  const createSignedMessagePath = path.join(LANE_ROOT, 'scripts', 'create-signed-message.js');
   const { createSignedMessage: sign } = require(createSignedMessagePath);
   return sign(msg, laneId);
 }

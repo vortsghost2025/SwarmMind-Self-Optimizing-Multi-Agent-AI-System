@@ -206,8 +206,26 @@ class InboxWatcher {
     return true;
   }
 
+  checkActiveBlocker() {
+    const blockerPath = path.join(this.repoRoot, 'lanes', 'broadcast', 'active-blocker.json');
+    try {
+      if (!fs.existsSync(blockerPath)) return null;
+      const raw = fs.readFileSync(blockerPath, 'utf8');
+      const blocker = JSON.parse(raw);
+      if (blocker && blocker.active === true) {
+        return blocker;
+      }
+    } catch (_) {}
+    return null;
+  }
+
   async scan() {
     this.ensureDirs();
+
+    const blocker = this.checkActiveBlocker();
+    if (blocker) {
+      console.log(`[watcher] ACTIVE_BLOCKER: task_id=${blocker.task_id || 'unknown'} reason=${blocker.reason || 'none'} — only P0 messages will be processed`);
+    }
 
     let files;
     try {
@@ -252,13 +270,22 @@ class InboxWatcher {
       }
     }
 
-    messages.sort((a, b) => {
-      const pa = PRIORITY_ORDER[a.priority] ?? 3;
-      const pb = PRIORITY_ORDER[b.priority] ?? 3;
-      return pa - pb;
-    });
+  messages.sort((a, b) => {
+    const pa = PRIORITY_ORDER[a.priority] ?? 3;
+    const pb = PRIORITY_ORDER[b.priority] ?? 3;
+    return pa - pb;
+  });
 
-    return messages;
+  if (blocker) {
+    const p0Only = messages.filter(m => (PRIORITY_ORDER[m.priority] ?? 3) === 0);
+    const deferred = messages.filter(m => (PRIORITY_ORDER[m.priority] ?? 3) > 0);
+    if (deferred.length > 0) {
+      console.log(`[watcher] ACTIVE_BLOCKER: deferring ${deferred.length} non-P0 messages (task_id=${blocker.task_id || 'unknown'})`);
+    }
+    return p0Only;
+  }
+
+  return messages;
   }
 
   applyPreemption(messages) {
