@@ -5,16 +5,19 @@ const fs = require('fs');
 const path = require('path');
 
 const { ArtifactResolver } = require('./artifact-resolver');
-const { LaneDiscovery } = require('S:/Archivist-Agent/.global/lane-discovery');
 
-const _discovery = new LaneDiscovery();
-const _validLanes = new Set(_discovery.listLanes());
+// LOCAL IMPLEMENTATION - Avoid cross-lane require()
+// ORIGIN: Previously required S:/Archivist-Agent/.global/lane-discovery
+// LOCALIZED: 2026-05-02 for SwarmMind sovereignty
+const { LANES } = require('./util/lane-discovery');
+
+const _validLanes = new Set(Object.keys(LANES));
 
 const DEFAULT_ALLOWED_ROOTS = [
-'S:/Archivist-Agent',
-'S:/kernel-lane',
-'S:/self-organizing-library',
-'S:/SwarmMind',
+  'S:/Archivist-Agent',
+  'S:/kernel-lane',
+  'S:/self-organizing-library',
+  'S:/SwarmMind',
 ];
 
 const COMPLETION_WINDOW_MS = 5 * 60 * 1000;

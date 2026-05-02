@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Broadcast Emergency Message Schema v1.0",
+  "description": "Emergency broadcast message format for P0 alerts across all lanes. Extends inbox-message-v1.3 with broadcast-specific constraints.",
+  "allOf": [
+    {
+      "$ref": "inbox-message-v1.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "idempotency_key",
+    "from",
+    "to",
+    "type",
+    "task_kind",
+    "priority",
+    "subject",
+    "body",
+    "timestamp",
+    "requires_action",
+    "payload",
+    "execution",
+    "lease",
+    "retry",
+    "evidence",
+    "heartbeat",
+    "signature",
+    "key_id",
+    "broadcast_metadata"
+  ],
+  "properties": {
+    "type": {
+      "enum": ["alert"]
+    },
+    "task_kind": {
+      "enum": ["alert"]
+    },
+    "priority": {
+      "enum": ["P0"]
+    },
+    "broadcast_metadata": {
+      "type": "object",
+      "required": ["broadcast_id", "originator", "transmitted_at"],
+      "properties": {
+        "broadcast_id": {
+          "type": "string",
+          "description": "Unique identifier for this broadcast event"
+        },
+        "originator": {
+          "type": "string",
+          "enum": ["swarmmind", "archivist", "kernel", "library"],
+          "description": "Lane that originated the broadcast"
+        },
+        "transmitted_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "UTC timestamp when broadcast was transmitted"
+        },
+        "target_lanes": {
+          "type": "array",
+          "items": {
+            "enum": ["archivist", "kernel", "library", "swarmmind"]
+          },
+          "default": ["archivist", "kernel", "library", "swarmmind"],
+          "description": "Target lanes for this broadcast"
+        },
+        "requires_ack": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether individual lane acknowledgments are required"
+        },
+        "response_deadline": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Optional deadline for lane responses"
+        }
+      }
+    }
+  }
+}

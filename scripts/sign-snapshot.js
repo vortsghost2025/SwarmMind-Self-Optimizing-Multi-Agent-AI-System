@@ -15,7 +15,11 @@
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-const { atomicWriteWithLease } = require('S:/kernel-lane/scripts/atomic-write-util');
+
+// LOCAL IMPLEMENTATION - Avoid cross-lane require()
+// ORIGIN: Previously required S:/kernel-lane/scripts/atomic-write-util
+// LOCALIZED: 2026-05-02 for SwarmMind sovereignty
+const { atomicWriteWithLease } = require('./util/atomic-write');
 
 const ROOT = path.join(__dirname, '..');
 const IDENTITY_DIR = path.join(ROOT, '.identity');

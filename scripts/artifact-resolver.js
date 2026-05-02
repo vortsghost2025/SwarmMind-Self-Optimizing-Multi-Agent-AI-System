@@ -4,10 +4,18 @@
 const fs = require('fs');
 const path = require('path');
 
+// LOCAL IMPLEMENTATION - Avoid cross-lane require()
+// ORIGIN: Previously required S:/Archivist-Agent/.global/lane-discovery
+// LOCALIZED: 2026-05-02 for SwarmMind sovereignty
+const { LANES, getAllLanes } = require('./util/lane-discovery');
+
 let _discovery = null;
 try {
-  const { LaneDiscovery } = require('S:/Archivist-Agent/.global/lane-discovery');
-  _discovery = new LaneDiscovery();
+  // Try to use local static lane config
+  _discovery = {
+    listLanes: () => Object.keys(LANES),
+    getLocalPath: (laneId) => LANES[laneId]?.root || null
+  };
 } catch (_) {}
 
 function _getDefaultAllowedRoots() {
@@ -16,6 +24,17 @@ function _getDefaultAllowedRoots() {
     for (const laneId of _discovery.listLanes()) {
       try { roots.push(_discovery.getLocalPath(laneId)); } catch (_) {}
     }
+    if (roots.length > 0) return roots;
+  }
+  
+  // Fallback: hardcoded roots for sovereignty
+  return [
+    'S:/Archivist-Agent',
+    'S:/self-organizing-library',
+    'S:/kernel-lane',
+    'S:/SwarmMind'
+  ];
+}
     if (roots.length > 0) return roots;
   }
   return ['S:/Archivist-Agent', 'S:/kernel-lane', 'S:/self-organizing-library', 'S:/SwarmMind'];

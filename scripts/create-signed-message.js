@@ -7,9 +7,9 @@ const crypto = require('crypto');
 
 const { deriveKeyId } = require(path.join(__dirname, '..', '.global', 'deriveKeyId.js'));
 
-// LEASE + ATOMIC WRITE: Require kernel primitives for cross-lane mutation safety
-const KERNEL_ROOT = 'S:/kernel-lane';
-const { atomicWriteWithLease } = require(path.join(KERNEL_ROOT, 'scripts', 'atomic-write-util'));
+// LEASE + ATOMIC WRITE: Sovereign implementation for SwarmMind autonomy
+// Previously depended on kernel-lane, now uses local copy to maintain lane sovereignty
+const { atomicWriteWithLease } = require('./util/atomic-write');
 const { guardWrite } = require(path.join(__dirname, 'outbox-write-guard'));
 
 const PASSFILE_CANDIDATES = [

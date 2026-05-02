@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Broadcast Acknowledgment Message Schema v1.0",
+  "description": "Acknowledgment from a lane upon receiving an emergency broadcast. Extends inbox-message-v1.3.",
+  "allOf": [
+    {
+      "$ref": "inbox-message-v1.json"
+    }
+  ],
+  "type": "object",
+  "required": [
+    "schema_version",
+    "task_id",
+    "idempotency_key",
+    "from",
+    "to",
+    "type",
+    "task_kind",
+    "priority",
+    "subject",
+    "body",
+    "timestamp",
+    "requires_action",
+    "payload",
+    "execution",
+    "lease",
+    "retry",
+    "evidence",
+    "heartbeat",
+    "signature",
+    "key_id",
+    "broadcast_ack"
+  ],
+  "properties": {
+    "type": {
+      "enum": ["ack"]
+    },
+    "task_kind": {
+      "enum": ["broadcast_ack"]
+    },
+    "priority": {
+      "enum": ["P0"]
+    },
+    "to": {
+      "enum": ["swarmmind"],
+      "description": "Broadcast acknowledgments always return to the originator (SwarmMind)"
+    },
+    "broadcast_ack": {
+      "type": "object",
+      "required": ["original_broadcast_id", "acknowledged_by", "acknowledged_at"],
+      "properties": {
+        "original_broadcast_id": {
+          "type": "string",
+          "description": "The broadcast_id from the original broadcast message"
+        },
+        "original_task_id": {
+          "type": "string",
+          "description": "The task_id of the original broadcast message being acknowledged"
+        },
+        "acknowledged_by": {
+          "type": "string",
+          "enum": ["archivist", "kernel", "library", "swarmmind"],
+          "description": "Lane sending this acknowledgment"
+        },
+        "acknowledged_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "UTC timestamp when broadcast was received and acknowledged"
+        },
+        "processing_time_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Time taken to process the broadcast in milliseconds"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["received", "processed", "action_taken"],
+          "description": "Status of broadcast processing"
+        },
+        "actions_taken": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of actions taken in response to broadcast"
+        },
+        "convergence_gate": {
+          "$ref": "#/definitions/convergence_gate"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "convergence_gate": {
+      "type": "object",
+      "required": ["claim", "evidence", "verified_by", "contradictions", "status"],
+      "properties": {
+        "claim": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "verified_by": {
+          "type": "string",
+          "enum": ["archivist", "kernel", "library", "swarmmind", "self"]
+        },
+        "contradictions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "claim", "evidence"],
+            "properties": {
+              "from": {"type": "string"},
+              "claim": {"type": "string"},
+              "evidence": {"type": "string"}
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["proven", "unproven", "conflicted", "blocked"]
+        }
+      }
+    }
+  }
+}

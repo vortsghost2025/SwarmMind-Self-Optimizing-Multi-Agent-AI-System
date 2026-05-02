@@ -8,8 +8,17 @@
       "requested_at": "2026-04-30T13:33:34.438Z",
       "status": "pending",
       "lane": "swarmmind"
+    },
+    {
+      "request_id": "248d0996-feaf-44e3-9358-fb46ca3344eb",
+      "description": "0 blocked, 8 quarantined files need attention",
+      "category": "incoming_messages",
+      "impact": "medium",
+      "requested_at": "2026-05-02T13:00:04.140Z",
+      "status": "pending",
+      "lane": "swarmmind"
     }
   ],
-  "last_report_date": "2026-05-01T13:00:02.870Z",
-  "report_cycle": 7
+  "last_report_date": "2026-05-02T13:00:04.140Z",
+  "report_cycle": 8
 }

@@ -4,8 +4,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const KERNEL_ROOT = 'S:/kernel-lane';
-const { atomicWriteWithLease } = require(path.join(KERNEL_ROOT, 'scripts', 'atomic-write-util'));
+// LEASE WRITE: Sovereign implementation for SwarmMind autonomy
+// Previously depended on kernel-lane, now uses local copy to maintain lane sovereignty
+const { atomicWriteWithLease } = require('./util/atomic-write');
 
 function ensureParentDir(filePath) {
   const dir = path.dirname(filePath);
