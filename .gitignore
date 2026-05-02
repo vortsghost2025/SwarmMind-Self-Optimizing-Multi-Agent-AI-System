@@ -55,3 +55,11 @@ logs/mcp-*.log
 logs/.*-audit.json
 SWARMMIND_SOVEREIGNTY_FIX_REPORT.md
 scripts/activate-watcher.ps1
+
+# Broadcast runtime artifacts
+lanes/swarmmind/broadcast-endpoint/broadcast-received.log
+lanes/swarmmind/broadcast-endpoint/broadcast-sent.log
+lanes/swarmmind/broadcast-endpoint/broadcasts-sent.json
+sovereignty-enforcement-report.json
+scripts/inbox-watcher.log
+lanes/broadcast/system_state.json
