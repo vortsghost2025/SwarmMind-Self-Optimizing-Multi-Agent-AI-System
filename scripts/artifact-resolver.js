@@ -26,7 +26,7 @@ function _getDefaultAllowedRoots() {
     }
     if (roots.length > 0) return roots;
   }
-  
+
   // Fallback: hardcoded roots for sovereignty
   return [
     'S:/Archivist-Agent',
@@ -34,10 +34,6 @@ function _getDefaultAllowedRoots() {
     'S:/kernel-lane',
     'S:/SwarmMind'
   ];
-}
-    if (roots.length > 0) return roots;
-  }
-  return ['S:/Archivist-Agent', 'S:/kernel-lane', 'S:/self-organizing-library', 'S:/SwarmMind'];
 }
 
 const DEFAULT_ALLOWED_ROOTS = _getDefaultAllowedRoots();
