@@ -161,6 +161,18 @@ node -e "const fs=require('fs'),crypto=require('crypto'); const ts=JSON.parse(fs
 
 ---
 
+## Output Provenance (MANDATORY)
+
+All final outputs MUST include this provenance block:
+
+```text
+OUTPUT_PROVENANCE: agent: <agent-runtime-or-model> lane: swarmmind generated_at: <ISO-8601 timestamp> session_id: <session-id-or-unknown>
+```
+
+Use ASCII-only. Do not send final output without this header. Every cross-lane message, evidence artifact, and convergence gate claim must carry complete `OUTPUT_PROVENANCE` fields so cycled messages stay unambiguous across agents.
+
+---
+
 ## Convergence Gate
 
 Every meaningful output must include:
