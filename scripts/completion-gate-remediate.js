@@ -3,12 +3,14 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const LANES = {
-  archivist: { actionRequired: 'S:/Archivist-Agent/lanes/archivist/inbox/action-required' },
-  kernel: { actionRequired: 'S:/kernel-lane/lanes/kernel/inbox/action-required' },
-  library: { actionRequired: 'S:/self-organizing-library/lanes/library/inbox/action-required' },
-  swarmmind: { actionRequired: 'S:/SwarmMind/lanes/swarmmind/inbox/action-required' },
+  archivist: { actionRequired: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/action-required') },
+  kernel: { actionRequired: sToLocal('S:/kernel-lane/lanes/kernel/inbox/action-required') },
+  library: { actionRequired: sToLocal('S:/self-organizing-library/lanes/library/inbox/action-required') },
+  swarmmind: { actionRequired: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox/action-required') },
 };
 
 function safeReadJson(filePath) {

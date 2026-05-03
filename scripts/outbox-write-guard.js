@@ -4,12 +4,14 @@
 const fs = require('fs');
 const path = require('path');
 const { moveFileWithLease } = require('./lease-write');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const LANE_DIRS = {
-  archivist: 'S:/Archivist-Agent',
-  library: 'S:/self-organizing-library',
-  swarmmind: 'S:/SwarmMind',
-  kernel: 'S:/kernel-lane',
+  archivist: getRoots()['archivist'],
+  library: getRoots()['library'],
+  swarmmind: getRoots()['swarmmind'],
+  kernel: getRoots()['kernel'],
 };
 
 function validateOutboxMessage(msg) {

@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-const mergeTablePath = 'S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md';
+
+const mergeTablePath = sToLocal('S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md');
 
 // Read current table
 let content = fs.readFileSync(mergeTablePath, 'utf8');
@@ -9,13 +11,13 @@ const lines = content.split('\n');
 
 // Evidence files
 const evidence = {
-  kernel_batch1: 'S:/kernel-lane/evidence/contradiction-resolution/batch1-responses-20260430.json',
-  kernel_batch2: 'S:/kernel-lane/evidence/contradiction-resolution/batch2-responses-20260430.json',
-  library_batch1: 'S:/self-organizing-library/evidence/contradiction-resolution/batch1-responses-20260430.json',
-  library_batch2: 'S:/self-organizing-library/evidence/contradiction-resolution/batch2-responses-20260430.json',
-  archivist_batch1: 'S:/Archivist-Agent/evidence/contradiction-resolution/batch1-responses-20260430.json',
-  archivist_batch2: 'S:/Archivist-Agent/evidence/contradiction-resolution/batch2-responses-20260430.json',
-  archivist_batch3: 'S:/Archivist-Agent/evidence/contradiction-resolution/batch3-responses-20260430.json'
+  kernel_batch1: sToLocal('S:/kernel-lane/evidence/contradiction-resolution/batch1-responses-20260430.json'),
+  kernel_batch2: sToLocal('S:/kernel-lane/evidence/contradiction-resolution/batch2-responses-20260430.json'),
+  library_batch1: sToLocal('S:/self-organizing-library/evidence/contradiction-resolution/batch1-responses-20260430.json'),
+  library_batch2: sToLocal('S:/self-organizing-library/evidence/contradiction-resolution/batch2-responses-20260430.json'),
+  archivist_batch1: sToLocal('S:/Archivist-Agent/evidence/contradiction-resolution/batch1-responses-20260430.json'),
+  archivist_batch2: sToLocal('S:/Archivist-Agent/evidence/contradiction-resolution/batch2-responses-20260430.json'),
+  archivist_batch3: sToLocal('S:/Archivist-Agent/evidence/contradiction-resolution/batch3-responses-20260430.json')
 };
 
 // Node updates based on all delivered responses

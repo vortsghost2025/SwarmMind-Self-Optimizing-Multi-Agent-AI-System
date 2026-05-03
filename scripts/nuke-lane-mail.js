@@ -2,12 +2,14 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const LANES = [
-  { name: 'archivist', dir: 'S:/Archivist-Agent' },
-  { name: 'kernel', dir: 'S:/kernel-lane' },
-  { name: 'library', dir: 'S:/self-organizing-library' },
-  { name: 'swarmmind', dir: 'S:/SwarmMind' }
+  { name: 'archivist', dir: getRoots()['archivist'] },
+  { name: 'kernel', dir: getRoots()['kernel'] },
+  { name: 'library', dir: getRoots()['library'] },
+  { name: 'swarmmind', dir: getRoots()['swarmmind'] }
 ];
 
 const SUBDIRS_TO_REMOVE = ['processed', 'expired', 'quarantine', 'invalid-schema', 'pending', 'duplicates', 'unsigned', 'unsigned-archive'];

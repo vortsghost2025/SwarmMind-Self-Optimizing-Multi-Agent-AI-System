@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 const fs = require('fs');
-const p = 'S:/Archivist-Agent/schemas/inbox-message-v1.json';
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
+const p = sToLocal('S:/Archivist-Agent/schemas/inbox-message-v1.json');
 let s = fs.readFileSync(p, 'utf8');
 
 s = s.replace(

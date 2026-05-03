@@ -20,6 +20,8 @@ const crypto = require('crypto');
 // ORIGIN: Previously required S:/kernel-lane/scripts/atomic-write-util
 // LOCALIZED: 2026-05-02 for SwarmMind sovereignty
 const { atomicWriteWithLease } = require('./util/atomic-write');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const ROOT = path.join(__dirname, '..');
 const IDENTITY_DIR = path.join(ROOT, '.identity');

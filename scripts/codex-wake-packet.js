@@ -4,14 +4,15 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { getLane } = require('./util/lane-discovery');
 
-const ROOT = 'S:/SwarmMind';
 const LANE = 'swarmmind';
+const ROOT = getLane('swarmmind').root;
 const INBOX = path.join(ROOT, 'lanes', LANE, 'inbox');
 const ACTION_REQUIRED = path.join(INBOX, 'action-required');
 const STATE_DIR = path.join(ROOT, 'lanes', LANE, 'state');
 const WAKE_PATH = path.join(STATE_DIR, 'codex-wake-packet.json');
-const ARCHIVIST_SIGNAL_DIR = 'S:/Archivist-Agent/lanes/archivist/inbox';
+const ARCHIVIST_SIGNAL_DIR = path.join(getLane('archivist').root, 'lanes', 'archivist', 'inbox');
 
 function nowIso() {
   return new Date().toISOString();

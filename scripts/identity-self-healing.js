@@ -5,20 +5,22 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { IdentityEnforcer } = require('./identity-enforcer');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const KEY_SIZE = 2048;
 const PASSFILE_SEARCH = [
-  'S:/Archivist-Agent/.runtime/lane-passphrases.json',
-  'S:/self-organizing-library/.runtime/lane-passphrases.json',
-  'S:/SwarmMind/.runtime/lane-passphrases.json',
-  'S:/kernel-lane/.runtime/lane-passphrases.json',
+  sToLocal('S:/Archivist-Agent/.runtime/lane-passphrases.json'),
+  sToLocal('S:/self-organizing-library/.runtime/lane-passphrases.json'),
+  sToLocal('S:/SwarmMind/.runtime/lane-passphrases.json'),
+  sToLocal('S:/kernel-lane/.runtime/lane-passphrases.json'),
 ];
 
 const LANE_IDENTITY_DIRS = {
-  archivist: 'S:/Archivist-Agent/.identity',
-  library: 'S:/self-organizing-library/.identity',
-  swarmmind: 'S:/SwarmMind/.identity',
-  kernel: 'S:/kernel-lane/.identity',
+  archivist: sToLocal('S:/Archivist-Agent/.identity'),
+  library: sToLocal('S:/self-organizing-library/.identity'),
+  swarmmind: sToLocal('S:/SwarmMind/.identity'),
+  kernel: sToLocal('S:/kernel-lane/.identity'),
 };
 
 class IdentitySelfHealing {
@@ -154,12 +156,12 @@ class IdentitySelfHealing {
 
   _updateTrustStores(publicKey, keyId) {
     const trustStoreDirs = [
-      'S:/Archivist-Agent/lanes/broadcast',
-      'S:/self-organizing-library/lanes/broadcast',
-      'S:/kernel-lane/lanes/broadcast',
+      sToLocal('S:/Archivist-Agent/lanes/broadcast'),
+      sToLocal('S:/self-organizing-library/lanes/broadcast'),
+      sToLocal('S:/kernel-lane/lanes/broadcast'),
     ];
     if (this.identityDir.includes('SwarmMind')) {
-      trustStoreDirs.push('S:/SwarmMind/lanes/broadcast');
+      trustStoreDirs.push(sToLocal('S:/SwarmMind/lanes/broadcast'));
     }
 
     let updated = 0;

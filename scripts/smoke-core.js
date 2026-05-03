@@ -15,10 +15,12 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-const ARCHIVIST_ROOT = 'S:/Archivist-Agent';
-const LIBRARY_ROOT = 'S:/self-organizing-library';
-const SWARMIND_ROOT = 'S:/SwarmMind';
+
+const ARCHIVIST_ROOT = getRoots()['archivist'];
+const LIBRARY_ROOT = getRoots()['library'];
+const SWARMIND_ROOT = getRoots()['swarmmind'];
 
 function syntaxCheck(filePath) {
   try {

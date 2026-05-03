@@ -5,6 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { IdentityEnforcer } = require('./identity-enforcer');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const privateKeyPem = fs.readFileSync(path.join(__dirname, '..', '.identity', 'private.pem'), 'utf8');
 const KEY_ID = 'addb0afb8ee5c2ed';
@@ -21,7 +23,7 @@ const outboxDir = path.join(__dirname, '..', 'lanes', 'swarmmind', 'outbox');
 if (!fs.existsSync(outboxDir)) fs.mkdirSync(outboxDir, { recursive: true });
 
 const systemState = {
-  repo_root: 'S:/SwarmMind',
+  repo_root: getRoots()['swarmmind'],
   lane: 'swarmmind',
   dry_run: true,
   inbox_root_scanned: 0,
@@ -112,7 +114,7 @@ const relay2 = {
     artifact_type: 'log',
   },
   system_state: {
-    repo_root: 'S:/SwarmMind',
+    repo_root: getRoots()['swarmmind'],
     lane: 'swarmmind',
     relay_loop: '2e',
   },
@@ -145,7 +147,7 @@ const relay3 = {
     artifact_type: 'log',
   },
   system_state: {
-    repo_root: 'S:/SwarmMind',
+    repo_root: getRoots()['swarmmind'],
     lane: 'swarmmind',
     relay_loop: '3',
     sync_gate_verify: syncGate,

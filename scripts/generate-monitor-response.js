@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const response = {
   schema_version: "1.3",
@@ -49,11 +51,11 @@ All outbound cross-lane SwarmMind messages are signed via create-signed-message.
     verified: true,
     verified_by: "swarmmind",
     verified_at: "2026-04-29T21:34:27Z",
-    evidence_path: "S:/SwarmMind/evidence/signed-message-monitor/evidence-summary.json"
+    evidence_path: sToLocal("S:/SwarmMind/evidence/signed-message-monitor/evidence-summary.json")
   },
   evidence_exchange: {
     artifact_type: "report",
-    artifact_path: "S:/SwarmMind/evidence/signed-message-monitor/evidence-summary.json",
+    artifact_path: sToLocal("S:/SwarmMind/evidence/signed-message-monitor/evidence-summary.json"),
     delivered_at: "2026-04-29T21:34:27Z"
   },
   heartbeat: {
@@ -64,7 +66,7 @@ All outbound cross-lane SwarmMind messages are signed via create-signed-message.
   },
   convergence_gate: {
     claim: "Signed-Message Monitor task accepted; signature validation operational with P0 alert path proven",
-    evidence: "S:/SwarmMind/evidence/signed-message-monitor/evidence-summary.json",
+    evidence: sToLocal("S:/SwarmMind/evidence/signed-message-monitor/evidence-summary.json"),
     verified_by: "swarmmind",
     contradictions: [],
     status: "proven"

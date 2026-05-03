@@ -8,12 +8,14 @@ const crypto = require('crypto');
 const { deriveKeyId } = require(path.join(__dirname, '..', '.global', 'deriveKeyId.js'));
 
 // LEASE + ATOMIC WRITE: Require kernel primitives for cross-lane mutation safety
-const KERNEL_ROOT = 'S:/kernel-lane';
+const KERNEL_ROOT = getRoots()['kernel'];
 const { atomicWriteJson, atomicWriteWithLease } = require(path.join(KERNEL_ROOT, 'scripts', 'atomic-write-util'));
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const PASSFILE_CANDIDATES = [
   path.join(__dirname, '..', '.runtime', 'lane-passphrases.json'),
-  'S:/Archivist-Agent/.runtime/lane-passphrases.json'
+  sToLocal('S:/Archivist-Agent/.runtime/lane-passphrases.json')
 ];
 
 function parseArgs(argv) {
@@ -53,10 +55,10 @@ function base64UrlEncode(input) {
 }
 
 const LANE_IDENTITY_DIRS = {
-  archivist: 'S:/Archivist-Agent/.identity',
-  library: 'S:/self-organizing-library/.identity',
-  swarmmind: 'S:/SwarmMind/.identity',
-  kernel: 'S:/kernel-lane/.identity',
+  archivist: sToLocal('S:/Archivist-Agent/.identity'),
+  library: sToLocal('S:/self-organizing-library/.identity'),
+  swarmmind: sToLocal('S:/SwarmMind/.identity'),
+  kernel: sToLocal('S:/kernel-lane/.identity'),
 };
 
 function resolvePassphrase(lane) {

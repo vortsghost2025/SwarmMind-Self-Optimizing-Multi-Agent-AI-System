@@ -3,13 +3,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getRoots } = require('./util/lane-discovery');
 
-const LANE_ROOTS = {
-  archivist: 'S:/Archivist-Agent',
-  kernel: 'S:/kernel-lane',
-  library: 'S:/self-organizing-library',
-  swarmmind: 'S:/SwarmMind',
-};
+const LANE_ROOTS = getRoots();
 
 function stateDir(lane) {
   return path.join(LANE_ROOTS[lane], 'lanes', lane, 'state');

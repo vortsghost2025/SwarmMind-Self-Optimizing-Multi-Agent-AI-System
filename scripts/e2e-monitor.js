@@ -3,8 +3,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-const ARCHIVIST_INBOX = 'S:/Archivist-Agent/lanes/archivist/inbox';
+
+const ARCHIVIST_INBOX = sToLocal('S:/Archivist-Agent/lanes/archivist/inbox');
 const TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
 const CHECK_INTERVAL_MS = 30 * 1000; // 30 seconds
 
@@ -29,7 +31,7 @@ function createReminder(lane) {
     idempotency_key: `full-test-reminder-${lane}-${new Date().toISOString().replace(/[:.]/g, '-')}`,
     body: `Reminder: please run the full test suite and deliver lane-e2e-summary-${lane}.json to the Archivist inbox.`
   };
-  const targetInbox = path.join('S:/Archivist-Agent/lanes', lane, 'inbox', msg.idempotency_key + '.json');
+  const targetInbox = path.join(sToLocal('S:/Archivist-Agent/lanes'), lane, 'inbox', msg.idempotency_key + '.json');
   fs.writeFileSync(targetInbox, JSON.stringify(msg, null, 2));
   console.log(`[REMINDER] Sent to ${lane}`);
 }
@@ -89,7 +91,7 @@ function aggregateSummaries() {
     results
   };
   
-  const outPath = 'S:/Archivist-Agent/lanes/archivist/outbox/e2e-summary-aggregation.json';
+  const outPath = sToLocal('S:/Archivist-Agent/lanes/archivist/outbox/e2e-summary-aggregation.json');
   fs.writeFileSync(outPath, JSON.stringify(report, null, 2));
   console.log(`[AGGREGATION] Written to ${outPath}`);
   return report;

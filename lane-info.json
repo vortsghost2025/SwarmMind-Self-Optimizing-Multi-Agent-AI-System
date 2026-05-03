@@ -1,15 +1,15 @@
 {
-  "lane_id": "swarmmind",
-  "role": "optimization",
-  "canonical_name": "SwarmMind",
-  "local_path": "S:/SwarmMind",
-  "repo": "https://github.com/vortsghost2025/SwarmMind",
-  "branch": "master",
-  "mailboxes": {
-    "inbox": "S:/SwarmMind/lanes/swarmmind/inbox",
-    "outbox": "S:/SwarmMind/lanes/swarmmind/outbox",
-    "processed": "S:/SwarmMind/lanes/swarmmind/inbox/processed",
-    "quarantine": "S:/SwarmMind/lanes/swarmmind/inbox/quarantine"
-  },
-  "broadcast_access": "S:/Archivist-Agent/lanes/broadcast"
+"lane_id": "swarmmind",
+"role": "optimization",
+"canonical_name": "SwarmMind",
+"local_path": "/home/we4free/agent/repos/SwarmMind",
+"repo": "https://github.com/vortsghost2025/SwarmMind",
+"branch": "master",
+"mailboxes": {
+"inbox": "/home/we4free/agent/repos/SwarmMind/lanes/swarmmind/inbox",
+"outbox": "/home/we4free/agent/repos/SwarmMind/lanes/swarmmind/outbox",
+"processed": "/home/we4free/agent/repos/SwarmMind/lanes/swarmmind/inbox/processed",
+"quarantine": "/home/we4free/agent/repos/SwarmMind/lanes/swarmmind/inbox/quarantine"
+},
+"broadcast_access": "/home/we4free/agent/repos/Archivist-Agent/lanes/broadcast"
 }

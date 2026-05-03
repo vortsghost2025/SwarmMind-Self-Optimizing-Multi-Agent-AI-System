@@ -1,12 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const LANES = {
-  archivist: { root: 'S:/Archivist-Agent', ts: 'S:/Archivist-Agent/lanes/broadcast/trust-store.json' },
-  library: { root: 'S:/self-organizing-library', ts: 'S:/self-organizing-library/lanes/broadcast/trust-store.json' },
-  swarmmind: { root: 'S:/SwarmMind', ts: 'S:/Archivist-Agent/lanes/broadcast/trust-store.json' },
-  kernel: { root: 'S:/kernel-lane', ts: 'S:/Archivist-Agent/lanes/broadcast/trust-store.json' }
+  archivist: { root: getRoots()['archivist'], ts: sToLocal('S:/Archivist-Agent/lanes/broadcast/trust-store.json') },
+  library: { root: getRoots()['library'], ts: sToLocal('S:/self-organizing-library/lanes/broadcast/trust-store.json') },
+  swarmmind: { root: getRoots()['swarmmind'], ts: sToLocal('S:/Archivist-Agent/lanes/broadcast/trust-store.json') },
+  kernel: { root: getRoots()['kernel'], ts: sToLocal('S:/Archivist-Agent/lanes/broadcast/trust-store.json') }
 };
 
 function kid(pem) {

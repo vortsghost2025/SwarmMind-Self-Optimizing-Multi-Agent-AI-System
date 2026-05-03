@@ -2,12 +2,14 @@
 'use strict';
 
 const { spawnSync } = require('child_process');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const LANES = [
-  { name: 'archivist', root: 'S:/Archivist-Agent' },
-  { name: 'library', root: 'S:/self-organizing-library' },
-  { name: 'kernel', root: 'S:/kernel-lane' },
-  { name: 'swarmmind', root: 'S:/SwarmMind' }
+  { name: 'archivist', root: getRoots()['archivist'] },
+  { name: 'library', root: getRoots()['library'] },
+  { name: 'kernel', root: getRoots()['kernel'] },
+  { name: 'swarmmind', root: getRoots()['swarmmind'] }
 ];
 
 function runNodeScript(cwd, args) {
@@ -29,7 +31,7 @@ function refreshHeartbeats() {
 }
 
 function runRecoverySuite() {
-  return runNodeScript('S:/Archivist-Agent', ['scripts/recovery-test-suite.js']);
+  return runNodeScript(getRoots()['archivist'], ['scripts/recovery-test-suite.js']);
 }
 
 function main() {

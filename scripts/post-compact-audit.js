@@ -4,22 +4,24 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const LANES = {
-  archivist: { root: 'S:/Archivist-Agent', inbox: 'S:/Archivist-Agent/lanes/archivist/inbox' },
-  library: { root: 'S:/self-organizing-library', inbox: 'S:/self-organizing-library/lanes/library/inbox' },
-  swarmmind: { root: 'S:/SwarmMind', inbox: 'S:/SwarmMind/lanes/swarmmind/inbox' },
-  kernel: { root: 'S:/kernel-lane', inbox: 'S:/kernel-lane/lanes/kernel/inbox' }
+  archivist: { root: getRoots()['archivist'], inbox: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox') },
+  library: { root: getRoots()['library'], inbox: sToLocal('S:/self-organizing-library/lanes/library/inbox') },
+  swarmmind: { root: getRoots()['swarmmind'], inbox: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox') },
+  kernel: { root: getRoots()['kernel'], inbox: sToLocal('S:/kernel-lane/lanes/kernel/inbox') }
 };
 
 class PostCompactAudit {
   constructor(options = {}) {
-    this.auditDir = options.auditDir || 'S:/Archivist-Agent/.compact-audit';
-    this.trustStorePath = options.trustStorePath || 'S:/Archivist-Agent/lanes/broadcast/trust-store.json';
-    this.constraintsPath = options.constraintsPath || 'S:/Archivist-Agent/constitutional_constraints.yaml';
-    this.bootstrapPath = options.bootstrapPath || 'S:/Archivist-Agent/BOOTSTRAP.md';
-    this.governancePath = options.governancePath || 'S:/Archivist-Agent/GOVERNANCE.md';
-    this.handoffPath = options.handoffPath || 'S:/Archivist-Agent/COMPACT_CONTEXT_HANDOFF.md';
+    this.auditDir = options.auditDir || sToLocal('S:/Archivist-Agent/.compact-audit');
+    this.trustStorePath = options.trustStorePath || sToLocal('S:/Archivist-Agent/lanes/broadcast/trust-store.json');
+    this.constraintsPath = options.constraintsPath || sToLocal('S:/Archivist-Agent/constitutional_constraints.yaml');
+    this.bootstrapPath = options.bootstrapPath || sToLocal('S:/Archivist-Agent/BOOTSTRAP.md');
+    this.governancePath = options.governancePath || sToLocal('S:/Archivist-Agent/GOVERNANCE.md');
+    this.handoffPath = options.handoffPath || sToLocal('S:/Archivist-Agent/COMPACT_CONTEXT_HANDOFF.md');
   }
 
   _hashContent(content) {
@@ -41,7 +43,7 @@ class PostCompactAudit {
   }
 
   _getActiveBlocker() {
-    const blockerPath = 'S:/Archivist-Agent/lanes/broadcast/active-blocker.json';
+    const blockerPath = sToLocal('S:/Archivist-Agent/lanes/broadcast/active-blocker.json');
     if (!fs.existsSync(blockerPath)) return { exists: false, blocker: null };
     try {
       return { exists: true, blocker: JSON.parse(fs.readFileSync(blockerPath, 'utf8')) };

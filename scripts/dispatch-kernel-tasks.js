@@ -2,8 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const ts = Date.now();
 const { buildCanonicalMessage, createSignedMessage } = require('./create-signed-message');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-const arDir = 'S:/kernel-lane/lanes/kernel/inbox/action-required';
+
+const arDir = sToLocal('S:/kernel-lane/lanes/kernel/inbox/action-required');
 fs.mkdirSync(arDir, { recursive: true });
 
 const tasks = [

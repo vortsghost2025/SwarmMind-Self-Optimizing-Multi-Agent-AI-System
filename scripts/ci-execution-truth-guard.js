@@ -3,14 +3,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getRoots } = require('./util/lane-discovery');
 
 const ACTIONABLE_TYPES = new Set(['task', 'escalation', 'request']);
-const LANE_ROOTS = {
-  archivist: 'S:/Archivist-Agent',
-  kernel: 'S:/kernel-lane',
-  library: 'S:/self-organizing-library',
-  swarmmind: 'S:/SwarmMind',
-};
+const LANE_ROOTS = getRoots();
 
 function parseArgs(argv) {
   const out = { allLanes: false, lane: null };

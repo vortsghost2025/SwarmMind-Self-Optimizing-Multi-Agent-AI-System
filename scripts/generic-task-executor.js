@@ -6,22 +6,22 @@ const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
 const { getCodeVersionHash } = require('./code-version-hash');
+const { LANES: _DL, getRoots } = require('./util/lane-discovery');
 
 const EXECUTOR_VERSION = '3.1.0';
 const FEATURE_FLAGS = {
-  v3_enabled: true,
-  nlp_routing: true,
-  timing_instrumentation: true,
-  safety_rails: true,
-  diff_size_limit: true,
+v3_enabled: true,
+nlp_routing: true,
+timing_instrumentation: true,
+safety_rails: true,
+diff_size_limit: true,
 };
 
-const LANE_REGISTRY = {
-  archivist: { root: 'S:/Archivist-Agent', inbox_target: 'S:/Archivist-Agent/lanes/archivist/inbox' },
-  kernel: { root: 'S:/kernel-lane', inbox_target: 'S:/Archivist-Agent/lanes/archivist/inbox' },
-  library: { root: 'S:/self-organizing-library', inbox_target: 'S:/Archivist-Agent/lanes/archivist/inbox' },
-  swarmmind: { root: 'S:/SwarmMind', inbox_target: 'S:/Archivist-Agent/lanes/archivist/inbox' },
-};
+const LANE_REGISTRY = {};
+const _roots = getRoots();
+for (const [id, info] of Object.entries(_DL)) {
+LANE_REGISTRY[id] = { root: info.root, inbox_target: path.join(_roots.archivist, 'lanes', 'archivist', 'inbox') };
+}
 
 const TRUTH_CRITICAL_PATH_MARKERS = [
   '/scripts/lane-worker.js',

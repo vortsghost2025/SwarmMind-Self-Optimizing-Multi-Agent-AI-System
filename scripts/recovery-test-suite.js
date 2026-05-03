@@ -4,6 +4,8 @@
 const fs = require('fs');
 const path = require('path');
 const { PostCompactAudit } = require('./post-compact-audit');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const PASS = '[PASS]';
 const FAIL = '[FAIL]';
@@ -53,7 +55,7 @@ class RecoveryTestSuite {
         : 'Restored context has contradictions — cannot prove correctness'
     };
 
-    const reportPath = 'S:/Archivist-Agent/.compact-audit/RECOVERY_TEST_RESULTS.json';
+    const reportPath = sToLocal('S:/Archivist-Agent/.compact-audit/RECOVERY_TEST_RESULTS.json');
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
     console.log(`Report: ${reportPath}`);
 
@@ -103,10 +105,10 @@ class RecoveryTestSuite {
   test6_messageInventory() {
     const counts = {};
     const LANES = {
-      archivist: 'S:/Archivist-Agent/lanes/archivist/inbox',
-      library: 'S:/self-organizing-library/lanes/library/inbox',
-  		swarmmind: 'S:/SwarmMind/lanes/swarmmind/inbox',
-      kernel: 'S:/kernel-lane/lanes/kernel/inbox'
+      archivist: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox'),
+      library: sToLocal('S:/self-organizing-library/lanes/library/inbox'),
+  		swarmmind: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox'),
+      kernel: sToLocal('S:/kernel-lane/lanes/kernel/inbox')
     };
     for (const [lane, inbox] of Object.entries(LANES)) {
       counts[lane] = this.audit._countInboxMessages(inbox);
@@ -116,7 +118,7 @@ class RecoveryTestSuite {
   }
 
   test7_riskSetPreservation() {
-    const prePath = 'S:/Archivist-Agent/.compact-audit/PRE_COMPACT_SNAPSHOT.json';
+    const prePath = sToLocal('S:/Archivist-Agent/.compact-audit/PRE_COMPACT_SNAPSHOT.json');
     if (!fs.existsSync(prePath)) {
       this.log('risk_set_preservation', false, 'no pre-compact snapshot to compare');
       return;
@@ -142,7 +144,7 @@ class RecoveryTestSuite {
   }
 
   test10_contradictionDetection() {
-    const prePath = 'S:/Archivist-Agent/.compact-audit/PRE_COMPACT_SNAPSHOT.json';
+    const prePath = sToLocal('S:/Archivist-Agent/.compact-audit/PRE_COMPACT_SNAPSHOT.json');
     if (!fs.existsSync(prePath)) {
       this.log('contradiction_detection', true, 'no pre-compact snapshot — first run, skip');
       return;

@@ -1,5 +1,8 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const { sToLocal } = require('./util/lane-discovery');
 
 const message = {
   schema_version: '1.3',
@@ -63,16 +66,14 @@ Ready when you are.`,
   convergence_gate: { claim: 'Offer of automation assistance sent to Library', evidence: 'S:/SwarmMind/evidence/graph-automation-offer/', verified_by: 'swarmmind', contradictions: [], status: 'proven' }
 };
 
-fs.writeFileSync('S:/temp/library-graph-automation-offer.json', JSON.stringify(message, null, 2));
+fs.writeFileSync(path.join(os.tmpdir(), 'library-graph-automation-offer.json'), JSON.stringify(message, null, 2));
 console.log('Offer message prepared for Library inbox delivery');
 
-// Sign it
-const { createSignedMessage } = require('S:/SwarmMind/scripts/create-signed-message.js');
+const { createSignedMessage } = require(path.join(__dirname, 'create-signed-message.js'));
 const signed = createSignedMessage(message, 'swarmmind');
 
-// Deliver to Library processed inbox (since it's a proposal/offer, processed is appropriate)
 const ts = new Date().toISOString().replace(/[:]/g, '-').slice(0,19);
-const outPath = `S:/self-organizing-library/lanes/library/inbox/processed/swarmmind-graph-automation-offer-${ts}.json`;
+const outPath = sToLocal(`S:/self-organizing-library/lanes/library/inbox/processed/swarmmind-graph-automation-offer-${ts}.json`);
 fs.writeFileSync(outPath, JSON.stringify(signed, null, 2));
 console.log('Delivered to Library processed inbox:', outPath);
 console.log('Library can now respond via their agent.');

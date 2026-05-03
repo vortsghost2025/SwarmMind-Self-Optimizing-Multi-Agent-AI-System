@@ -1,7 +1,9 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-const EVIDENCE_BASE = 'S:/self-organizing-library/context-buffer/graphs';
+
+const EVIDENCE_BASE = sToLocal('S:/self-organizing-library/context-buffer/graphs');
 
 // Batch 1 response
 const batch1Response = [
@@ -46,12 +48,12 @@ const batch3Response = [
   }
 ];
 
-const batch1Path = 'S:/Archivist-Agent/lanes/archivist/inbox/quarantine/contradiction-batch-1-responses-20260430.json';
-const batch3Path = 'S:/Archivist-Agent/lanes/archivist/inbox/quarantine/contradiction-batch-3-responses-20260430.json';
-const evidenceDir = 'S:/SwarmMind/evidence/contradiction-resolution';
+const batch1Path = sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/quarantine/contradiction-batch-1-responses-20260430.json');
+const batch3Path = sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/quarantine/contradiction-batch-3-responses-20260430.json');
+const evidenceDir = sToLocal('S:/SwarmMind/evidence/contradiction-resolution');
 
 fs.mkdirSync(evidenceDir, { recursive: true });
-fs.mkdirSync('S:/Archivist-Agent/lanes/archivist/inbox/quarantine', { recursive: true });
+fs.mkdirSync(sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/quarantine'), { recursive: true });
 
 const batch1Wrapper = {
   schema_version: '1.3',

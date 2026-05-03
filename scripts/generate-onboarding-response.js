@@ -7,6 +7,8 @@ const crypto = require('crypto');
 
 // Load IdentityEnforcer for its signMessage method and stableStringify dependency
 const { IdentityEnforcer } = require('./identity-enforcer');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 // Load private key
 const privateKeyPath = path.join(__dirname, '..', '.identity', 'private.pem');
@@ -82,7 +84,7 @@ System state:
     timeout_seconds: 900
   },
   system_state: {
-    repo_root: 'S:/SwarmMind',
+    repo_root: getRoots()['swarmmind'],
     lane: 'swarmmind',
     dry_run: true,
     scanned: 1,

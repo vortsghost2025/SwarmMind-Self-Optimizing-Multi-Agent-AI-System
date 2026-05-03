@@ -3,20 +3,13 @@
 
 const fs = require('fs');
 const path = require('path');
+const { LANES: _DL, getRoots } = require('./util/lane-discovery');
 
-const CANONICAL_INBOX = {
-  archivist: 'S:/Archivist-Agent/lanes/archivist/inbox/',
-  library:   'S:/self-organizing-library/lanes/library/inbox/',
-  swarmmind: 'S:/SwarmMind/lanes/swarmmind/inbox/',
-  kernel:    'S:/kernel-lane/lanes/kernel/inbox/',
-};
-
-const LANE_ROOTS = {
-  archivist: 'S:/Archivist-Agent',
-  library:   'S:/self-organizing-library',
-  swarmmind: 'S:/SwarmMind',
-  kernel:    'S:/kernel-lane',
-};
+const CANONICAL_INBOX = {};
+const LANE_ROOTS = getRoots();
+for (const [id, info] of Object.entries(_DL)) {
+CANONICAL_INBOX[id] = info.inbox + '/';
+}
 
 function nowIso() { return new Date().toISOString(); }
 

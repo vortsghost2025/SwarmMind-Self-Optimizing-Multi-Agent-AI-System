@@ -6,15 +6,11 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { getRoots } = require('./util/lane-discovery');
 
 const LANE = process.env.LANE || 'swarmmind';
 
-const LANE_ROOTS = {
-  swarmmind: 'S:/SwarmMind',
-  archivist: 'S:/Archivist-Agent',
-  kernel: 'S:/kernel-lane',
-  library: 'S:/self-organizing-library'
-};
+const LANE_ROOTS = getRoots();
 
 const LANE_ROOT = LANE_ROOTS[LANE];
 const INBOX_DIR = path.join(LANE_ROOT, 'lanes', LANE, 'inbox');

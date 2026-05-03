@@ -100,10 +100,10 @@ const DEFAULT_CONFIG = {
   quarantinePath: path.join(__dirname, '..', 'lanes', 'archivist', 'inbox', 'quarantine'),
   actionRequiredPath: path.join(__dirname, '..', 'lanes', 'archivist', 'inbox', 'action-required'),
   canonicalPaths: {
-    archivist: 'S:/Archivist-Agent/lanes/archivist/inbox/',
-    library: 'S:/self-organizing-library/lanes/library/inbox/',
-    swarmmind: 'S:/SwarmMind/lanes/swarmmind/inbox/',
-    kernel: 'S:/kernel-lane/lanes/kernel/inbox/'
+    archivist: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/'),
+    library: sToLocal('S:/self-organizing-library/lanes/library/inbox/'),
+    swarmmind: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox/'),
+    kernel: sToLocal('S:/kernel-lane/lanes/kernel/inbox/')
   }
 };
 
@@ -124,6 +124,8 @@ class InboxWatcher {
     this._identityHealed = false;
     try {
       const { healLaneIdentity } = require('./identity-self-healing');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
       const healResult = healLaneIdentity(this.config.laneName || 'archivist');
       this._identityHealed = healResult.keysRegenerated || false;
       if (healResult.keysRegenerated) {

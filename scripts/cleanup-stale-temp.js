@@ -4,6 +4,8 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 function cleanDir(dir) {
   if (!fs.existsSync(dir)) return;
@@ -21,5 +23,5 @@ function cleanDir(dir) {
 }
 
 // Common temp locations
-['tmp/', 'S:/SwarmMind/tmp/', os.tmpdir() + '/swarmmind/'].forEach(cleanDir);
+['tmp/', sToLocal('S:/SwarmMind/tmp/'), os.tmpdir() + '/swarmmind/'].forEach(cleanDir);
 console.log('Cleanup complete.');

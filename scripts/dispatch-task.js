@@ -8,10 +8,10 @@ const crypto = require('crypto');
 const REPO_ROOT = path.resolve(__dirname, '..');
 
 const LANE_REGISTRY = {
-  archivist: { inbox: 'S:/Archivist-Agent/lanes/archivist/inbox', root: 'S:/Archivist-Agent' },
-  kernel: { inbox: 'S:/kernel-lane/lanes/kernel/inbox', root: 'S:/kernel-lane' },
-  library: { inbox: 'S:/self-organizing-library/lanes/library/inbox', root: 'S:/self-organizing-library' },
-  swarmmind: { inbox: 'S:/SwarmMind/lanes/swarmmind/inbox', root: 'S:/SwarmMind' },
+  archivist: { inbox: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox'), root: getRoots()['archivist'] },
+  kernel: { inbox: sToLocal('S:/kernel-lane/lanes/kernel/inbox'), root: getRoots()['kernel'] },
+  library: { inbox: sToLocal('S:/self-organizing-library/lanes/library/inbox'), root: getRoots()['library'] },
+  swarmmind: { inbox: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox'), root: getRoots()['swarmmind'] },
 };
 
 function generateId() {
@@ -41,6 +41,8 @@ function dispatchTask(options) {
   // Sign
   try {
     const { createSignedMessage, buildCanonicalMessage } = require(path.join(REPO_ROOT, 'scripts', 'create-signed-message.js'));
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
     const msg = buildCanonicalMessage({
       profile: requiresAction ? 'control_actionable_pre_execution' : 'default',
       task_id: taskId,

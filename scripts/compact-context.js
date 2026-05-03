@@ -10,7 +10,7 @@ const { execSync } = require('child_process');
 // ---- Configuration ----
 const CONFIG = {
   // Paths – adjust if your layout differs
-  dialoguePath: path.resolve('S:/SwarmMind/dialogue_history.json'),
+  dialoguePath: path.resolve(sToLocal('S:/SwarmMind/dialogue_history.json')),
   snapshotPath: path.resolve('S:/lanes/current/broadcast/system_state.json'),
   outputPath: path.resolve('S:/.global/compact_payload_latest.json'),
   // Summarisation model endpoint – replace with your fast model CLI
@@ -31,6 +31,8 @@ function saveJson(file, obj) {
 function summariseConversation(messages) {
   // Serialize messages to a temporary JSON file for the CLI
   const os = require('os');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
   const tempPath = path.join(os.tmpdir(), 'dialogue.tmp.json');
   saveJson(tempPath, messages);
 

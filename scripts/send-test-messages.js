@@ -3,11 +3,13 @@
 const fs = require('fs');
 const path = require('path');
 const { buildCanonicalMessage, createSignedMessage } = require('./create-signed-message');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const targets = [
-  { name: 'library', inbox: 'S:/self-organizing-library/lanes/library/inbox' },
-  { name: 'swarmmind', inbox: 'S:/SwarmMind/lanes/swarmmind/inbox' },
-  { name: 'kernel', inbox: 'S:/kernel-lane/lanes/kernel/inbox' }
+  { name: 'library', inbox: sToLocal('S:/self-organizing-library/lanes/library/inbox') },
+  { name: 'swarmmind', inbox: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox') },
+  { name: 'kernel', inbox: sToLocal('S:/kernel-lane/lanes/kernel/inbox') }
 ];
 
 function makeMsg(toLane) {

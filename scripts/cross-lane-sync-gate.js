@@ -4,13 +4,9 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { getRoots } = require('./util/lane-discovery');
 
-const LANE_ROOTS = {
-  archivist: 'S:/Archivist-Agent',
-  kernel: 'S:/kernel-lane',
-  library: 'S:/self-organizing-library',
-  swarmmind: 'S:/SwarmMind'
-};
+const LANE_ROOTS = getRoots();
 
 const TRUST_STORE_PATHS = [
   'S:/Archivist-Agent/lanes/broadcast/trust-store.json',

@@ -6,29 +6,31 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { deriveKeyId } = require('../.global/deriveKeyId');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-const VERIFICATION_DIR = path.resolve('S:/SwarmMind/verification');
-const VERIFICATION_DIR_FALLBACK = path.resolve('S:/self-organizing-library/verification');
+
+const VERIFICATION_DIR = path.resolve(sToLocal('S:/SwarmMind/verification'));
+const VERIFICATION_DIR_FALLBACK = path.resolve(sToLocal('S:/self-organizing-library/verification'));
 
 const TRUST_STORE_CANDIDATES = [
-  path.resolve('S:/SwarmMind/lanes/broadcast/trust-store.json'),
-  path.resolve('S:/self-organizing-library/lanes/broadcast/trust-store.json'),
-  path.resolve('S:/kernel-lane/lanes/broadcast/trust-store.json'),
-  path.resolve('S:/Archivist-Agent/lanes/broadcast/trust-store.json'),
+  path.resolve(sToLocal('S:/SwarmMind/lanes/broadcast/trust-store.json')),
+  path.resolve(sToLocal('S:/self-organizing-library/lanes/broadcast/trust-store.json')),
+  path.resolve(sToLocal('S:/kernel-lane/lanes/broadcast/trust-store.json')),
+  path.resolve(sToLocal('S:/Archivist-Agent/lanes/broadcast/trust-store.json')),
 ];
 
 const LANE_SNAPSHOT_CANDIDATES = {
   archivist: [
-    path.resolve('S:/Archivist-Agent/.identity/snapshot.json'),
+    path.resolve(sToLocal('S:/Archivist-Agent/.identity/snapshot.json')),
   ],
   library: [
-    path.resolve('S:/self-organizing-library/.identity/snapshot.json'),
+    path.resolve(sToLocal('S:/self-organizing-library/.identity/snapshot.json')),
   ],
   kernel: [
-    path.resolve('S:/kernel-lane/.identity/snapshot.json'),
+    path.resolve(sToLocal('S:/kernel-lane/.identity/snapshot.json')),
   ],
   swarmmind: [
-    path.resolve('S:/SwarmMind/.identity/snapshot.json'),
+    path.resolve(sToLocal('S:/SwarmMind/.identity/snapshot.json')),
   ],
 };
 

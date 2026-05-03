@@ -1,10 +1,12 @@
 const fs = require('fs');
 const p = require('path');
-const arDir = 'S:/Archivist-Agent/scripts';
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
+const arDir = sToLocal('S:/Archivist-Agent/scripts');
 const lanes = [
-  { name: 'kernel', root: 'S:/kernel-lane' },
-  { name: 'library', root: 'S:/self-organizing-library' },
-  { name: 'swarmmind', root: 'S:/SwarmMind' }
+  { name: 'kernel', root: getRoots()['kernel'] },
+  { name: 'library', root: getRoots()['library'] },
+  { name: 'swarmmind', root: getRoots()['swarmmind'] }
 ];
 
 // Get all scripts in Archivist

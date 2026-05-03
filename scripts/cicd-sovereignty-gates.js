@@ -13,7 +13,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const LANE_ROOT = 'S:/SwarmMind';
+const LANE_ROOT = getRoots()['swarmmind'];
 const LANE_NAME = 'SwarmMind';
 const SCHEMA_DIR = path.join(LANE_ROOT, 'schemas');
 const INBOX_MESSAGE_SCHEMA = 'inbox-message-v1.json';
@@ -40,6 +40,8 @@ function runGate1() {
   }
 
   const childProcess = require('child_process');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
   try {
     const output = childProcess.execSync('node "' + enforcerPath + '" --strict --lane ' + LANE_NAME, {
       cwd: LANE_ROOT,

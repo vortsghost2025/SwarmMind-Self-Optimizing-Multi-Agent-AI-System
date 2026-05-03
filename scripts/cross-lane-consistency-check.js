@@ -1,14 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
 const lanes = ['archivist', 'kernel', 'library', 'swarmmind'];
-const roots = {
-  archivist: 'S:/Archivist-Agent',
-  kernel: 'S:/kernel-lane',
-  library: 'S:/self-organizing-library',
-  swarmmind: 'S:/SwarmMind'
-};
+const roots = getRoots();
 
 console.log('=== CROSS-LANE CONSISTENCY CHECK ===\n');
 
@@ -110,8 +106,8 @@ console.log('\n6. PEM FILES IN GIT HISTORY');
 for (const lane of lanes) {
   const root = roots[lane];
   try {
-    const result = require('child_process').execSync(
-      'git log --all --diff-filter=A --name-only --pretty=format: -- "*.pem" "*.key"',
+const result = require('child_process').execSync(
+'git log --all --diff-filter=A --name-only --pretty=format: -- "*.pem" "*.key"',
       { cwd: root, encoding: 'utf8', timeout: 10000 }
     );
     const found = result.trim().split('\n').filter(l => l.trim());

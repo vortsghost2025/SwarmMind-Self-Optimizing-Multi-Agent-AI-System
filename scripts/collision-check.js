@@ -3,8 +3,10 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-const BROADCAST_DIR = 'S:/Archivist-Agent/lanes/broadcast';
+
+const BROADCAST_DIR = sToLocal('S:/Archivist-Agent/lanes/broadcast');
 const INTENT_FILE = path.join(BROADCAST_DIR, 'edit-intents.jsonl');
 
 function getActiveIntents() {

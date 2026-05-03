@@ -6,13 +6,15 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const CANONICAL_PATHS = {
-  'swarmmind': 'S:/SwarmMind',
-  'kernel': 'S:/kernel-lane',
-  'authority': 'S:/Archivist-Agent',  // Authority runs in Archivist context
-  'library': 'S:/self-organizing-library',
-  'archivist': 'S:/Archivist-Agent'
+  'swarmmind': getRoots()['swarmmind'],
+  'kernel': getRoots()['kernel'],
+  'authority': getRoots()['archivist'],  // Authority runs in Archivist context
+  'library': getRoots()['library'],
+  'archivist': getRoots()['archivist']
 };
 
 const FORBIDDEN_VARIANTS = [
@@ -168,7 +170,7 @@ if (require.main === module) {
   
   // Generate report
   const report = guard.generateReport();
-  const reportPath = 'S:/Archivist-Agent/.compact-audit/path-normalization-report.json';
+  const reportPath = sToLocal('S:/Archivist-Agent/.compact-audit/path-normalization-report.json');
   fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
   
   console.log(`\n[GUARD] Report saved: ${reportPath}`);

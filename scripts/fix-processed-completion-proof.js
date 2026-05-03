@@ -8,12 +8,14 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const LANES = {
-  archivist: 'S:/Archivist-Agent/lanes/archivist',
-  kernel: 'S:/kernel-lane/lanes/kernel',
-  library: 'S:/self-organizing-library/lanes/library',
-  swarmmind: 'S:/SwarmMind/lanes/swarmmind'
+  archivist: sToLocal('S:/Archivist-Agent/lanes/archivist'),
+  kernel: sToLocal('S:/kernel-lane/lanes/kernel'),
+  library: sToLocal('S:/self-organizing-library/lanes/library'),
+  swarmmind: sToLocal('S:/SwarmMind/lanes/swarmmind')
 };
 
 const COMPLETION_PROOF_FIELDS = [

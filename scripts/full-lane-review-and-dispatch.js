@@ -7,9 +7,11 @@ const { spawnSync } = require('child_process');
 
 const { createSignedMessage, buildCanonicalMessage } = require('./create-signed-message');
 const { deliverMessage, getCanonicalPath } = require('../src/lane/SchemaValidator');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const REVIEW_ID = `full-lane-review-${Date.now()}`;
-const REPORT_DIR = 'S:/Archivist-Agent/lanes/archivist/outbox';
+const REPORT_DIR = sToLocal('S:/Archivist-Agent/lanes/archivist/outbox');
 
 function runNodeJson(scriptPath, args = []) {
   const res = spawnSync('node', [scriptPath, ...args], { encoding: 'utf8' });
@@ -47,20 +49,15 @@ function readJsonIfExists(file) {
 }
 
 function buildEvidence() {
-  const syncGate = runNodeJson('S:/self-organizing-library/scripts/sync-gate-verify.js');
+  const syncGate = runNodeJson(sToLocal('S:/self-organizing-library/scripts/sync-gate-verify.js'));
 
   // post-compact writes to file; run and then read the artifact
-  spawnSync('node', ['S:/Archivist-Agent/scripts/post-compact-audit.js'], { encoding: 'utf8' });
-  const compactAudit = readJsonIfExists('S:/Archivist-Agent/.compact-audit/POST_COMPACT_AUDIT.json');
+  spawnSync('node', [sToLocal('S:/Archivist-Agent/scripts/post-compact-audit.js')], { encoding: 'utf8' });
+  const compactAudit = readJsonIfExists(sToLocal('S:/Archivist-Agent/.compact-audit/POST_COMPACT_AUDIT.json'));
 
-  const recovery = runNodeJson('S:/Archivist-Agent/scripts/recover-action-required-from-processed.js');
+  const recovery = runNodeJson(sToLocal('S:/Archivist-Agent/scripts/recover-action-required-from-processed.js'));
 
-  const repos = {
-    archivist: 'S:/Archivist-Agent',
-    library: 'S:/self-organizing-library',
-    kernel: 'S:/kernel-lane',
-    swarmmind: 'S:/SwarmMind',
-  };
+  const repos = getRoots();
 
   const git = {};
   for (const [lane, repo] of Object.entries(repos)) {

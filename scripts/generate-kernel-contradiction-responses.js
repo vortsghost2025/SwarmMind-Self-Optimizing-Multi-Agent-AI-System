@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 // Helper to create schema-valid batch response wrapper
 function createBatchWrapper(batchId, lane, nodeResponses) {
@@ -76,7 +78,7 @@ const kernelBatch3 = createBatchWrapper(3, 'kernel', [{
 }]);
 
 // Write files
-const kDir = 'S:/kernel-lane/lanes/kernel/inbox/quarantine';
+const kDir = sToLocal('S:/kernel-lane/lanes/kernel/inbox/quarantine');
 fs.mkdirSync(kDir, { recursive: true });
 fs.writeFileSync(`${kDir}/contradiction-batch-1-responses-20260430.json`, JSON.stringify(kernelBatch1, null, 2));
 fs.writeFileSync(`${kDir}/contradiction-batch-2-responses-20260430.json`, JSON.stringify(kernelBatch2, null, 2));

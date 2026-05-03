@@ -1,6 +1,8 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const broadcast = {
   schema_version: '1.3',
@@ -20,12 +22,12 @@ const broadcast = {
   lease: { owner: 'archivist', acquired_at: new Date().toISOString(), expires_at: null, renewal_count: 0, max_renewals: 3 },
   retry: { attempt: 1, max_attempts: 3, last_error: null, last_attempt_at: null },
   evidence: { required: true, verified: false },
-  evidence_exchange: { artifact_type: 'report', artifact_path: 'S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md' },
+  evidence_exchange: { artifact_type: 'report', artifact_path: sToLocal('S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md') },
   heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 900, status: 'done' },
-  convergence_gate: { claim: 'CONTRADICTION_SIGNATURE_39 workflow closure complete; 10 proven_spurious, 7 needs_lane_review pending Archivist edge evidence', evidence: 'S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md', verified_by: 'swarmmind', contradictions: [], status: 'proven' }
+  convergence_gate: { claim: 'CONTRADICTION_SIGNATURE_39 workflow closure complete; 10 proven_spurious, 7 needs_lane_review pending Archivist edge evidence', evidence: sToLocal('S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md'), verified_by: 'swarmmind', contradictions: [], status: 'proven' }
 };
 
-const outDir = 'S:/Archivist-Agent/lanes/broadcast';
+const outDir = sToLocal('S:/Archivist-Agent/lanes/broadcast');
 fs.mkdirSync(outDir, { recursive: true });
 const outPath = path.join(outDir, 'contradiction-resolution-final-20260430.json');
 fs.writeFileSync(outPath, JSON.stringify(broadcast, null, 2));

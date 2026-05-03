@@ -12,7 +12,7 @@ const IN_PROGRESS_DIR = path.join(REPO_ROOT, 'lanes', LANE, 'inbox', 'in-progres
 const PROCESSED_DIR = path.join(REPO_ROOT, 'lanes', LANE, 'inbox', 'processed');
 const OUTBOX_DIR = path.join(REPO_ROOT, 'lanes', LANE, 'outbox');
 
-const ARCHIVIST_INBOX = 'S:/Archivist-Agent/lanes/archivist/inbox/';
+const ARCHIVIST_INBOX = sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/');
 
 function nowIso() { return new Date().toISOString(); }
 
@@ -105,6 +105,8 @@ function createResponse(originalMsg, executionResult) {
 function signAndDeliver(response) {
   try {
     const { createSignedMessage } = require(path.join(REPO_ROOT, 'scripts', 'create-signed-message.js'));
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
     const signed = createSignedMessage(response, LANE);
 
     const outPath = path.join(OUTBOX_DIR, `${response.task_id}.json`);

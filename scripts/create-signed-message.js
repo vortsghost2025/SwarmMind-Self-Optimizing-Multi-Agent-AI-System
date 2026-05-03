@@ -7,22 +7,19 @@ const crypto = require('crypto');
 
 const { deriveKeyId } = require(path.join(__dirname, '..', '.global', 'deriveKeyId.js'));
 
-// LEASE + ATOMIC WRITE: Sovereign implementation for SwarmMind autonomy
-// Previously depended on kernel-lane, now uses local copy to maintain lane sovereignty
 const { atomicWriteWithLease } = require('./util/atomic-write');
 const { guardWrite } = require(path.join(__dirname, 'outbox-write-guard'));
+const { LANES: _DL, getRoots } = require('./util/lane-discovery');
 
 const PASSFILE_CANDIDATES = [
-  path.join(__dirname, '..', '.runtime', 'lane-passphrases.json'),
-  'S:/Archivist-Agent/.runtime/lane-passphrases.json'
+path.join(__dirname, '..', '.runtime', 'lane-passphrases.json'),
+path.join(getRoots().archivist, '.runtime', 'lane-passphrases.json')
 ];
 
-const LANE_IDENTITY_DIRS = {
-  archivist: 'S:/Archivist-Agent/.identity',
-  library: 'S:/self-organizing-library/.identity',
-  swarmmind: 'S:/SwarmMind/.identity',
-  kernel: 'S:/kernel-lane/.identity',
-};
+const LANE_IDENTITY_DIRS = {};
+for (const [id, info] of Object.entries(_DL)) {
+LANE_IDENTITY_DIRS[id] = path.join(info.root, '.identity');
+}
 
 const DEFAULT_PAYLOAD = { mode: 'inline', compression: 'none' };
 const DEFAULT_EXECUTION = { mode: 'manual', engine: 'pipeline', actor: 'lane' };

@@ -11,10 +11,10 @@ const fs = require('fs');
 const path = require('path');
 
 const LANES = {
-  'Archivist': 'S:/Archivist-Agent',
-  'Kernel': 'S:/kernel-lane',
-  'Library': 'S:/self-organizing-library',
-  'SwarmMind': 'S:/SwarmMind'
+  'Archivist': getRoots()['archivist'],
+  'Kernel': getRoots()['kernel'],
+  'Library': getRoots()['library'],
+  'SwarmMind': getRoots()['swarmmind']
 };
 
 const CURRENT_LANE = 'SwarmMind';
@@ -211,6 +211,8 @@ const shouldExitOnError = args.includes('--strict');
 console.log('═══════════════════════════════════════════════════════════════');
 console.log('   SOVEREIGNTY ENFORCEMENT SCANNER');
 console.log('   Rule: NO CROSS-LANE require() OR hardcoded paths');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 console.log('═══════════════════════════════════════════════════════════════\n');
 
 const allViolations = [];

@@ -1,61 +1,35 @@
 /**
  * LOCAL LANE DISCOVERY UTILITY
  * ORIGIN: S:/Archivist-Agent/.global/lane-discovery.js
- * LOCALIZED: SwarmMind (2026-05-02)
- * PURPOSE: Local implementation to avoid cross-lane require()
+ * LOCALIZED: SwarmMind (2026-05-03)
+ * PURPOSE: Platform-aware lane discovery — auto-detects Windows S:/ vs Ubuntu paths
+ * FALLBACK: Original Windows-only version backed up as lane-discovery-win-backup.js
  */
-
-const LANES = {
-  archivist: {
-    name: 'Archivist',
-    root: 'S:/Archivist-Agent',
-    inbox: 'S:/Archivist-Agent/lanes/archivist/inbox',
-    outbox: 'S:/Archivist-Agent/lanes/archivist/outbox',
-    state: 'S:/Archivist-Agent/lanes/archivist/state'
-  },
-  library: {
-    name: 'Library',
-    root: 'S:/self-organizing-library',
-    inbox: 'S:/self-organizing-library/lanes/library/inbox',
-    outbox: 'S:/self-organizing-library/lanes/library/outbox',
-    state: 'S:/self-organizing-library/lanes/library/state'
-  },
-  kernel: {
-    name: 'Kernel',
-    root: 'S:/kernel-lane',
-    inbox: 'S:/kernel-lane/lanes/kernel/inbox',
-    outbox: 'S:/kernel-lane/lanes/kernel/outbox',
-    state: 'S:/kernel-lane/lanes/kernel/state'
-  },
-  swarmmind: {
-    name: 'SwarmMind',
-    root: 'S:/SwarmMind',
-    inbox: 'S:/SwarmMind/lanes/swarmmind/inbox',
-    outbox: 'S:/SwarmMind/lanes/swarmmind/outbox',
-    state: 'S:/SwarmMind/lanes/swarmmind/state'
+const os = require('os');
+const path = require('path');
+function _resolveRoots() {
+  if (process.platform === 'win32' || process.env.LANE_PLATFORM === 'windows') {
+    return { archivist: 'S:/Archivist-Agent', library: 'S:/self-organizing-library', kernel: 'S:/kernel-lane', swarmmind: 'S:/SwarmMind' };
   }
-};
-
-function getLane(name) {
-  return LANES[name.toLowerCase()];
+  const reposDir = process.env.LANE_REPOS_DIR || path.join(os.homedir(), 'agent', 'repos');
+  return { archivist: path.join(reposDir, 'Archivist-Agent'), library: path.join(reposDir, 'self-organizing-library'), kernel: path.join(reposDir, 'kernel-lane'), swarmmind: path.join(reposDir, 'SwarmMind') };
 }
-
-function getAllLanes() {
-  return Object.values(LANES);
+const ROOTS = _resolveRoots();
+const LANES = {};
+for (const [id, root] of Object.entries(ROOTS)) {
+  LANES[id] = {
+    name: id.charAt(0).toUpperCase() + id.slice(1),
+    root: root,
+    get inbox() { return path.join(this.root, 'lanes', id, 'inbox'); },
+    get outbox() { return path.join(this.root, 'lanes', id, 'outbox'); },
+    get state() { return path.join(this.root, 'lanes', id, 'state'); }
+  };
 }
-
-function getLaneNames() {
-  return Object.keys(LANES);
+function sToLocal(sPath) {
+  return sPath.replace(/^S:\//, ROOTS.archivist.replace(/\/Archivist-Agent$/, '') + '/');
 }
-
-module.exports = {
-  LANES,
-  getLane,
-  getAllLanes,
-  getLaneNames
-};
-
-/**
- * Note: Original Archivist version includes dynamic discovery.
- * This is a simplified static version for SwarmMind sovereignty.
- */
+function getLane(name) { return LANES[name.toLowerCase()]; }
+function getAllLanes() { return Object.values(LANES); }
+function getLaneNames() { return Object.keys(LANES); }
+function getRoots() { return ROOTS; }
+module.exports = { LANES, ROOTS, sToLocal, getLane, getAllLanes, getLaneNames, getRoots };

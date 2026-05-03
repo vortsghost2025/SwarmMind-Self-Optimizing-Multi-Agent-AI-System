@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 function createBatchWrapper(batchId, lane, nodeResponses) {
   return {
@@ -49,7 +51,7 @@ const libraryBatch2 = createBatchWrapper(2, 'library', [
 ]);
 
 // Write files
-const lDir = 'S:/self-organizing-library/lanes/library/inbox/quarantine';
+const lDir = sToLocal('S:/self-organizing-library/lanes/library/inbox/quarantine');
 fs.mkdirSync(lDir, { recursive: true });
 fs.writeFileSync(`${lDir}/contradiction-batch-1-responses-20260430.json`, JSON.stringify(libraryBatch1, null, 2));
 fs.writeFileSync(`${lDir}/contradiction-batch-2-responses-20260430.json`, JSON.stringify(libraryBatch2, null, 2));

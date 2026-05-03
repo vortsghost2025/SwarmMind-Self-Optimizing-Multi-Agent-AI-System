@@ -3,6 +3,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+
 
 const ACTION_REQUIRED_TYPES = new Set(['task', 'escalation', 'request']);
 
@@ -17,20 +19,20 @@ function isActionRequiredMessage(msg) {
 
 const LANES = {
   archivist: {
-    processed: 'S:/Archivist-Agent/lanes/archivist/inbox/processed',
-    actionRequired: 'S:/Archivist-Agent/lanes/archivist/inbox/action-required',
+    processed: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/processed'),
+    actionRequired: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/action-required'),
   },
   library: {
-    processed: 'S:/self-organizing-library/lanes/library/inbox/processed',
-    actionRequired: 'S:/self-organizing-library/lanes/library/inbox/action-required',
+    processed: sToLocal('S:/self-organizing-library/lanes/library/inbox/processed'),
+    actionRequired: sToLocal('S:/self-organizing-library/lanes/library/inbox/action-required'),
   },
   kernel: {
-    processed: 'S:/kernel-lane/lanes/kernel/inbox/processed',
-    actionRequired: 'S:/kernel-lane/lanes/kernel/inbox/action-required',
+    processed: sToLocal('S:/kernel-lane/lanes/kernel/inbox/processed'),
+    actionRequired: sToLocal('S:/kernel-lane/lanes/kernel/inbox/action-required'),
   },
   swarmmind: {
-    processed: 'S:/SwarmMind/lanes/swarmmind/inbox/processed',
-    actionRequired: 'S:/SwarmMind/lanes/swarmmind/inbox/action-required',
+    processed: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox/processed'),
+    actionRequired: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox/action-required'),
   },
 };
 
