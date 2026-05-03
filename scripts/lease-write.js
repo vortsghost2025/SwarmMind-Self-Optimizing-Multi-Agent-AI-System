@@ -4,6 +4,19 @@
 const fs = require('fs');
 const path = require('path');
 
+function safeUnlink(filePath, context) {
+  try {
+    fs.unlinkSync(filePath);
+    return 'ok';
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      console.log('[watcher] RACE_SKIPPED: ' + (context || 'file') + ' already removed by another process');
+      return 'race_skipped';
+    }
+    throw e;
+  }
+}
+
 // LEASE WRITE: Sovereign implementation for SwarmMind autonomy
 // Previously depended on kernel-lane, now uses local copy to maintain lane sovereignty
 const { atomicWriteWithLease } = require('./util/atomic-write');
@@ -28,7 +41,7 @@ async function moveFileWithLease(sourcePath, destPath, laneId, timeoutMs = 30000
   ensureParentDir(destPath);
 
   if (fs.existsSync(destPath)) {
-    fs.unlinkSync(sourcePath);
+    safeUnlink(sourcePath, path.basename(sourcePath));
     return { moved: false, reason: 'DEST_EXISTS_SOURCE_DROPPED', sourcePath, destPath };
   }
 
