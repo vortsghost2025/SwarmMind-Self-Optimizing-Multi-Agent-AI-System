@@ -1,0 +1,89 @@
+{
+  "version": "resilience_policy_v1",
+  "retry": {
+    "max_attempts": 5,
+    "base_delay_ms": 500,
+    "max_delay_ms": 8000,
+    "jitter": 0.3
+  },
+  "budgets": {
+    "sync_total_ms": 30000,
+    "async_total_ms": 300000,
+    "tool_calls_max": 50
+  },
+  "domains": {
+    "execution": {
+      "default_strategy": "RETRY"
+    },
+    "contract": {
+      "default_strategy": "QUARANTINE"
+    },
+    "performance": {
+      "default_strategy": "DEGRADE"
+    },
+    "constitution": {
+      "default_strategy": "ABORT"
+    },
+    "integrity": {
+      "default_strategy": "QUARANTINE"
+    }
+  },
+  "failover": {
+    "require_equivalence": true
+  },
+  "constraints": {
+    "set_id": "constitution_v7",
+    "pre_action": [
+      {
+        "id": "C-TOOL-ALLOWLIST",
+        "type": "allowlist_tool",
+        "severity": "high",
+        "config": {
+          "allowed_tools": [
+            "external_api_x",
+            "s3_put",
+            "dynamodb_put",
+            "sqs_send"
+          ]
+        }
+      },
+      {
+        "id": "C-BUDGET-TOOLCALLS",
+        "type": "budget_toolcalls",
+        "severity": "medium",
+        "config": {
+          "max": 50
+        }
+      }
+    ],
+    "post_action": [
+      {
+        "id": "C-RESPONSE-SCHEMA",
+        "type": "schema_presence",
+        "severity": "high",
+        "config": {
+          "required_fields": [
+            "status"
+          ]
+        }
+      }
+    ],
+    "pre_output": [
+      {
+        "id": "C-LABEL-DEGRADED",
+        "type": "label_degraded_if_used",
+        "severity": "medium",
+        "config": {}
+      }
+    ]
+  },
+  "equivalence_registry": {
+    "external_api_x": {
+      "equivalent_sources": [
+        "external_api_x_backup"
+      ],
+      "equivalent_under_constraints": true,
+      "last_tested": "2026-02-22"
+    }
+  }
+}

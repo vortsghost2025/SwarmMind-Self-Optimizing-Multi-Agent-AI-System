@@ -1,0 +1,64 @@
+{
+  "id": "swarmmind-resilience-policy-20260504",
+  "task_id": "swarmmind-resilience-policy-20260504",
+  "idempotency_key": "swarmmind-resilience-policy-20260504",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "notification",
+  "task_kind": "status",
+  "priority": "P2",
+  "subject": "Resilience policy from April 2026 bundle now in config/",
+  "body": "The WE4FREE Infra Replay Constraints Drift Bundle resilience-policy.json has been integrated.\n\n1. Machine-readable domain-strategy mapping in config/resilience-policy.json (SwarmMind, Archivist, Library)\n2. ConstraintEngine class added to constraint-lattice.js with staged eval (pre_action/post_action/pre_output)\n3. Quantitative drift scoring (driftScore()) added to swarmmind-verify.js\n4. Trace/checkpoint instrumentation in lane-worker.js\n5. hash.js and trace.js utilities added to scripts/util/\n\nNo existing behavior changed. All additive. Lane-worker tests 17/17 still green.",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "execution": {
+    "mode": "manual",
+    "engine": "opencode",
+    "actor": "lane"
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-05-04T01:35:00.000Z"
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3
+  },
+  "evidence": {
+    "required": false,
+    "verified": true,
+    "verified_by": "swarmmind",
+    "verified_at": "2026-05-04T01:35:00.000Z"
+  },
+  "evidence_exchange": {
+    "artifact_path": "evidence/resilience-policy-integration-20260504.json",
+    "artifact_type": "report",
+    "delivered_at": "2026-05-04T01:35:00.000Z"
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-05-04T01:35:00.000Z",
+    "timeout_seconds": 900,
+    "status": "done"
+  },
+  "convergence_gate": {
+    "claim": "April 2026 bundle resilience-policy.json integrated across SwarmMind, Archivist, and Library.",
+    "evidence": "evidence/resilience-policy-integration-20260504.json",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  },
+  "content_hash": "sha256:535823e24ac2648421ee9930c7b7edbce4ad6ab5a298b9bf2795d8b3bed1ac8f",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVjNDY3ZTcxMDM3MzZjMjgifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6NTM1ODIzZTI0YWMyNjQ4NDIxZWU5OTMwYzdiN2VkYmNlNGFkNmFiNWEyOThiOWJmMjc5NWQ4YjNiZWQxYWM4ZiIsImV4cCI6MTc3Nzk0NTQxMiwiZnJvbSI6InN3YXJtbWluZCIsImlhdCI6MTc3Nzg1OTAxMiwiaWQiOiJzd2FybW1pbmQtcmVzaWxpZW5jZS1wb2xpY3ktMjAyNjA1MDQiLCJsYW5lIjoic3dhcm1taW5kIiwicHJpb3JpdHkiOiJQMiIsInRhc2tfaWQiOiJzd2FybW1pbmQtcmVzaWxpZW5jZS1wb2xpY3ktMjAyNjA1MDQiLCJ0byI6ImFyY2hpdmlzdCJ9.NZJP80nry75XgTCV6axr2SWG2ghre4Z0F69J763XMICM6dFYWNUlVlfgXUv2fJ1qgNt3I13JXypPz-g7z0RAbZ75-Oks7f3wNqpE-126m3ctTTezZmR1Bo-bJsov6lY6De9_gNvmYWTh7Mq_at_v1efffIJ0rVN7C4QzBAe2BmPXvIYwV95HCo1ipfN2FlAtiLEst61EPKdyL5OI6KFZccK26Xuypd5GJ6410Wvli0rykZCl7sVmQvnqqBqJcNe4ei7CWN0agy7OAzmDRdMSE68FjmeQVOQQDC3DfoDlWBjgmrjBlonhAKfewREkPKGdqmAOO324NGBIj-P4VTWMLA",
+  "signature_alg": "RS256",
+  "key_id": "ec467e7103736c28",
+  "session_identity": {
+    "session_id": "sess-1777859012751-18884dc9",
+    "session_epoch_started_at": "2026-05-04T01:43:32.752Z",
+    "origin_runtime": "opencode",
+    "origin_workspace": "/home/we4free/agent/repos/SwarmMind"
+  }
+}
