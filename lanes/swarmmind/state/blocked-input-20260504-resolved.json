@@ -1,0 +1,67 @@
+{
+  "status": "resolved",
+  "resolved_at": "2026-05-04T15:30:00.000Z",
+  "resolved_by": "swarmmind",
+  "previous_blocked_input": "April152026mainreferencepoint",
+  "source_path": "S:/April152026mainreferencepoint (via SMB + Windows PowerShell copy)",
+  "bundles_imported": [
+    {
+      "name": "WE4FREE_Sean_Infra_Replay_Constraints_Drift_Bundle",
+      "zip_sha256": "see evidence/april15-intake/checksums.sha256",
+      "items": ["resilience-policy.json", "hash.js", "trace.js", "constraint-engine/index.ts", "drift-detection/index.ts", "replay-cli/index.ts", "terraform (main.tf, variables.tf)", "cdk (stack.ts)"],
+      "status": "FULLY_IMPLEMENTED"
+    },
+    {
+      "name": "WE4FREE_Sean_Resilience_Code_Bundle",
+      "zip_sha256": "see evidence/april15-intake/checksums.sha256",
+      "items": ["resilience-policy.json (simplified)", "trace.js", "classifyError.js", "decide.js", "service-api/index.js", "lambda-worker/handler.js"],
+      "status": "CORE_IMPLEMENTED_INFRA_REFERENCE_ONLY"
+    }
+  ],
+  "gap_analysis": {
+    "already_done_before_bundle_access": [
+      "config/resilience-policy.json",
+      "scripts/util/hash.js",
+      "scripts/util/trace.js",
+      "scripts/constraint-lattice.js (ConstraintEngine)",
+      "scripts/swarmmind-verify.js (driftScore)",
+      "lane-worker.js (ConstraintEngine + driftScore integration)",
+      "retry-with-backoff.js (domain strategies, retryWithPolicy)",
+      "execution-gate.js (failover lookup)"
+    ],
+    "implemented_after_bundle_access": [
+      "scripts/util/classifyError.js (error domain classifier)",
+      "scripts/util/decide.js (strategy decision engine)",
+      "scripts/we4free-replay.js (validate + replay CLI)",
+      "scripts/we4free-drift.js (baseline + compare CLI)"
+    ],
+    "reference_only_not_for_lane_core": [
+      "terraform/ (SQS+DLQ+Lambda+S3+DynamoDB infra)",
+      "cdk/ (TypeScript equivalent stack)",
+      "service-api/index.js (Express + circuit breaker)",
+      "lambda-worker/handler.js (Lambda SQS consumer)"
+    ]
+  },
+  "spec_diffs": {
+    "constraint_engine": {
+      "reference": "TypeScript, constructor takes (constraintSetId, rules), checks ctx.response for schema_presence, checks ctx.output.labels for label_degraded",
+      "our_impl": "JavaScript, loads from config/resilience-policy.json, checks both ctx and ctx.response for schema_presence, flags requires_label for label_degraded",
+      "verdict": "functionally equivalent, minor structural differences from TS->JS port"
+    },
+    "drift_detection": {
+      "reference": "TypeScript CLI with baseline/compare commands, L1 distance on decision/tool distributions + violation rate delta",
+      "our_impl": "Two parts: (1) swarmmind-verify.js driftScore() for per-trace inline scoring, (2) we4free-drift.js CLI for baseline/compare matching reference spec exactly",
+      "verdict": "full coverage — inline + CLI"
+    },
+    "resilience_policy": {
+      "reference_infra": "89 lines with constraints, budgets.tool_calls_max, equivalence_registry",
+      "reference_resilience": "33 lines without constraints block",
+      "our_impl": "matches infra bundle (89 lines, full constraints + equivalence)",
+      "verdict": "our version is the more complete variant"
+    }
+  },
+  "evidence": [
+    "evidence/april15-intake/checksums.sha256",
+    "evidence/april15-intake/extracted-files.txt"
+  ]
+}

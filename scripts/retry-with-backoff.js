@@ -2,6 +2,8 @@
 
 const path = require('path');
 const { ConstraintEngine, ConstitutionViolation } = require('./constraint-lattice');
+const { classifyError } = require('./util/classifyError');
+const { decide } = require('./util/decide');
 
 const DOMAIN_STRATEGY_ORDER = ['RETRY', 'DEGRADE', 'QUARANTINE', 'ABORT'];
 
@@ -13,12 +15,8 @@ function isNonRetriableValidationError(err) {
 }
 
 function domainForError(err) {
-  if (err instanceof ConstitutionViolation) return 'constitution';
-  const msg = String((err && err.message) || err || '').toLowerCase();
-  if (msg.includes('integrity') || msg.includes('hash') || msg.includes('checksum')) return 'integrity';
-  if (msg.includes('contract') || msg.includes('schema') || msg.includes('validation')) return 'contract';
-  if (msg.includes('timeout') || msg.includes('performance') || msg.includes('slow')) return 'performance';
-  return 'execution';
+  const cls = classifyError(err);
+  return cls.error_domain;
 }
 
 async function retryWithPolicy(fn, opts = {}) {
