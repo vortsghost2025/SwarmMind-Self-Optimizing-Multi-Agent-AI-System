@@ -1,0 +1,67 @@
+{
+  "title": "April 2026 Bundle Integration Evidence (Re-implemented)",
+  "date": "2026-05-04",
+  "recovery_note": "ConstraintEngine and driftScore lost in Ubuntu headless crash. Re-implemented from surviving config schema + outbox description.",
+  "original_source": "S:/April152026mainreferencepoint/WE4FREE_Sean_Infra_Replay_Constraints_Drift_Bundle.zip",
+  "artifacts_added": [
+    "config/resilience-policy.json (survived in prior commit)",
+    "scripts/util/trace.js (survived in recovery commit cfac63a)",
+    "scripts/util/hash.js (survived in recovery commit cfac63a)",
+    "scripts/constraint-lattice.js (RE-IMPLEMENTED)",
+    "scripts/swarmmind-verify.js (RE-IMPLEMENTED)"
+  ],
+  "code_modified": [
+    "scripts/constraint-lattice.js: ConstraintEngine with staged eval (pre_action/post_action/pre_output), ConstitutionViolation, loads config/resilience-policy.json",
+    "scripts/swarmmind-verify.js: driftScore() with weights decision=0.45/tool=0.35/violation=0.20, verifyTraceIntegrity(), interpretation labels",
+    "scripts/lane-worker.js: trace/checkpoint integration (survived in cfac63a)"
+  ],
+  "constraint_engine_spec": {
+    "class": "ConstraintEngine",
+    "methods": ["load()", "evaluateStage(stage, ctx)", "enforce(stage, ctx)", "evaluateAll(ctx)", "getDomainStrategy(domain)", "getRetryConfig()", "getBudgets()"],
+    "stages": ["pre_action", "post_action", "pre_output"],
+    "constraint_evaluators": ["allowlist_tool", "budget_toolcalls", "schema_presence", "label_degraded_if_used"],
+    "violation_class": "ConstitutionViolation",
+    "policy_source": "config/resilience-policy.json",
+    "constraint_set_id": "constitution_v7"
+  },
+  "drift_score_spec": {
+    "function": "driftScore(trace, weights)",
+    "default_weights": { "decision": 0.45, "tool": 0.35, "violation": 0.20 },
+    "components": ["decision drift (reversals + stale)", "tool drift (failures + retries)", "violation drift (high/medium constraint failures)"],
+    "interpretation_labels": ["stable (<0.15)", "minor_drift (<0.40)", "significant_drift (<0.70)", "critical_drift (>=0.70)"],
+    "companion": "verifyTraceIntegrity(trace)"
+  },
+  "smoke_test_results": {
+    "constraint_engine": {
+      "load_policy": "PASS",
+      "pre_action_allowed_tool": "PASS (all_pass=true)",
+      "pre_action_blocked_tool": "PASS (all_pass=false, 1 violation)",
+      "pre_action_budget_ok": "PASS (all_pass=true)",
+      "pre_action_budget_exceeded": "PASS (all_pass=false, 1 violation)",
+      "post_action_missing_status": "PASS (all_pass=false, 1 violation)",
+      "post_action_has_status": "PASS (all_pass=true)",
+      "pre_output_not_degraded": "PASS (all_pass=true)",
+      "pre_output_degraded": "PASS (all_pass=true, requires_label=true)",
+      "evaluateAll_clean": "PASS (all_pass=true)",
+      "enforce_throws_violation": "PASS (ConstitutionViolation, C-TOOL-ALLOWLIST)"
+    },
+    "drift_score": {
+      "clean_trace": "PASS (score computed, interpretation assigned)",
+      "drifty_trace": "PASS (score=0.91, critical_drift)",
+      "integrity_check_clean": "PASS (valid=true)",
+      "integrity_check_bad": "PASS (valid=false, 5 issues)"
+    }
+  },
+  "baseline_tests": {
+    "lane_worker": "17/17 PASS",
+    "executor_v3": "46/64 (18 pre-existing S:/ path failures, not from this work)"
+  },
+  "recovery_commits": {
+    "crash_recovery": "cfac63a",
+    "reimplementation": "pending"
+  },
+  "blocked_input": {
+    "missing_input": "April152026mainreferencepoint",
+    "impact": "Cannot verify re-implementation matches original spec exactly. Remaining bundle items unknown."
+  }
+}

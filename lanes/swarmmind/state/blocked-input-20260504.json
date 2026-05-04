@@ -1,0 +1,28 @@
+{
+  "status": "blocked_input",
+  "missing_input": "April152026mainreferencepoint",
+  "description": "Reference document from April 15 2026 main reference point. Required to re-implement ConstraintEngine class (constraint-lattice.js) and driftScore() (swarmmind-verify.js) lost in crash, and to continue remaining bundle items.",
+  "blocked_since": "2026-05-04T02:15:00.000Z",
+  "smb_mount_checked": true,
+  "smb_mount_path": "/mnt/swarmmind",
+  "smb_mount_active": true,
+  "smb_search_result": "not_found",
+  "recovery_commit": "cfac63a",
+  "lost_items": [
+    {
+      "item": "ConstraintEngine class with staged eval (pre_action/post_action/pre_output)",
+      "expected_path": "scripts/constraint-lattice.js",
+      "status": "lost_in_crash"
+    },
+    {
+      "item": "driftScore() quantitative drift scoring",
+      "expected_path": "scripts/swarmmind-verify.js",
+      "status": "lost_in_crash"
+    }
+  ],
+  "test_baseline": {
+    "lane_worker": "17/17 pass",
+    "executor_v3": "46/64 pass (18 fail - pre-existing, not from recovery)",
+    "note": "Executor failures appear to be path-mapping issues on Ubuntu (S:/ vs local paths), not regressions from recovery commit"
+  }
+}
