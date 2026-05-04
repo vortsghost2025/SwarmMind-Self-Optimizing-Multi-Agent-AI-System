@@ -27,31 +27,32 @@
       "type": "string",
       "default": "library"
     },
-  "to": {
-    "type": "string",
-    "enum": [
-      "archivist",
-      "library",
-      "swarmmind",
-      "kernel",
-      "broadcast",
-      "all"
-    ]
-  },
-  "type": {
-    "type": "string",
-    "enum": [
-      "task",
-      "response",
-      "heartbeat",
-      "escalation",
-      "handoff",
-      "ack",
-      "alert",
-      "notification",
-      "status"
-    ]
-  },
+    "to": {
+      "type": "string",
+      "enum": [
+        "archivist",
+        "library",
+        "swarmmind",
+        "kernel",
+        "broadcast",
+        "all",
+        "authority"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "task",
+        "response",
+        "heartbeat",
+        "escalation",
+        "handoff",
+        "ack",
+        "alert",
+        "notification",
+        "status"
+      ]
+    },
     "task_kind": {
       "type": "string",
       "enum": [
@@ -66,7 +67,8 @@
         "handoff",
         "alert",
         "notification",
-        "heartbeat"
+        "heartbeat",
+        "audit"
       ],
       "description": "v1.3: Optional for alert/ack/heartbeat types. Required for task/response/escalation/handoff."
     },
@@ -146,7 +148,9 @@
           "enum": [
             "manual",
             "session_task",
-            "watcher"
+            "watcher",
+            "auto",
+            "pipeline"
           ]
         },
         "engine": {
@@ -154,7 +158,9 @@
           "enum": [
             "kilo",
             "opencode",
-            "other"
+            "codex",
+            "other",
+            "pipeline"
           ]
         },
         "actor": {
@@ -162,7 +168,12 @@
           "enum": [
             "lane",
             "subagent",
-            "watcher"
+            "watcher",
+            "task-executor",
+            "kernel",
+            "library",
+            "swarmmind",
+            "archivist"
           ],
           "description": "v1.1: 'watcher' added for watcher-initiated processing provenance."
         },
@@ -257,15 +268,15 @@
         },
         "artifact_type": {
           "type": "string",
-    "enum": [
-      "benchmark",
-      "profile",
-      "release",
-      "log",
-      "response",
-      "report",
-      "artifact"
-    ]
+          "enum": [
+            "benchmark",
+            "profile",
+            "release",
+            "log",
+            "response",
+            "report",
+            "artifact"
+          ]
         },
         "delivered_at": {
           "type": "string",

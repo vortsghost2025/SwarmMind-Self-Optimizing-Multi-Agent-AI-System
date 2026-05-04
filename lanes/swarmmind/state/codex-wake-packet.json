@@ -1,14 +1,15 @@
 {
   "schema_version": "1.0",
   "lane": "swarmmind",
-  "generated_at": "2026-05-03T15:55:11.392Z",
+  "generated_at": "2026-05-04T21:44:00Z",
   "pending_count": 0,
   "pending": [],
+  "last_session_summary": "Quarantine re-validation (3 kernel msgs moved to processed). HARDEN-4 notification sent to Archivist. Kernel audit rec #1 ACKed. Heartbeat updated. Governance items queued.",
   "instructions": [
     "Open this file when activating Codex as SwarmMind.",
     "Process pending items in priority order.",
     "Send signed response to Archivist inbox with convergence_gate.",
     "Move completed SwarmMind inbox items to processed."
   ],
-  "packet_hash": "60dec087ab5b0b4ad3218b9e6de9d82cf62edd1b4c757a9c7d6e5d7817d8df80"
+  "packet_hash": ""
 }

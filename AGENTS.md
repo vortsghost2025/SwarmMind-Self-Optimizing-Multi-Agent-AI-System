@@ -137,7 +137,7 @@ SwarmMind identity:
 
 - Public key: `S:/SwarmMind/.identity/public.pem`
 - Private key: `S:/SwarmMind/.identity/private.pem`
-- Active key id: `addb0afb8ee5c2ed`
+- Active key id: `1450972ce0a225b7`
 - Trust store: `S:/SwarmMind/lanes/broadcast/trust-store.json`
 
 Signing helper:
