@@ -10,6 +10,7 @@ const { ExecutionGate } = require('./execution-gate');
 const { evaluateVerificationDomain } = require('./verification-domain-gate');
 const { getCodeVersionHash } = require('./code-version-hash');
 const { getRoots } = require('./util/lane-discovery');
+const { newTrace, addDecision, checkpoint, addConstraintEval, finalizeTrace, writeTrace } = require('./util/trace');
 
 const ACTIONABLE_TYPES = new Set(['task', 'escalation', 'request']);
 const NON_ASCII_PATTERN = /[^\x00-\x7F]/;
@@ -916,8 +917,17 @@ _routeRaw(filePath, queueKey, meta) {
 }
 
   processOnce() {
+    const trace = newTrace();
+    trace.lane = this.lane;
+    trace.repo_root = this.repoRoot;
+    trace.dry_run = this.dryRun;
+    addDecision(trace, { decision: 'PROCESS_CYCLE_START', scanned: 0 });
+
     this.ensureQueues();
     const files = this.listInboxFiles();
+    trace.scanned = files.length;
+    addDecision(trace, { decision: 'FILES_SCANNED', count: files.length });
+
     const routes = [];
 
     for (const filePath of files) {
@@ -931,6 +941,12 @@ _routeRaw(filePath, queueKey, meta) {
           reason: 'PROCESSING_EXCEPTION',
           detail: err.message,
           dry_run: this.dryRun,
+        });
+        addConstraintEval(trace, {
+          stage: 'post_action',
+          constraint_set: 'lane-worker',
+          result: 'fail',
+          violations: [{ constraint_id: 'PROCESSING_EXCEPTION', severity: 'high', evidence: { file: filePath, error: err.message } }]
         });
       }
     }
@@ -957,6 +973,16 @@ _routeRaw(filePath, queueKey, meta) {
       routes,
       timestamp: nowIso(),
     };
+
+    addDecision(trace, { decision: 'PROCESS_CYCLE_END', routed: summary.routed });
+    checkpoint(trace, 'process_cycle', { scanned: summary.scanned, routed: summary.routed });
+
+    if (!this.dryRun) {
+      try {
+        const traceDir = path.join(this.repoRoot, 'lanes', this.lane, 'state', 'traces');
+        writeTrace(finalizeTrace(trace), traceDir);
+      } catch (_) {}
+    }
 
     this.lastRun = summary;
     return summary;
