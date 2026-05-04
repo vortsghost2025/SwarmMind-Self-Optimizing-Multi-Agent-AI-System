@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.3",
+  "task_id": "swarmmind-hardening-sprint-task-packets-20260504",
+  "idempotency_key": "swarmmind-hardening-sprint-20260504",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "notification",
+  "task_kind": "report",
+  "priority": "P1",
+  "subject": "Hardening sprint task packets — drift detection, validation enforcement, secure transfer logging",
+  "body": "Per verification review recommendations, splitting 3 pending controls into lane-scoped P1 tasks.\n\nAll three have core implementations in SwarmMind. The gap is: (1) cross-lane wiring, (2) dual-verification integration per VERIFICATION_LANES.md, (3) evidence of enforcement.\n\nSee payload.tasks for the full packet set.",
+  "requires_action": true,
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "tasks": [
+      {
+        "id": "HARDEN-1",
+        "title": "Drift detection — cross-lane baseline + compare",
+        "owner": "swarmmind",
+        "priority": "P1",
+        "status": "partially_done",
+        "done_in_swarmmind": [
+          "scripts/we4free-drift.js (baseline + compare CLI)",
+          "scripts/swarmmind-verify.js (inline driftScore per trace)",
+          "lane-worker.js computes drift_score every cycle"
+        ],
+        "remaining": [
+          "Create baseline profile from all 4 lanes' trace directories",
+          "Run compare against each lane, generate drift reports",
+          "Wire drift report output into VERIFICATION_LANES.md Lane R checks",
+          "Evidence: lanes/swarmmind/state/drift-reports/"
+        ],
+        "evidence_path": "evidence/drift-baseline-proven-YYYYMMDD.json",
+        "due": "2026-05-07"
+      },
+      {
+        "id": "HARDEN-2",
+        "title": "Validation enforcement — dual-verification integration",
+        "owner": "swarmmind",
+        "priority": "P1",
+        "status": "partially_done",
+        "done_in_swarmmind": [
+          "scripts/constraint-lattice.js (ConstraintEngine, staged eval)",
+          "scripts/execution-gate.js (failover lookup, equivalence registry)",
+          "scripts/verification-domain-gate.js (temporal, semantic, observability)",
+          "config/resilience-policy.json (constitution_v7 constraint set)",
+          "lane-worker.js runs pre_action/post_action/pre_output constraints"
+        ],
+        "remaining": [
+          "Map ConstraintEngine stages to VERIFICATION_LANES.md Lane L (structural) checks",
+          "Map verification-domain-gate to Lane R (operational) checks",
+          "Implement consensus check function (L result == R result, confidence delta <= 3)",
+          "Wire consensus result into lane-worker routing decisions",
+          "Evidence: evidence/dual-verification-proven-YYYYMMDD.json"
+        ],
+        "evidence_path": "evidence/dual-verification-proven-YYYYMMDD.json",
+        "due": "2026-05-09"
+      },
+      {
+        "id": "HARDEN-3",
+        "title": "Secure transfer logging — signed message audit trail",
+        "owner": "swarmmind",
+        "priority": "P1",
+        "status": "partially_done",
+        "done_in_swarmmind": [
+          "scripts/create-signed-message.js (RS256 signing)",
+          "scripts/identity-enforcer.js (signature validation)",
+          "scripts/git-relay.sh (bash transport via git push/pull)",
+          "SchemaValidator.js enforces signature_valid on all messages",
+          "lane-worker.js sends NACK on signature mismatch"
+        ],
+        "remaining": [
+          "Create unified transfer log format (who sent, when, signature hash, delivery status)",
+          "Write transfer-log-aggregator that scans all lanes' outbox/processed for audit trail",
+          "Verify cross-lane message signing is active (check trust-store.json key coverage)",
+          "Evidence: evidence/transfer-logging-proven-YYYYMMDD.json"
+        ],
+        "evidence_path": "evidence/transfer-logging-proven-YYYYMMDD.json",
+        "due": "2026-05-11"
+      },
+      {
+        "id": "HARDEN-4",
+        "title": "Re-run verification after each control lands",
+        "owner": "archivist",
+        "priority": "P1",
+        "status": "pending",
+        "note": "Archivist to re-run VERIFICATION_TABLE checks after HARDEN-1, HARDEN-2, HARDEN-3 each close. Not all at once — one at a time with evidence.",
+        "depends_on": ["HARDEN-1", "HARDEN-2", "HARDEN-3"],
+        "evidence_path": "VERIFICATION_COMPLETED.md (updated per control)",
+        "due": "2026-05-12"
+      }
+    ]
+  },
+  "execution": { "mode": "manual", "engine": "opencode", "actor": "lane", "session_id": "recovery-2026-05-04" },
+  "lease": { "owner": "swarmmind", "acquired_at": "2026-05-04T16:00:00.000Z" },
+  "retry": { "attempt": 1, "max_attempts": 3 },
+  "evidence": { "required": true, "evidence_path": "lanes/swarmmind/outbox/swarmmind-hardening-sprint-task-packets-20260504.json", "verified": true, "verified_by": "swarmmind", "verified_at": "2026-05-04T16:00:00.000Z" },
+  "evidence_exchange": { "artifact_path": "lanes/swarmmind/outbox/swarmmind-hardening-sprint-task-packets-20260504.json", "artifact_type": "report", "delivered_at": "2026-05-04T16:00:00.000Z" },
+  "heartbeat": { "interval_seconds": 300, "last_heartbeat_at": "2026-05-04T16:00:00.000Z", "timeout_seconds": 900, "status": "done" },
+  "convergence_gate": {
+    "claim": "3 pending verification controls decomposed into lane-scoped P1 tasks with owner, evidence path, and due date.",
+    "evidence": "lanes/swarmmind/outbox/swarmmind-hardening-sprint-task-packets-20260504.json",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  }
+}
