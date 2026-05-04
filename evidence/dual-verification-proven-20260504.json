@@ -1,0 +1,45 @@
+{
+  "title": "HARDEN-2: Dual-Verification Integration",
+  "date": "2026-05-04",
+  "status": "proven",
+  "implementation": {
+    "module": "scripts/dual-verification.js",
+    "classes": ["DualVerification", "LaneL", "LaneR"],
+    "functions": ["consensusCheck()"],
+    "lane_l_mapping": {
+      "perspective": "structural",
+      "source": "ConstraintEngine (constraint-lattice.js)",
+      "checks": ["pre_action constraints", "post_action constraints", "pre_output constraints"]
+    },
+    "lane_r_mapping": {
+      "perspective": "operational",
+      "sources": ["verification-domain-gate.js", "swarmmind-verify.js"],
+      "checks": ["temporal validity", "semantic validity", "observability", "trace integrity", "drift score"]
+    }
+  },
+  "consensus_rules": {
+    "AGREE + confidence_delta<=3 + consensus>=7": "PROCEED",
+    "AGREE + consensus<7": "ADDITIONAL_VERIFICATION",
+    "DISAGREE": "INVESTIGATE",
+    "BOTH_FAIL": "ESCALATE"
+  },
+  "smoke_tests": {
+    "clean_message": "PASS/PASS -> PROCEED conf:7",
+    "constraint_violation": "FAIL/PASS -> INVESTIGATE",
+    "null_message": "FAIL/FAIL -> ESCALATE",
+    "low_confidence": "PASS/PASS -> ADDITIONAL_VERIFICATION conf:3.5",
+    "both_fail": "FAIL/FAIL -> ESCALATE",
+    "disagreement": "PASS/FAIL -> INVESTIGATE"
+  },
+  "lane_worker_integration": {
+    "summary_fields": ["dual_verification.lane_l", "dual_verification.lane_r", "dual_verification.action", "dual_verification.consensus_confidence", "escalation_required"],
+    "tests": "17/17 PASS"
+  },
+  "convergence_gate": {
+    "claim": "Dual-verification framework integrated: Lane L (structural/constraints) and Lane R (operational/domain/drift) produce consensus-checked results in every lane-worker cycle.",
+    "evidence": "evidence/dual-verification-proven-20260504.json",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  }
+}

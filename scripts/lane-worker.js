@@ -13,6 +13,7 @@ const { getRoots } = require('./util/lane-discovery');
 const { newTrace, addDecision, checkpoint, addConstraintEval, finalizeTrace, writeTrace } = require('./util/trace');
 const { ConstraintEngine, ConstitutionViolation } = require('./constraint-lattice');
 const { driftScore, verifyTraceIntegrity } = require('./swarmmind-verify');
+const { DualVerification } = require('./dual-verification');
 
 const ACTIONABLE_TYPES = new Set(['task', 'escalation', 'request']);
 const NON_ASCII_PATTERN = /[^\x00-\x7F]/;
@@ -413,6 +414,11 @@ class LaneWorker {
     this.lastRun = null;
     this.sessionId = SESSION_ID;
     this.isOwner = false;
+    this.dualVerification = new DualVerification({
+      repoRoot: this.repoRoot,
+      resolver: this.artifactResolver,
+      codeVersionHash: this.codeVersionHash,
+    });
     if (!this.dryRun) {
       const existing = getActiveOwner(this.repoRoot);
       if (!existing || existing.session_id === SESSION_ID || (Date.now() - new Date(existing.claimed_at).getTime()) > 900000) {
@@ -1032,6 +1038,20 @@ _routeRaw(filePath, queueKey, meta) {
 
     const integrity = verifyTraceIntegrity(finalTrace);
     summary.trace_integrity = integrity.valid;
+
+    const lastMsg = routes.length > 0 ? routes[routes.length - 1] : null;
+    const dualResult = this.dualVerification.verify(lastMsg, finalTrace);
+    summary.dual_verification = {
+      lane_l: dualResult.lane_l.result,
+      lane_r: dualResult.lane_r.result,
+      action: dualResult.action,
+      consensus_confidence: dualResult.consensus_confidence,
+      lane_l_confidence: dualResult.lane_l.confidence,
+      lane_r_confidence: dualResult.lane_r.confidence,
+    };
+    if (dualResult.action === 'ESCALATE') {
+      summary.escalation_required = true;
+    }
 
     if (!this.dryRun) {
       try {
