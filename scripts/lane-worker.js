@@ -11,6 +11,8 @@ const { evaluateVerificationDomain } = require('./verification-domain-gate');
 const { getCodeVersionHash } = require('./code-version-hash');
 const { getRoots } = require('./util/lane-discovery');
 const { newTrace, addDecision, checkpoint, addConstraintEval, finalizeTrace, writeTrace } = require('./util/trace');
+const { ConstraintEngine, ConstitutionViolation } = require('./constraint-lattice');
+const { driftScore, verifyTraceIntegrity } = require('./swarmmind-verify');
 
 const ACTIONABLE_TYPES = new Set(['task', 'escalation', 'request']);
 const NON_ASCII_PATTERN = /[^\x00-\x7F]/;
@@ -923,6 +925,40 @@ _routeRaw(filePath, queueKey, meta) {
     trace.dry_run = this.dryRun;
     addDecision(trace, { decision: 'PROCESS_CYCLE_START', scanned: 0 });
 
+    let constraintEngine = null;
+    try {
+      const policyPath = path.join(this.repoRoot, 'config', 'resilience-policy.json');
+      if (fs.existsSync(policyPath)) {
+        constraintEngine = new ConstraintEngine({ policyPath });
+        constraintEngine.load();
+      }
+    } catch (_) {
+      constraintEngine = null;
+    }
+
+    if (constraintEngine) {
+      const preCtx = { tool: 'lane-worker-processOnce', tool_call_count: 0 };
+      const preResult = constraintEngine.evaluateStage('pre_action', preCtx);
+      addConstraintEval(trace, { stage: 'pre_action', constraint_set: constraintEngine.constraintSet ? constraintEngine.constraintSet.set_id : null, result: preResult.all_pass ? 'pass' : 'fail', violations: preResult.violations });
+      if (!preResult.all_pass) {
+        addDecision(trace, { decision: 'BLOCK', reason: 'pre_action constraint violation' });
+        checkpoint(trace, 'process_cycle_blocked', { stage: 'pre_action', violations: preResult.violations.length });
+        if (!this.dryRun) {
+          try {
+            const traceDir = path.join(this.repoRoot, 'lanes', this.lane, 'state', 'traces');
+            writeTrace(finalizeTrace(trace), traceDir);
+          } catch (_) {}
+        }
+        return {
+          lane: this.lane, repo_root: this.repoRoot, dry_run: this.dryRun,
+          scanned: 0, routed: { action_required: 0, in_progress: 0, processed: 0, blocked: 0, quarantine: 0 },
+          blocked_by_constraint: true, constraint_stage: 'pre_action', violations: preResult.violations,
+          timestamp: nowIso(),
+        };
+      }
+      addDecision(trace, { decision: 'PROCEED', reason: 'pre_action constraints pass' });
+    }
+
     this.ensureQueues();
     const files = this.listInboxFiles();
     trace.scanned = files.length;
@@ -932,7 +968,13 @@ _routeRaw(filePath, queueKey, meta) {
 
     for (const filePath of files) {
       try {
-        routes.push(this.processFile(filePath));
+        const record = this.processFile(filePath);
+        routes.push(record);
+        if (constraintEngine) {
+          const postCtx = { status: record.target_queue === 'processed' ? 'ok' : record.reason, tool_call_count: routes.length };
+          const postResult = constraintEngine.evaluateStage('post_action', postCtx);
+          addConstraintEval(trace, { stage: 'post_action', constraint_set: constraintEngine.constraintSet ? constraintEngine.constraintSet.set_id : null, result: postResult.all_pass ? 'pass' : 'fail', violations: postResult.violations });
+        }
       } catch (err) {
         routes.push({
           source: filePath,
@@ -974,13 +1016,27 @@ _routeRaw(filePath, queueKey, meta) {
       timestamp: nowIso(),
     };
 
+    if (constraintEngine) {
+      const preOutputCtx = { degraded: routes.some(r => r.target_queue === 'quarantine' || r.target_queue === 'blocked') };
+      const preOutputResult = constraintEngine.evaluateStage('pre_output', preOutputCtx);
+      addConstraintEval(trace, { stage: 'pre_output', constraint_set: constraintEngine.constraintSet ? constraintEngine.constraintSet.set_id : null, result: preOutputResult.all_pass ? 'pass' : 'fail', violations: preOutputResult.violations });
+    }
+
     addDecision(trace, { decision: 'PROCESS_CYCLE_END', routed: summary.routed });
     checkpoint(trace, 'process_cycle', { scanned: summary.scanned, routed: summary.routed });
+
+    const finalTrace = finalizeTrace(trace);
+    const drift = driftScore(finalTrace);
+    summary.drift_score = drift.score;
+    summary.drift_interpretation = drift.interpretation;
+
+    const integrity = verifyTraceIntegrity(finalTrace);
+    summary.trace_integrity = integrity.valid;
 
     if (!this.dryRun) {
       try {
         const traceDir = path.join(this.repoRoot, 'lanes', this.lane, 'state', 'traces');
-        writeTrace(finalizeTrace(trace), traceDir);
+        writeTrace(finalTrace, traceDir);
       } catch (_) {}
     }
 

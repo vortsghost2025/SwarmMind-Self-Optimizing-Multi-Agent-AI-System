@@ -3,12 +3,21 @@
 
 const fs = require('fs');
 const path = require('path');
+const { ConstraintEngine } = require('./constraint-lattice');
 
 class ExecutionGate {
   constructor(options = {}) {
     this.lane = options.lane || 'swarmmind';
     this.dryRun = options.dryRun !== undefined ? !!options.dryRun : true;
     this.resolver = options.resolver || null;
+    this.constraintEngine = null;
+    try {
+      const policyPath = path.join(__dirname, '..', 'config', 'resilience-policy.json');
+      if (fs.existsSync(policyPath)) {
+        this.constraintEngine = new ConstraintEngine({ policyPath });
+        this.constraintEngine.load();
+      }
+    } catch (_) {}
   }
 
   verify(msg) {
@@ -167,6 +176,32 @@ class ExecutionGate {
     if (msg.completion_artifact_path) return msg.completion_artifact_path;
     if (msg.evidence && msg.evidence.evidence_path) return msg.evidence.evidence_path;
     return null;
+  }
+
+  lookupFailover(source) {
+    if (!this.constraintEngine || !this.constraintEngine.policy) return null;
+    const reg = this.constraintEngine.policy.equivalence_registry || {};
+    const entry = reg[source];
+    if (!entry) return null;
+    return {
+      source,
+      equivalents: entry.equivalent_sources || [],
+      equivalent_under_constraints: entry.equivalent_under_constraints === true,
+      last_tested: entry.last_tested || null,
+    };
+  }
+
+  checkFailoverRequired(source) {
+    const entry = this.lookupFailover(source);
+    if (!entry) return { failover: false, reason: 'no_equivalence_entry' };
+    const requireEquiv = this.constraintEngine.policy.failover ? this.constraintEngine.policy.failover.require_equivalence : false;
+    if (requireEquiv && !entry.equivalent_under_constraints) {
+      return { failover: false, reason: 'equivalence_not_verified_under_constraints', source, equivalents: entry.equivalents };
+    }
+    if (entry.equivalents.length === 0) {
+      return { failover: false, reason: 'no_equivalent_sources_listed', source };
+    }
+    return { failover: true, reason: 'equivalent_available', source, equivalents: entry.equivalents, last_tested: entry.last_tested };
   }
 }
 
