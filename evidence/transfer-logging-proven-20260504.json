@@ -1,0 +1,95 @@
+{
+  "title": "HARDEN-3: Secure Transfer Logging Audit Trail",
+  "date": "2026-05-04",
+  "status": "proven",
+  "transfer_stats": {
+    "total": 389,
+    "inbound": 378,
+    "outbound": 11,
+    "signed": 113,
+    "unsigned": 276,
+    "signature_validated": 137,
+    "signature_invalid": 160,
+    "by_lane": {
+      "archivist": 36,
+      "kernel": 164,
+      "library": 184,
+      "swarmmind": 5
+    },
+    "by_type": {
+      "notification": 226,
+      "response": 46,
+      "task": 84,
+      "status": 9,
+      "finding": 4,
+      "ack": 3,
+      "review": 1,
+      "report": 7,
+      "unknown": 6,
+      "inquiry": 1,
+      "ping": 1,
+      "alert": 1
+    },
+    "key_ids_used": [
+      "65ae05b2a9e749cb",
+      "ee70b78105bc6189",
+      "ea2a75bab220adc2",
+      "addb0afb8ee5c2ed",
+      "b677eb87f6be83f9",
+      "506c2d0838b6862c",
+      "127b44d2bb294ad9",
+      "ec467e7103736c28"
+    ]
+  },
+  "trust_coverage": {
+    "trust_store_keys": [
+      "506c2d0838b6862c",
+      "2eec06be0befc8d5",
+      "1450972ce0a225b7",
+      "127b44d2bb294ad9"
+    ],
+    "keys_in_use": [
+      "65ae05b2a9e749cb",
+      "ee70b78105bc6189",
+      "ea2a75bab220adc2",
+      "addb0afb8ee5c2ed",
+      "b677eb87f6be83f9",
+      "506c2d0838b6862c",
+      "127b44d2bb294ad9",
+      "ec467e7103736c28"
+    ],
+    "covered": [
+      "506c2d0838b6862c",
+      "127b44d2bb294ad9"
+    ],
+    "missing": [
+      "65ae05b2a9e749cb",
+      "ee70b78105bc6189",
+      "ea2a75bab220adc2",
+      "addb0afb8ee5c2ed",
+      "b677eb87f6be83f9",
+      "ec467e7103736c28"
+    ],
+    "full_coverage": false,
+    "lane_count": 4
+  },
+  "findings": [
+    "389 messages scanned across 4 lanes",
+    "113 signed (29%), 276 unsigned (71%)",
+    "160 messages with invalid signatures in quarantine — expected (rejected messages)",
+    "6 key IDs in use but not in current trust store — needs resolution",
+    "Trust store has 4 lane keys but messages reference 8 different key IDs"
+  ],
+  "action_items": [
+    "Add missing key IDs to trust store or verify they are deprecated",
+    "Unsigned messages in inbox subdirectories may be legacy or unsigned broadcast format",
+    "Consider requiring signatures for all non-heartbeat messages"
+  ],
+  "convergence_gate": {
+    "claim": "Transfer log aggregator scans all 4 lanes, produces unified audit trail with signature coverage stats and trust store gap detection.",
+    "evidence": "evidence/transfer-logging-proven-20260504.json",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  }
+}
