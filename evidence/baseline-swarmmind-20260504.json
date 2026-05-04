@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-05-04T18:40:36.606Z",
+  "runs": 3,
+  "violRate": 0.6666666666666666,
+  "decDist": {
+    "PROCESS_CYCLE_START": 0.42857142857142855,
+    "FILES_SCANNED": 0.14285714285714285,
+    "PROCESS_CYCLE_END": 0.14285714285714285,
+    "BLOCK": 0.2857142857142857
+  },
+  "toolDist": {}
+}

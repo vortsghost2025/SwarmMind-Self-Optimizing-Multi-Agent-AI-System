@@ -1,0 +1,46 @@
+{
+  "title": "HARDEN-1: Cross-Lane Drift Detection Baseline",
+  "date": "2026-05-04",
+  "status": "proven",
+  "baselines": {
+    "swarmmind": {
+      "runs": 3,
+      "violRate": 0.67,
+      "top_decisions": ["PROCESS_CYCLE_START", "BLOCK", "FILES_SCANNED", "PROCESS_CYCLE_END"],
+      "note": "BLOCK decisions from ConstraintEngine pre_action enforcement during testing"
+    },
+    "archivist": {
+      "runs": 1,
+      "violRate": 0,
+      "top_decisions": ["PROCESS_CYCLE_START", "FILES_SCANNED", "PROCESS_CYCLE_END"],
+      "note": "Clean — no constraint engine wired yet"
+    },
+    "kernel": {
+      "runs": 1,
+      "violRate": 0,
+      "top_decisions": ["PROCESS_CYCLE_START", "FILES_SCANNED", "PROCESS_CYCLE_END"],
+      "note": "Clean — no constraint engine wired yet"
+    },
+    "library": {
+      "runs": 1,
+      "violRate": 0,
+      "top_decisions": ["PROCESS_CYCLE_START", "FILES_SCANNED", "PROCESS_CYCLE_END"],
+      "note": "Clean — no constraint engine wired yet"
+    }
+  },
+  "trace_instrumentation_deployed": {
+    "swarmmind": { "trace_js": true, "hash_js": true, "lane_worker_patched": true, "trace_count": 3 },
+    "archivist": { "trace_js": true, "hash_js": true, "lane_worker_patched": true, "trace_count": 1 },
+    "kernel": { "trace_js": true, "hash_js": true, "lane_worker_patched": true, "trace_count": 1 },
+    "library": { "trace_js": true, "hash_js": true, "lane_worker_patched": true, "trace_count": 1 }
+  },
+  "drift_cli_available": "scripts/we4free-drift.js (baseline + compare commands)",
+  "inline_drift_available": "scripts/swarmmind-verify.js driftScore() in lane-worker.js",
+  "convergence_gate": {
+    "claim": "All 4 lanes now produce traces and have drift detection baselines.",
+    "evidence": "evidence/baseline-{swarmmind,archivist,kernel,library}-20260504.json",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  }
+}
