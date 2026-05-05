@@ -12,15 +12,15 @@
       "signing": "Cross-lane messages, convergence proposals, heartbeat attestations",
       "verification": "Inbox message validation, trust store verification"
     },
-"constraints": {
+    "constraints": {
       "never_export_private_key": true,
       "rotate_on_compromise_only": true
-   },
-   "reconciliation": {
+    },
+    "reconciliation": {
       "status": "superseded",
       "note": "This identity file references the pre-ubuntu-migration RSA key. The canonical active key is tracked in .identity/meta.json (key_id 1450972ce0a225b7) and lanes/broadcast/trust-store.json. This old key_id ecb12bdacf826701 is retained for historical reference only.",
-      "active_key_id": "1450972ce0a225b7",
+      "active_key_id": "ec467e7103736c28",
       "reconciled_at": "2026-05-04T18:35:00Z"
-   }
-}
+    }
+  }
 }
