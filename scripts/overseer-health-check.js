@@ -101,6 +101,11 @@ for (const [lane, r] of Object.entries(results.lanes)) {
   console.log(`  [${icon}] ${lane}: proc=${r.checks.process} systemd=${r.checks.systemd} hb=${r.checks.heartbeat} trust=${r.checks.trust_store} q=${r.checks.inbox_quarantine} b=${r.checks.inbox_blocked}`);
 }
 console.log(`\n  Summary: ${results.summary.healthy} healthy, ${results.summary.degraded} degraded, ${results.summary.down} down`);
-console.log(`  Report: ${REPORT_PATH}\n`);
+console.log(`  Report: ${REPORT_PATH}`);
+
+console.log(`\nOUTPUT_PROVENANCE:`);
+console.log(`  agent: opencode-glm5`);
+console.log(`  lane: swarmmind`);
+console.log(`  target: 4-lane autonomous runtime health oversight`);
 
 process.exit(results.summary.down > 0 ? 1 : 0);
