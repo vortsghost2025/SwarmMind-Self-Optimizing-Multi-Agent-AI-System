@@ -7,13 +7,13 @@ SYSTEMD_DIR="${HOME}/.config/systemd/user"
 mkdir -p "$SYSTEMD_DIR"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPOS_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPOS_BASE="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
 declare -A SERVICES
-SERVICES[kernel]="${REPOS_DIR}/kernel-lane"
-SERVICES[archivist]="${REPOS_DIR}/Archivist-Agent"
-SERVICES[swarmmind]="${REPOS_DIR}/SwarmMind"
-SERVICES[library]="${REPOS_DIR}/self-organizing-library"
+SERVICES[kernel]="${REPOS_BASE}/kernel-lane"
+SERVICES[archivist]="${REPOS_BASE}/Archivist-Agent"
+SERVICES[swarmmind]="${REPOS_BASE}/SwarmMind"
+SERVICES[library]="${REPOS_BASE}/self-organizing-library"
 
 for lane in kernel archivist swarmmind library; do
   src="${SERVICES[$lane]}/config/systemd/${lane}-lane-worker.service"
@@ -34,4 +34,4 @@ echo "  systemctl --user enable --now archivist-lane-worker"
 echo "  systemctl --user enable --now swarmmind-lane-worker"
 echo "  systemctl --user enable --now library-lane-worker"
 echo ""
-echo "Or use: ${REPOS_DIR}/SwarmMind/scripts/start-all-lanes.sh"
+echo "Or use: ${REPOS_BASE}/SwarmMind/scripts/start-all-lanes.sh"
