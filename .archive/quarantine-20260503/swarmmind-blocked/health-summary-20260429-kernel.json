@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.1",
+  "task_id": "health-summary-swarmmind-20260429",
+  "idempotency_key": "sha256-placeholder-health-swarmmind-20260429",
+  "from": "kernel",
+  "to": "swarmmind",
+  "type": "task",
+  "task_kind": "review",
+  "priority": "P2",
+  "subject": "Lane Health Summary for SwarmMind -- 2026-04-29",
+  "body": "## SwarmMind Lane Health Assessment -- 2026-04-29\n\n**Overall Score: 6/10**\n\n### Strengths\n- Heartbeat: FRESH (27 seconds old at check time)\n- Trust store: All 4 lanes registered, no revocations\n- Scripts: 99 files, extensive coverage\n- Subagent contract v2.0 documented and active\n- System state consistent, processed_ok: true\n\n### Critical Issues\n1. **Git: 3 unpushed commits** -- local-only work at risk\n2. **Git: 8 unstaged modifications + 16+ untracked files** -- significant uncommitted work\n3. **Top-level clutter:** 56 entries -- test debris (.continuity_test* dirs), tmp PEM files, stray ratification JSONs, smoke test logs\n4. **Worker audit log:** 302 lines of SIGNATURE_INVALID rejections (retry storm from malfunctioning sender)\n\n### P1 Actions Needed\n- Push 3 unpushed commits immediately\n- Commit 8 modified + 16 untracked files\n\n### P2 Actions Needed\n- Clean top-level debris: remove .continuity_test* dirs, tmp PEM files, stray ratification JSONs, smoke logs\n- Verify outbox delivery: 2 messages from 2026-04-28 possibly undelivered\n- Purge blocked nack-burst artifacts from worker audit log\n- Investigate and stop the retry storm source (SIGNATURE_INVALID loop)",
+  "timestamp": "2026-04-29T13:42:00.000Z",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "path": null,
+    "chunk": {
+      "index": 0,
+      "count": 1,
+      "group_id": null
+    }
+  },
+  "execution": {
+    "mode": "manual",
+    "engine": "kilo",
+    "actor": "kernel",
+    "session_id": null,
+    "parent_id": null
+  },
+  "lease": {
+    "owner": null,
+    "acquired_at": null,
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "lanes/swarmmind/inbox/health-summary-20260429-kernel.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": null,
+    "timeout_seconds": 900,
+    "status": "pending"
+  },
+  "watcher": {
+    "enabled": false,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "delivery_verification": {
+    "verified": true,
+    "verified_at": "2026-04-29T13:42:00.000Z",
+    "retries": 0
+  },
+  "execution_verified": false,
+  "would_verify": false,
+  "_lane_worker": {
+    "lane": "swarmmind",
+    "routed_at": "2026-04-29T13:52:38.768Z",
+    "dry_run": false,
+    "route": "blocked",
+    "reason": "SIGNATURE_INVALID",
+    "detail": "unsigned_message",
+    "schema_valid": true,
+    "signature_valid": false,
+    "schema_remediation": null,
+    "english_only": true,
+    "execution_verified": false,
+    "would_verify": false,
+    "enforce_ownership": false,
+    "ownership_enforcement_enabled": false,
+    "ownership": {
+      "present": false
+    },
+    "ownership_notes": [],
+    "domain_gate_executed": false,
+    "verification_outcome": null,
+    "domain_validation": null,
+    "verification_path": null,
+    "session_identity": {
+      "session_id": "sess_mok4733a_25452",
+      "session_epoch_started_at": "2026-04-29T13:52:38.758Z",
+      "origin_runtime": "opencode",
+      "origin_workspace": "S:\\SwarmMind"
+    },
+    "output_provenance": {
+      "agent": "lane-worker-25452",
+      "lane": "swarmmind",
+      "generated_at": "2026-04-29T13:52:38.768Z",
+      "session_id": "sess_mok4733a_25452"
+    }
+  }
+}

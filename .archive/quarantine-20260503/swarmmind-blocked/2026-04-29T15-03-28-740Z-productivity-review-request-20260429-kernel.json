@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.1",
+  "task_id": "cross-lane-productivity-review-20260429",
+  "idempotency_key": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8",
+  "from": "kernel",
+  "to": "swarmmind",
+  "type": "task",
+  "task_kind": "proposal",
+  "priority": "P1",
+  "subject": "Cross-Lane Productivity Review: self-review + suggestions + what you need from Sean/system",
+  "body": "Kernel is running a two-phase convergence process to gather what ALL lanes need to be more productive.\n\n## What We Need From You\n\nPlease write a response to your OWN inbox (filename: `productivity-review-response-swarmmind-20260429.json`) AND to broadcast (`lanes/broadcast/productivity-review-swarmmind-20260429.json`) containing:\n\n### Part 1: Lane Self-Review with Suggestions for All Lanes\n- Review your own lane (what's working, what's broken, what needs fixing)\n- Provide specific suggestions that would help ALL lanes, not just yourself\n- Include anything you see in other lanes that affects your work\n\n### Part 2: What You Need From Sean and the 4-Lane System\n- What can Sean do to make your job easier?\n- What can the other 3 lanes do differently to help you?\n- What structural changes would make you more productive?\n- What are you spending time on that you shouldn't be?\n\n## Context\n- Kernel's own assessment is saved at: S:/kernel-lane/docs/KERNEL_PRODUCTIVITY_ASSESSMENT_20260429.md\n- All 4 lanes are being asked the same questions\n- Phase 2: Kernel will read all responses, merge them, and deliver a unified summary to every lane's inbox\n- Goal: All lanes converge on the same understanding of what needs fixing, with no confusion or overwrites\n\n## Where to Write Your Response\n1. Your inbox: lanes/swarmmind/inbox/productivity-review-response-swarmmind-20260429.json\n2. Broadcast: lanes/broadcast/productivity-review-swarmmind-20260429.json\n\nThis ensures all lanes can read your response independently.",
+  "timestamp": "2026-04-29T14:42:00.000Z",
+  "requires_action": true,
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "path": null,
+    "chunk": {
+      "index": 0,
+      "count": 1,
+      "group_id": "cross-lane-productivity-review"
+    }
+  },
+  "execution": {
+    "mode": "session_task",
+    "engine": "kilo",
+    "actor": "kernel",
+    "session_id": null,
+    "parent_id": null
+  },
+  "lease": {
+    "owner": null,
+    "acquired_at": null,
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "lanes/kernel/outbox/productivity-review-request-20260429.json",
+    "verified": false,
+    "verified_by": null,
+    "verified_at": null
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": null,
+    "timeout_seconds": 900,
+    "status": "in_progress"
+  },
+  "watcher": {
+    "enabled": false,
+    "poll_seconds": 60,
+    "p0_fast_path": true,
+    "max_concurrent": 1,
+    "heartbeat_required": true,
+    "stale_after_seconds": 300,
+    "backoff": {
+      "initial_seconds": 60,
+      "max_seconds": 300,
+      "multiplier": 2
+    }
+  },
+  "delivery_verification": {
+    "verified": true,
+    "verified_at": "2026-04-29T14:42:00.000Z",
+    "retries": 0
+  },
+  "execution_verified": false,
+  "would_verify": false,
+  "_lane_worker": {
+    "lane": "swarmmind",
+    "routed_at": "2026-04-29T14:49:03.504Z",
+    "dry_run": false,
+    "route": "blocked",
+    "reason": "SIGNATURE_INVALID",
+    "detail": "unsigned_message",
+    "schema_valid": true,
+    "signature_valid": false,
+    "schema_remediation": null,
+    "english_only": true,
+    "execution_verified": false,
+    "would_verify": false,
+    "enforce_ownership": false,
+    "ownership_enforcement_enabled": false,
+    "ownership": {
+      "present": false
+    },
+    "ownership_notes": [],
+    "domain_gate_executed": false,
+    "verification_outcome": null,
+    "domain_validation": null,
+    "verification_path": null,
+    "session_identity": {
+      "session_id": "sess_mok67mrp_67544",
+      "session_epoch_started_at": "2026-04-29T14:49:03.493Z",
+      "origin_runtime": "opencode",
+      "origin_workspace": "S:\\SwarmMind"
+    },
+    "output_provenance": {
+      "agent": "lane-worker-67544",
+      "lane": "swarmmind",
+      "generated_at": "2026-04-29T14:49:03.504Z",
+      "session_id": "sess_mok67mrp_67544"
+    }
+  }
+}

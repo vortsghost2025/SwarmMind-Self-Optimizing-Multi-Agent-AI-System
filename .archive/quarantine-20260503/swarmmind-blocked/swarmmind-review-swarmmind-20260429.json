@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.3",
+  "task_id": "swarmmind-cross-lane-review-swarmmind-20260429",
+  "idempotency_key": "swarmmind-review-swarmmind-20260429-v1",
+  "from": "swarmmind",
+  "to": "swarmmind",
+  "type": "notification",
+  "task_kind": "report",
+  "priority": "P2",
+  "subject": "SwarmMind Cross-Lane Review: swarmmind lane status and cleanup summary",
+  "body": "Cross-lane review of SwarmMind lane (self-review). Post-E2E stabilization already completed in prior session. Current state: 0 active items across all categories. 310 items previously archived (8 quarantine, 299 blocked, 3 stale-foreign). Outbox: 2 files. Codex-wake-packet: 0 pending. Heartbeat: fresh.",
+  "timestamp": "2026-04-29T13:11:30.514Z",
+  "requires_action": false,
+  "payload": {
+    "mode": "inline",
+    "compression": "none",
+    "path": null,
+    "chunk": {
+      "index": 0,
+      "count": 1,
+      "group_id": null
+    }
+  },
+  "execution": {
+    "mode": "manual",
+    "engine": "kilo",
+    "actor": "lane",
+    "session_id": null
+  },
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-29T13:11:30.514Z",
+    "expires_at": null,
+    "renew_count": 0,
+    "max_renewals": 3
+  },
+  "retry": {
+    "attempt": 1,
+    "max_attempts": 3,
+    "last_error": null,
+    "last_attempt_at": null
+  },
+  "evidence": {
+    "required": true,
+    "evidence_path": "S:/SwarmMind/lanes/swarmmind/outbox/swarmmind-review-swarmmind-20260429.json",
+    "verified": true,
+    "verified_by": "swarmmind",
+    "verified_at": "2026-04-29T13:11:30.514Z"
+  },
+  "evidence_exchange": {
+    "artifact_path": "S:/SwarmMind/lanes/swarmmind/outbox/swarmmind-review-swarmmind-20260429.json",
+    "artifact_type": "report",
+    "delivered_at": "2026-04-29T13:11:30.514Z"
+  },
+  "heartbeat": {
+    "interval_seconds": 300,
+    "last_heartbeat_at": "2026-04-29T13:11:30.514Z",
+    "timeout_seconds": 900,
+    "status": "done"
+  },
+  "convergence_gate": {
+    "claim": "SwarmMind lane already clean from prior stabilization: 0 actionable items, 0 pending Codex work.",
+    "evidence": "S:/SwarmMind/lanes/swarmmind/outbox/swarmmind-review-swarmmind-20260429.json",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  },
+  "review_detail": {
+    "current": {
+      "action_required": 0,
+      "blocked": 0,
+      "quarantine": 0,
+      "stale_foreign": 0,
+      "in_progress": 0
+    },
+    "previously_archived": {
+      "quarantine": 8,
+      "blocked": 299,
+      "stale_foreign": 3,
+      "total": 310
+    },
+    "outbox_count": 2,
+    "codex_wake_pending": 0,
+    "notes": [
+      "SwarmMind was cleaned in prior post-E2E stabilization session",
+      "251 additional nack-nack burst files re-accumulated and were archived this session",
+      "Convergence gate: proven for post-E2E stabilization report"
+    ]
+  },
+  "execution_verified": false,
+  "would_verify": false,
+  "_lane_worker": {
+    "lane": "swarmmind",
+    "routed_at": "2026-04-29T13:12:05.741Z",
+    "dry_run": false,
+    "route": "blocked",
+    "reason": "SIGNATURE_INVALID",
+    "detail": "unsigned_message",
+    "schema_valid": true,
+    "signature_valid": false,
+    "schema_remediation": null,
+    "english_only": true,
+    "execution_verified": false,
+    "would_verify": false,
+    "enforce_ownership": false,
+    "ownership_enforcement_enabled": false,
+    "ownership": {
+      "present": false
+    },
+    "ownership_notes": [],
+    "domain_gate_executed": false,
+    "verification_outcome": null,
+    "domain_validation": null,
+    "verification_path": null,
+    "session_identity": {
+      "session_id": "sess_mok2qxr8_18552",
+      "session_epoch_started_at": "2026-04-29T13:12:05.732Z",
+      "origin_runtime": "opencode",
+      "origin_workspace": "S:\\SwarmMind"
+    },
+    "output_provenance": {
+      "agent": "lane-worker-18552",
+      "lane": "swarmmind",
+      "generated_at": "2026-04-29T13:12:05.741Z",
+      "session_id": "sess_mok2qxr8_18552"
+    }
+  }
+}
