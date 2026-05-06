@@ -14,7 +14,7 @@ try {
   // Try to use local static lane config
   _discovery = {
     listLanes: () => Object.keys(LANES),
-    getLocalPath: (laneId) => LANES[laneId]?.root || null
+		getLocalPath: (laneId) => (LANES[laneId] && LANES[laneId].root) || null
   };
 } catch (_) {}
 
