@@ -15,10 +15,21 @@
       "category": "incoming_messages",
       "impact": "medium",
       "requested_at": "2026-05-02T13:00:04.140Z",
-      "status": "pending",
-      "lane": "swarmmind"
+      "status": "resolved",
+      "lane": "swarmmind",
+      "resolved_at": "2026-05-03T13:00:02.277Z"
+    },
+    {
+      "request_id": "0a749317-097e-4c27-b86a-44b10aeacef6",
+      "description": "0 blocked, 9 quarantined files need attention",
+      "category": "incoming_messages",
+      "impact": "medium",
+      "requested_at": "2026-05-03T13:00:02.277Z",
+      "status": "resolved",
+      "lane": "swarmmind",
+      "resolved_at": "2026-05-04T13:00:02.319Z"
     }
   ],
-  "last_report_date": "2026-05-02T13:00:04.140Z",
-  "report_cycle": 8
+  "last_report_date": "2026-05-05T13:00:02.852Z",
+  "report_cycle": 11
 }

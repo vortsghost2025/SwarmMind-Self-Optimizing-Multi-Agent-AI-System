@@ -347,3 +347,25 @@ Constraints:
 - `createSignedMessage()` supports unencrypted keys; passphrase is optional after the local fix that removed the dead throw path.
 - `codex-wake-packet.js` records pending Codex-required work at `lanes/swarmmind/state/codex-wake-packet.json`.
 
+
+## Non-Negotiable Output Provenance
+
+Every response, report, audit, handoff, generated plan, or user-facing message MUST begin with:
+
+OUTPUT_PROVENANCE:
+agent: <agent/model/tool identity>
+lane: <lane name>
+target: <current task/request/artifact>
+
+When available, include:
+
+generated_at: <ISO-8601 timestamp>
+session_id: <session or run id>
+
+This requirement exists for accessibility and multi-agent governance traceability. Do not omit it.
+
+Canonical contract files:
+- governance/OUTPUT_PROVENANCE_CONTRACT.md
+- governance/output-provenance.contract.json
+- scripts/output-provenance.js
+- scripts/verify-output-provenance.js
