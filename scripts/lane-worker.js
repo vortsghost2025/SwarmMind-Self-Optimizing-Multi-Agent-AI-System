@@ -47,6 +47,7 @@ function normalizeToAscii(str) {
 
 const SKIP_FILENAMES = new Set(['heartbeat.json', 'watcher.log', 'watcher.pid', 'readme.md']);
 const HEARTBEAT_PATTERN = /^heartbeat-.+\.json$/i;
+const LANE_WORKER_COPY_PATTERN = /\.lane-worker-\d{4}-\d{2}-\d{2}T/;
 
 const SESSION_ID = process.env.LANE_SESSION_ID || `sess_${Date.now().toString(36)}_${process.pid}`;
 const SESSION_EPOCH = new Date().toISOString();
@@ -491,32 +492,34 @@ class LaneWorker {
     const files = [];
     const inboxDir = this.config.queues.inbox;
 
-    // Scan inbox root
-    if (fs.existsSync(inboxDir)) {
-      const entries = fs.readdirSync(inboxDir, { withFileTypes: true });
-      for (const ent of entries) {
-        if (!ent.isFile()) continue;
-        const lower = ent.name.toLowerCase();
-        if (!lower.endsWith('.json')) continue;
-        if (SKIP_FILENAMES.has(lower)) continue;
-        if (HEARTBEAT_PATTERN.test(lower)) continue;
-        files.push(path.join(inboxDir, ent.name));
-      }
+  // Scan inbox root
+  if (fs.existsSync(inboxDir)) {
+    const entries = fs.readdirSync(inboxDir, { withFileTypes: true });
+    for (const ent of entries) {
+      if (!ent.isFile()) continue;
+      const lower = ent.name.toLowerCase();
+      if (!lower.endsWith('.json')) continue;
+      if (SKIP_FILENAMES.has(lower)) continue;
+      if (HEARTBEAT_PATTERN.test(lower)) continue;
+      if (LANE_WORKER_COPY_PATTERN.test(ent.name)) continue;
+      files.push(path.join(inboxDir, ent.name));
     }
+  }
 
-    // Scan action-required subfolder (tasks awaiting agent execution)
-    const arDir = this.config.queues.actionRequired;
-    if (fs.existsSync(arDir)) {
-      const entries = fs.readdirSync(arDir, { withFileTypes: true });
-      for (const ent of entries) {
-        if (!ent.isFile()) continue;
-        const lower = ent.name.toLowerCase();
-        if (!lower.endsWith('.json')) continue;
-        if (SKIP_FILENAMES.has(lower)) continue;
-        if (HEARTBEAT_PATTERN.test(lower)) continue;
-        files.push(path.join(arDir, ent.name));
-      }
+  // Scan action-required subfolder (tasks awaiting agent execution)
+  const arDir = this.config.queues.actionRequired;
+  if (fs.existsSync(arDir)) {
+    const entries = fs.readdirSync(arDir, { withFileTypes: true });
+    for (const ent of entries) {
+      if (!ent.isFile()) continue;
+      const lower = ent.name.toLowerCase();
+      if (!lower.endsWith('.json')) continue;
+      if (SKIP_FILENAMES.has(lower)) continue;
+      if (HEARTBEAT_PATTERN.test(lower)) continue;
+      if (LANE_WORKER_COPY_PATTERN.test(ent.name)) continue;
+      files.push(path.join(arDir, ent.name));
     }
+  }
 
     return files.slice(0, this.maxFiles);
   }
@@ -953,7 +956,9 @@ _routeRaw(filePath, queueKey, meta) {
           try {
             const traceDir = path.join(this.repoRoot, 'lanes', this.lane, 'state', 'traces');
             writeTrace(finalizeTrace(trace), traceDir);
-          } catch (_) {}
+	} catch (loadErr) {
+		process.stderr.write(`[lane-worker] Identity enforcer module load failed: ${loadErr.message}\n`);
+	}
         }
         return {
           lane: this.lane, repo_root: this.repoRoot, dry_run: this.dryRun,
