@@ -57,3 +57,5 @@
 {"timestamp":"2026-05-02T15:29:26.646Z","event":"OUTBOX_WRITE_BLOCKED","filename":"msg-1777735766646.json","id":null,"from":"swarmmind","errors":["MISSING_ID"]}
 {"timestamp":"2026-05-02T16:27:35.888Z","event":"OUTBOX_WRITE_BLOCKED","filename":"msg-1777739255888.json","id":null,"from":"swarmmind","errors":["MISSING_ID"]}
 {"timestamp":"2026-05-02T21:40:59.569Z","event":"OUTBOX_WRITE_BLOCKED","filename":"msg-1777758059568.json","id":null,"from":"swarmmind","errors":["MISSING_ID"]}
+{"timestamp":"2026-05-06T02:26:12.506Z","event":"OUTBOX_WRITE_BLOCKED","filename":"msg-1778034372506.json","id":null,"from":"swarmmind","errors":["MISSING_ID"]}
+{"timestamp":"2026-05-06T03:21:22.984Z","event":"OUTBOX_WRITE_BLOCKED","filename":"msg-1778037682984.json","id":null,"from":"kernel","errors":["MISSING_ID"]}

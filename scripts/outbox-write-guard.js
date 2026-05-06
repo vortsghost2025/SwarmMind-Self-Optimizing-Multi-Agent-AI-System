@@ -7,11 +7,19 @@ const { moveFileWithLease } = require('./lease-write');
 const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
 
+const os = require('os');
+const isWin32 = process.platform === 'win32';
+const UBUNTU_ROOT = path.join(os.homedir(), 'agent', 'repos');
+function _resolve(winPath) {
+  if (isWin32) return winPath;
+  const m = winPath.match(/^S:\/(.+)$/);
+  return m ? path.join(UBUNTU_ROOT, m[1]) : winPath;
+}
 const LANE_DIRS = {
-  archivist: getRoots()['archivist'],
-  library: getRoots()['library'],
-  swarmmind: getRoots()['swarmmind'],
-  kernel: getRoots()['kernel'],
+  archivist: _resolve('S:/Archivist-Agent'),
+  library: _resolve('S:/self-organizing-library'),
+  swarmmind: _resolve('S:/SwarmMind'),
+  kernel: _resolve('S:/kernel-lane'),
 };
 
 function validateOutboxMessage(msg) {
