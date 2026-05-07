@@ -66,6 +66,9 @@ lanes/broadcast/system_state.json
 
 S:/
 
+# Compact restore packets (runtime, should live in .compact-audit/)
+COMPACT_RESTORE_PACKET.json
+
 # Compact audit runtime artifacts
 .compact-audit/
 COMPACT_CONTEXT_HANDOFF.md
