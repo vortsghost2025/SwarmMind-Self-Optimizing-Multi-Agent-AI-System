@@ -21,6 +21,15 @@ const LANES = {
 const CURRENT_LANE = 'SwarmMind';
 const CURRENT_ROOT = LANES[CURRENT_LANE];
 
+if (process.platform !== 'win32') {
+  for (const [name, p] of Object.entries(LANES)) {
+    if (/^[A-Za-z]:[\\/]/.test(p)) {
+      console.error(`[sovereignty] FATAL: Windows path leak on ${process.platform}: ${name}=${p}`);
+      process.exit(1);
+    }
+  }
+}
+
 // Allowed: local relative imports, node_modules, own util/
 const ALLOWED_PATTERNS = [
   /^\.\.?\//,           // ./ or ../
