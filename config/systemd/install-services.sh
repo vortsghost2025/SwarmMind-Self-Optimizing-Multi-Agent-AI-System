@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install all 4 lane-worker systemd user services on Ubuntu headless
+# Install all 8 systemd user services (4 lane-worker + 4 relay-daemon) on Ubuntu headless
 # Run once: bash config/systemd/install-services.sh
 set -euo pipefail
 
@@ -16,22 +16,23 @@ SERVICES[swarmmind]="${REPOS_BASE}/SwarmMind"
 SERVICES[library]="${REPOS_BASE}/self-organizing-library"
 
 for lane in kernel archivist swarmmind library; do
-  src="${SERVICES[$lane]}/config/systemd/${lane}-lane-worker.service"
-  if [ ! -f "$src" ]; then
-    echo "SKIP: $lane — service file not found at $src"
-    continue
-  fi
-
-  cp "$src" "${SYSTEMD_DIR}/${lane}-lane-worker.service"
-  echo "INSTALLED: ${lane}-lane-worker.service"
+  for svc in lane-worker relay-daemon; do
+    src="${SERVICES[$lane]}/config/systemd/${lane}-${svc}.service"
+    if [ ! -f "$src" ]; then
+      echo "SKIP: ${lane}-${svc} — not found at $src"
+      continue
+    fi
+    cp "$src" "${SYSTEMD_DIR}/${lane}-${svc}.service"
+    echo "INSTALLED: ${lane}-${svc}.service"
+  done
 done
 
 systemctl --user daemon-reload
 echo ""
-echo "Services installed. Enable and start with:"
-echo "  systemctl --user enable --now kernel-lane-worker"
-echo "  systemctl --user enable --now archivist-lane-worker"
-echo "  systemctl --user enable --now swarmmind-lane-worker"
-echo "  systemctl --user enable --now library-lane-worker"
+echo "8 services installed. Enable all with:"
+echo "  for s in kernel archivist swarmmind library; do"
+echo "    systemctl --user enable --now \${s}-lane-worker"
+echo "    systemctl --user enable --now \${s}-relay-daemon"
+echo "  done"
 echo ""
 echo "Or use: ${REPOS_BASE}/SwarmMind/scripts/start-all-lanes.sh"
