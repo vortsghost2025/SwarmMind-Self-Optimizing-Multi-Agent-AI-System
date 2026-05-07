@@ -65,3 +65,9 @@ scripts/inbox-watcher.log
 lanes/broadcast/system_state.json
 
 S:/
+
+# Compact audit runtime artifacts
+.compact-audit/
+COMPACT_CONTEXT_HANDOFF.md
+lanes/*/state/traces/
+lanes/*/state/worker-audit.log
