@@ -14,6 +14,7 @@ const { newTrace, addDecision, checkpoint, addConstraintEval, finalizeTrace, wri
 const { ConstraintEngine, ConstitutionViolation } = require('./constraint-lattice');
 const { driftScore, verifyTraceIntegrity } = require('./swarmmind-verify');
 const { DualVerification } = require('./dual-verification');
+const { verifyOutputProvenance } = require('./output-provenance');
 
 const ACTIONABLE_TYPES = new Set(['task', 'escalation', 'request']);
 const NON_ASCII_PATTERN = /[^\x00-\x7F]/;
@@ -525,9 +526,16 @@ class LaneWorker {
     }
   if (!isEnglishOnly(msg)) {
     return { queue: 'quarantine', reason: 'FORMAT_VIOLATION_NON_ASCII', detail: 'Message contains non-ASCII content. Re-request in English per governance constraint.' };
-  }
+    }
 
-  // NFM-022 fix: skip hasUnresolvableEvidence for actionable tasks
+    if (typeof msg.body === 'string') {
+      var prov = verifyOutputProvenance(msg.body);
+      if (!prov.ok) {
+        return { queue: 'blocked', reason: 'OUTPUT_PROVENANCE_MISSING', detail: 'body lacks OUTPUT_PROVENANCE header. Missing: ' + prov.missing.join(', ') + '. All agent output must include OUTPUT_PROVENANCE:, agent:, lane:, target:.' };
+      }
+    }
+
+    // NFM-022 fix: skip hasUnresolvableEvidence for actionable tasks
   // A new task (requires_action=true) hasn't been executed yet, so
   // evidence.required=true with no artifact is expected, not a violation.
   if (!isActionable(msg) && cp.hasUnresolvableEvidence(msg)) {
