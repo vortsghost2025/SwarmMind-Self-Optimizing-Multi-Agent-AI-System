@@ -36,7 +36,8 @@
         "kernel",
         "broadcast",
         "all",
-        "authority"
+        "authority",
+        "functions.git"
       ]
     },
     "type": {
@@ -424,6 +425,25 @@
       "minLength": 16,
       "maxLength": 16,
       "pattern": "^[a-f0-9]{16}$"
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Optional execution metrics. Backward-compatible; absent messages still validate.",
+      "properties": {
+        "duration_ms": {
+          "type": "number"
+        },
+        "tokens_used": {
+          "type": "integer"
+        },
+        "retries": {
+          "type": "integer"
+        },
+        "tool_calls": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": true
     }
   },
   "required": [

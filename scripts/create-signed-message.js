@@ -48,6 +48,9 @@ function canonicalId(prefix = 'task') {
 }
 
 function buildCanonicalMessage(options = {}) {
+  if (process.env.SWARM_DEBUG_SIGNING === '1') {
+    console.log('[create-signed-message] resolved to:', options.to || 'unknown');
+  }
   const {
     profile = 'default',
     schema_version = '1.3',
