@@ -13,8 +13,8 @@ const { getRoots } = require('./util/lane-discovery');
 const { newTrace, addDecision, checkpoint, addConstraintEval, finalizeTrace, writeTrace } = require('./util/trace');
 const { ConstraintEngine, ConstitutionViolation } = require('./constraint-lattice');
 const { driftScore, verifyTraceIntegrity } = require('./swarmmind-verify');
-const { DualVerification } = require('./dual-verification');
 const { verifyOutputProvenance } = require('./output-provenance');
+const { DualVerification } = require('./dual-verification');
 
 const ACTIONABLE_TYPES = new Set(['task', 'escalation', 'request']);
 const NON_ASCII_PATTERN = /[^\x00-\x7F]/;

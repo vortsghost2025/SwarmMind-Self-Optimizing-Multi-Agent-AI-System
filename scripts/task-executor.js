@@ -6,6 +6,7 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
+const { ensureOutputProvenance, verifyOutputProvenance } = require(path.join(REPO_ROOT, 'scripts', 'output-provenance'));
 const LANE = 'swarmmind';
 const { ensureOutputProvenance, verifyOutputProvenance } = require(path.join(REPO_ROOT, 'scripts', 'output-provenance'));
 // Import lane discovery utilities for path resolution
@@ -128,7 +129,7 @@ function signAndDeliver(response) {
   }
   try {
     const { createSignedMessage } = require(path.join(REPO_ROOT, 'scripts', 'create-signed-message.js'));
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+    const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
     const signed = createSignedMessage(response, LANE);
 
