@@ -57,6 +57,7 @@ const TYPE_CHECKS = {
   to: 'string',
   type: 'string',
   task_kind: 'string',
+  metrics: 'object',
   priority: 'string',
   subject: 'string',
   body: 'string',

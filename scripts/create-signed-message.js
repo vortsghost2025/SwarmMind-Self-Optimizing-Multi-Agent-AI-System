@@ -7,6 +7,13 @@ const crypto = require('crypto');
 
 const { deriveKeyId } = require(path.join(__dirname, '..', '.global', 'deriveKeyId.js'));
 
+// Simple conditional logger for signing‑related debugging. Controlled via the SWARM_DEBUG_SIGNING env var.
+function debugLog(...args) {
+  if (process.env.SWARM_DEBUG_SIGNING) {
+    console.log(...args);
+  }
+}
+
 const { atomicWriteWithLease } = require('./util/atomic-write');
 const { guardWrite } = require(path.join(__dirname, 'outbox-write-guard'));
 const { LANES: _DL, getRoots } = require('./util/lane-discovery');
@@ -99,7 +106,7 @@ function buildCanonicalMessage(options = {}) {
     ...heartbeat,
   };
 
-  return {
+  const built = {
     schema_version,
     task_id: resolvedTaskId,
     idempotency_key: resolvedIdempotency,
@@ -121,6 +128,8 @@ function buildCanonicalMessage(options = {}) {
     heartbeat: mergedHeartbeat,
     ...extra,
   };
+  debugLog('[buildCanonicalMessage] to field:', built.to);
+  return built;
 }
 
 function stableStringify(value) {
@@ -182,6 +191,7 @@ function createSignedMessage(msg, laneId) {
   const keyId = deriveKeyId(publicPem);
   const from = msg.from || msg.from_lane || laneId;
   const to = msg.to || msg.to_lane || null;
+  debugLog('[createSignedMessage] to field:', to);
   const msgId = msg.id || msg.task_id || `msg-${Date.now()}`;
   const contentHash = 'sha256:' + crypto.createHash('sha256')
     .update(stableStringify({ body: msg.body || '', payload: msg.payload || {} }))
@@ -268,7 +278,7 @@ if (require.main === module) {
   const raw = fs.readFileSync(messagePath, 'utf8').replace(/^\uFEFF/, '');
   const msg = JSON.parse(raw);
   const signed = createSignedMessage(msg, lane);
-  console.log(JSON.stringify(signed, null, 2));
+  debugLog(JSON.stringify(signed, null, 2));
 
   if (outboxDir) {
     const result = await writeSignedMessage(msg, lane, outboxDir);
