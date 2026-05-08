@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-05-08T00:20:51.301Z",
+  "lane": "swarmmind",
+  "dry_run": false,
+  "before": {
+    "blocked": 0,
+    "quarantine": 2
+  },
+  "after": {
+    "blocked": 0,
+    "quarantine": 1,
+    "archived": 1,
+    "expired": 0,
+    "deduplicated": 0,
+    "skipped_contradicts": 0
+  },
+  "actions": [
+    {
+      "file": "accessibility-contract-notification-swarmmind-20260505.json",
+      "rule": "stale-default",
+      "action": "archive",
+      "reason": "Stale message (default — archive after threshold)",
+      "age_hours": 56,
+      "destination": "archive"
+    }
+  ]
+}

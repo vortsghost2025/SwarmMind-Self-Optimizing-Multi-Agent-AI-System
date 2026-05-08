@@ -1,0 +1,69 @@
+{
+  "schema": "store-journal-snapshot-v2",
+  "generated_at": "2026-05-08T01:02:50.808Z",
+  "host": "we",
+  "date": "2026-05-08",
+  "lanes": {
+    "library": {
+      "total_entries": 0,
+      "in_progress": [],
+      "active_ownerships": [],
+      "files_changed_today": [],
+      "last_activity": null
+    },
+    "archivist": {
+      "total_entries": 0,
+      "in_progress": [],
+      "active_ownerships": [],
+      "files_changed_today": [],
+      "last_activity": null
+    },
+    "swarmmind": {
+      "total_entries": 5,
+      "in_progress": [
+        {
+          "agent": "smoke-test-ubuntu",
+          "session_id": "smoke-test-004",
+          "target": "journal smoke test",
+          "started_at": "2026-05-08T00:12:37.262Z"
+        },
+        {
+          "agent": "autonomous-executor-v1.0.0",
+          "session_id": "auto-3008750",
+          "target": "autonomous-executor-swarmmind",
+          "started_at": "2026-05-08T00:18:21.526Z"
+        }
+      ],
+      "active_ownerships": [
+        {
+          "path": "lanes/swarmmind/inbox/action-required",
+          "owner": "autonomous-executor-v1.0.0",
+          "reason": "autonomous task execution"
+        }
+      ],
+      "files_changed_today": [
+        "scripts/autonomous-executor.js",
+        "scripts/blocked-remediator.js"
+      ],
+      "last_activity": {
+        "timestamp": "2026-05-08T01:02:50.784Z",
+        "event": "work_completed",
+        "agent": "git-post-commit"
+      }
+    },
+    "kernel": {
+      "total_entries": 0,
+      "in_progress": [],
+      "active_ownerships": [],
+      "files_changed_today": [],
+      "last_activity": null
+    },
+    "opencode": {
+      "total_entries": 0,
+      "in_progress": [],
+      "active_ownerships": [],
+      "files_changed_today": [],
+      "last_activity": null
+    }
+  }
+}
