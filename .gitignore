@@ -74,3 +74,12 @@ COMPACT_RESTORE_PACKET.json
 COMPACT_CONTEXT_HANDOFF.md
 lanes/*/state/traces/
 lanes/*/state/worker-audit.log
+
+# Blocked-remediator reports (generated every cycle)
+context-buffer/blocked-remediation-report-*.json
+
+# Operator alerts (hygiene monitor, deduplicated)
+lanes/broadcast/operator_alert_*.json
+
+# Lane journal (local-only, broadcast summaries sync via git)
+lanes/swarmmind/journal/
