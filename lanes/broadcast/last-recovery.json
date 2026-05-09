@@ -9,7 +9,7 @@
     "total": 11,
     "all_passed": false
   },
-  "claim": "Restored context has contradictions — cannot prove correctness",
+  "claim": "Restored context has contradictions [?] cannot prove correctness",
   "evidence": {
     "relative": ".compact-audit/RECOVERY_TEST_RESULTS.json",
     "absolute": "S:\\Archivist-Agent\\.compact-audit\\RECOVERY_TEST_RESULTS.json"
@@ -41,5 +41,8 @@
     "expected": 4
   },
   "run_by": "scripts/recovery-test-suite.js",
-  "archivist_repo_git_sha": "4815b3fc5f6ad0e0047a605faf2d8a3dbde7465a"
+  "archivist_repo_git_sha": "4815b3fc5f6ad0e0047a605faf2d8a3dbde7465a",
+  "format_violation": true,
+  "sanitized_at": "2026-05-09T01:28:01.037Z",
+  "sanitization_reason": "Non-ASCII characters replaced with ASCII equivalents per English-only constraint"
 }
