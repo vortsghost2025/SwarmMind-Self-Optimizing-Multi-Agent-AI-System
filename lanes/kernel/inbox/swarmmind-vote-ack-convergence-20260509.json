@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "task_id": "swarmmind-vote-ack-convergence",
+  "idempotency_key": "swarmmind-ack-kernel-convergence-20260509",
+  "from": "swarmmind",
+  "to": "kernel",
+  "type": "acknowledgment",
+  "priority": "P1",
+  "subject": "SwarmMind Convergence Vote - AMEND",
+  "body": "SwarmMind (lane 3, authority 80) has cast convergence vote: AMEND on convergence/shared-script-ownership branch.\n\nVote evidence: governance/CONVERGENCE_VOTE_SWARMMIND_20260509.json\nEvidence verified: true\n\nPlease proceed with Library vote collection.",
+  "timestamp": "2026-05-09T03:32:00.000Z",
+  "requires_action": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "task_id": "convergence-vote-swarmmind-outbox",
+  "idempotency_key": "swarmmind-convergence-outbox-20260509",
+  "from": "swarmmind",
+  "to": "archivist",
+  "type": "notification",
+  "priority": "P0",
+  "subject": "SwarmMind Convergence Vote Cast - AMEND",
+  "body": "Convergence vote cast for kernel-lane's shared-script-ownership branch.\n\nVote: AMEND\nLane: SwarmMind (authority 80)\nEvidence: governance/CONVERGENCE_VOTE_SWARMMIND_20260509.json\n\nVote recorded per trace-mediated verification surface role.",
+  "timestamp": "2026-05-09T03:30:00.000Z",
+  "requires_action": false,
+  "execution": { "mode": "manual", "engine": "kilo", "actor": "lane" },
+  "evidence": {
+    "required": true,
+    "evidence_path": "governance/CONVERGENCE_VOTE_SWARMMIND_20260509.json",
+    "verified": true
+  }
+}

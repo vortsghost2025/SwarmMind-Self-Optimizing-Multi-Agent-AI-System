@@ -1,0 +1,62 @@
+{
+  "timestamp": "2026-05-09T03:31:33.050Z",
+  "suite": "recovery-verification-v1",
+  "results": [
+    {
+      "name": "trust_chain_continuity",
+      "passed": false,
+      "detail": "0/4 lanes have key IDs"
+    },
+    {
+      "name": "governance_integrity",
+      "passed": false,
+      "detail": "gov=undefined... boot=undefined..."
+    },
+    {
+      "name": "constraint_preservation",
+      "passed": false,
+      "detail": "0 constraints, required=4"
+    },
+    {
+      "name": "handoff_tamper_detection",
+      "passed": false,
+      "detail": "no handoff file"
+    },
+    {
+      "name": "blocker_consistency",
+      "passed": true,
+      "detail": "no active blocker"
+    },
+    {
+      "name": "message_inventory",
+      "passed": true,
+      "detail": "total=0 {\"archivist\":0,\"library\":0,\"swarmmind\":0,\"kernel\":0}"
+    },
+    {
+      "name": "risk_set_preservation",
+      "passed": true,
+      "detail": "5 known risks in pre-compact snapshot"
+    },
+    {
+      "name": "lane_liveness",
+      "passed": false,
+      "detail": "0/4 lanes alive"
+    },
+    {
+      "name": "multi_source_consistency",
+      "passed": false,
+      "detail": "6 sources, 13 contradictions"
+    },
+    {
+      "name": "contradiction_detection",
+      "passed": true,
+      "detail": "status=aligned unexpected_changes=1"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "total": 10,
+    "all_passed": false
+  },
+  "claim": "Restored context has contradictions — cannot prove correctness"
+}

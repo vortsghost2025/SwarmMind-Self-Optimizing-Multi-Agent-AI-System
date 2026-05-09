@@ -1,0 +1,134 @@
+{
+  "timestamp": "2026-05-09T03:31:28.912Z",
+  "phase": "pre_compact",
+  "active_blocker": {
+    "exists": false,
+    "blocker": null
+  },
+  "trust_store_key_ids": {},
+  "constraint_names": [],
+  "governance_hash": null,
+  "bootstrap_hash": null,
+  "handoff_hash": null,
+  "lane_states": {
+    "archivist": {
+      "status": "no_heartbeat",
+      "timestamp": null
+    },
+    "library": {
+      "status": "no_heartbeat",
+      "timestamp": null
+    },
+    "swarmmind": {
+      "status": "no_heartbeat",
+      "timestamp": null
+    },
+    "kernel": {
+      "status": "no_heartbeat",
+      "timestamp": null
+    }
+  },
+  "inbox_counts": {
+    "archivist": 0,
+    "library": 0,
+    "swarmmind": 0,
+    "kernel": 0
+  },
+  "known_risks": [
+    "identity_soft_keys",
+    "determinism_not_guaranteed",
+    "kernel_partial_convergence",
+    "contract_alignment_ambiguous",
+    "subagent_code_destruction_surface"
+  ],
+  "file_integrity": {
+    "archivist": {
+      "private_pem": {
+        "path": "S:/Archivist-Agent/.identity/private.pem",
+        "exists": false,
+        "hash": null
+      },
+      "public_pem": {
+        "path": "S:/Archivist-Agent/.identity/public.pem",
+        "exists": false,
+        "hash": null
+      },
+      "snapshot_json": {
+        "path": "S:/Archivist-Agent/.identity/snapshot.json",
+        "exists": false,
+        "hash": null
+      },
+      "trust_store": {
+        "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+        "exists": false,
+        "hash": null
+      }
+    },
+    "library": {
+      "private_pem": {
+        "path": "S:/self-organizing-library/.identity/private.pem",
+        "exists": false,
+        "hash": null
+      },
+      "public_pem": {
+        "path": "S:/self-organizing-library/.identity/public.pem",
+        "exists": false,
+        "hash": null
+      },
+      "snapshot_json": {
+        "path": "S:/self-organizing-library/.identity/snapshot.json",
+        "exists": false,
+        "hash": null
+      },
+      "trust_store": {
+        "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+        "exists": false,
+        "hash": null
+      }
+    },
+    "swarmmind": {
+      "private_pem": {
+        "path": "S:/SwarmMind/.identity/private.pem",
+        "exists": false,
+        "hash": null
+      },
+      "public_pem": {
+        "path": "S:/SwarmMind/.identity/public.pem",
+        "exists": false,
+        "hash": null
+      },
+      "snapshot_json": {
+        "path": "S:/SwarmMind/.identity/snapshot.json",
+        "exists": false,
+        "hash": null
+      },
+      "trust_store": {
+        "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+        "exists": false,
+        "hash": null
+      }
+    },
+    "kernel": {
+      "private_pem": {
+        "path": "S:/kernel-lane/.identity/private.pem",
+        "exists": false,
+        "hash": null
+      },
+      "public_pem": {
+        "path": "S:/kernel-lane/.identity/public.pem",
+        "exists": false,
+        "hash": null
+      },
+      "snapshot_json": {
+        "path": "S:/kernel-lane/.identity/snapshot.json",
+        "exists": false,
+        "hash": null
+      },
+      "trust_store": {
+        "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+        "exists": false,
+        "hash": null
+      }
+    }
+  }
+}

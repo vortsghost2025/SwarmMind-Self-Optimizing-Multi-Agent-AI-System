@@ -1,0 +1,309 @@
+{
+  "timestamp": "2026-05-09T03:31:28.927Z",
+  "schema": "post-compact-audit-v1",
+  "pre_compact": {
+    "active_blocker": {
+      "exists": false,
+      "blocker": null
+    },
+    "trust_store_key_ids": {},
+    "constraint_names": [],
+    "lane_states": {
+      "archivist": {
+        "status": "no_heartbeat",
+        "timestamp": null
+      },
+      "library": {
+        "status": "no_heartbeat",
+        "timestamp": null
+      },
+      "swarmmind": {
+        "status": "no_heartbeat",
+        "timestamp": null
+      },
+      "kernel": {
+        "status": "no_heartbeat",
+        "timestamp": null
+      }
+    },
+    "inbox_counts": {
+      "archivist": 0,
+      "library": 0,
+      "swarmmind": 0,
+      "kernel": 0
+    },
+    "governance_hash": null,
+    "bootstrap_hash": null,
+    "handoff_hash": null,
+    "known_risks": [
+      "identity_soft_keys",
+      "determinism_not_guaranteed",
+      "kernel_partial_convergence",
+      "contract_alignment_ambiguous",
+      "subagent_code_destruction_surface"
+    ],
+    "file_integrity": {
+      "archivist": {
+        "private_pem": {
+          "path": "S:/Archivist-Agent/.identity/private.pem",
+          "exists": false,
+          "hash": null
+        },
+        "public_pem": {
+          "path": "S:/Archivist-Agent/.identity/public.pem",
+          "exists": false,
+          "hash": null
+        },
+        "snapshot_json": {
+          "path": "S:/Archivist-Agent/.identity/snapshot.json",
+          "exists": false,
+          "hash": null
+        },
+        "trust_store": {
+          "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+          "exists": false,
+          "hash": null
+        }
+      },
+      "library": {
+        "private_pem": {
+          "path": "S:/self-organizing-library/.identity/private.pem",
+          "exists": false,
+          "hash": null
+        },
+        "public_pem": {
+          "path": "S:/self-organizing-library/.identity/public.pem",
+          "exists": false,
+          "hash": null
+        },
+        "snapshot_json": {
+          "path": "S:/self-organizing-library/.identity/snapshot.json",
+          "exists": false,
+          "hash": null
+        },
+        "trust_store": {
+          "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+          "exists": false,
+          "hash": null
+        }
+      },
+      "swarmmind": {
+        "private_pem": {
+          "path": "S:/SwarmMind/.identity/private.pem",
+          "exists": false,
+          "hash": null
+        },
+        "public_pem": {
+          "path": "S:/SwarmMind/.identity/public.pem",
+          "exists": false,
+          "hash": null
+        },
+        "snapshot_json": {
+          "path": "S:/SwarmMind/.identity/snapshot.json",
+          "exists": false,
+          "hash": null
+        },
+        "trust_store": {
+          "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+          "exists": false,
+          "hash": null
+        }
+      },
+      "kernel": {
+        "private_pem": {
+          "path": "S:/kernel-lane/.identity/private.pem",
+          "exists": false,
+          "hash": null
+        },
+        "public_pem": {
+          "path": "S:/kernel-lane/.identity/public.pem",
+          "exists": false,
+          "hash": null
+        },
+        "snapshot_json": {
+          "path": "S:/kernel-lane/.identity/snapshot.json",
+          "exists": false,
+          "hash": null
+        },
+        "trust_store": {
+          "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+          "exists": false,
+          "hash": null
+        }
+      }
+    }
+  },
+  "post_compact": {
+    "active_blocker": {
+      "exists": false,
+      "blocker": null
+    },
+    "trust_store_key_ids": {},
+    "constraint_names": [],
+    "lane_states": {
+      "archivist": {
+        "status": "no_heartbeat",
+        "timestamp": null
+      },
+      "library": {
+        "status": "no_heartbeat",
+        "timestamp": null
+      },
+      "swarmmind": {
+        "status": "no_heartbeat",
+        "timestamp": null
+      },
+      "kernel": {
+        "status": "no_heartbeat",
+        "timestamp": null
+      }
+    },
+    "inbox_counts": {
+      "archivist": 0,
+      "library": 0,
+      "swarmmind": 0,
+      "kernel": 0
+    },
+    "governance_hash": null,
+    "bootstrap_hash": null,
+    "handoff_hash": null,
+    "known_risks": [],
+    "file_integrity": {
+      "archivist": {
+        "private_pem": {
+          "path": "S:/Archivist-Agent/.identity/private.pem",
+          "exists": false,
+          "hash": null
+        },
+        "public_pem": {
+          "path": "S:/Archivist-Agent/.identity/public.pem",
+          "exists": false,
+          "hash": null
+        },
+        "snapshot_json": {
+          "path": "S:/Archivist-Agent/.identity/snapshot.json",
+          "exists": false,
+          "hash": null
+        },
+        "trust_store": {
+          "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+          "exists": false,
+          "hash": null
+        }
+      },
+      "library": {
+        "private_pem": {
+          "path": "S:/self-organizing-library/.identity/private.pem",
+          "exists": false,
+          "hash": null
+        },
+        "public_pem": {
+          "path": "S:/self-organizing-library/.identity/public.pem",
+          "exists": false,
+          "hash": null
+        },
+        "snapshot_json": {
+          "path": "S:/self-organizing-library/.identity/snapshot.json",
+          "exists": false,
+          "hash": null
+        },
+        "trust_store": {
+          "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+          "exists": false,
+          "hash": null
+        }
+      },
+      "swarmmind": {
+        "private_pem": {
+          "path": "S:/SwarmMind/.identity/private.pem",
+          "exists": false,
+          "hash": null
+        },
+        "public_pem": {
+          "path": "S:/SwarmMind/.identity/public.pem",
+          "exists": false,
+          "hash": null
+        },
+        "snapshot_json": {
+          "path": "S:/SwarmMind/.identity/snapshot.json",
+          "exists": false,
+          "hash": null
+        },
+        "trust_store": {
+          "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+          "exists": false,
+          "hash": null
+        }
+      },
+      "kernel": {
+        "private_pem": {
+          "path": "S:/kernel-lane/.identity/private.pem",
+          "exists": false,
+          "hash": null
+        },
+        "public_pem": {
+          "path": "S:/kernel-lane/.identity/public.pem",
+          "exists": false,
+          "hash": null
+        },
+        "snapshot_json": {
+          "path": "S:/kernel-lane/.identity/snapshot.json",
+          "exists": false,
+          "hash": null
+        },
+        "trust_store": {
+          "path": "S:/SwarmMind/lanes/broadcast/trust-store.json",
+          "exists": false,
+          "hash": null
+        }
+      }
+    }
+  },
+  "diff": {
+    "blocker_changed": false,
+    "blocker_detail": null,
+    "trust_chain_intact": true,
+    "trust_detail": null,
+    "constraints_intact": true,
+    "constraints_detail": null,
+    "governance_intact": true,
+    "governance_detail": null,
+    "bootstrap_intact": true,
+    "bootstrap_detail": null,
+    "handoff_intact": true,
+    "handoff_detail": null,
+    "message_loss": 0,
+    "message_loss_detail": {},
+    "lane_degradations": [],
+    "risk_set_preserved": false,
+    "missing_risks": [
+      "identity_soft_keys",
+      "determinism_not_guaranteed",
+      "kernel_partial_convergence",
+      "contract_alignment_ambiguous",
+      "subagent_code_destruction_surface"
+    ],
+    "unexpected_changes": [
+      "risks_lost: identity_soft_keys, determinism_not_guaranteed, kernel_partial_convergence, contract_alignment_ambiguous, subagent_code_destruction_surface"
+    ],
+    "file_integrity_violations": []
+  },
+  "status": "aligned",
+  "proof": {
+    "method": "multi_source_contradiction_test",
+    "sources_checked": [
+      "active_blocker",
+      "trust_store",
+      "constitutional_constraints",
+      "governance_doc",
+      "bootstrap_doc",
+      "handoff_doc",
+      "inbox_message_counts",
+      "lane_heartbeats",
+      "known_risk_set",
+      "file_integrity"
+    ],
+    "contradictions_found": 1,
+    "self_declared_alignment": false
+  }
+}

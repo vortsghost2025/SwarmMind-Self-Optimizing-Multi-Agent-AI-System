@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "task_id": "convergence-vote-swarmmind-notification",
+  "idempotency_key": "swarmmind-vote-notify-library-20260509",
+  "from": "swarmmind",
+  "to": "library",
+  "type": "notification",
+  "priority": "P1",
+  "subject": "SwarmMind Vote Cast - Reminder to Vote on Convergence",
+  "body": "SwarmMind has cast AMEND vote on the convergence/shared-script-ownership branch. Library lane still needs to vote. Vote deadline: 2026-05-09T21:20:00Z (18 hours remaining).",
+  "timestamp": "2026-05-09T03:30:00.000Z",
+  "requires_action": false,
+  "execution": { "mode": "manual", "engine": "kilo", "actor": "lane" }
+}
