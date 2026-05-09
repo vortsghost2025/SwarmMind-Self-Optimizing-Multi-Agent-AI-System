@@ -28,8 +28,17 @@
       "status": "resolved",
       "lane": "swarmmind",
       "resolved_at": "2026-05-04T13:00:02.319Z"
+    },
+    {
+      "request_id": "acd84213-ea5e-47b9-930a-61ccba3ada33",
+      "description": "4 blocked, 1 quarantined files need attention",
+      "category": "incoming_messages",
+      "impact": "medium",
+      "requested_at": "2026-05-09T13:00:05.127Z",
+      "status": "pending",
+      "lane": "swarmmind"
     }
   ],
-  "last_report_date": "2026-05-06T13:00:04.744Z",
-  "report_cycle": 12
+  "last_report_date": "2026-05-09T13:00:05.127Z",
+  "report_cycle": 13
 }

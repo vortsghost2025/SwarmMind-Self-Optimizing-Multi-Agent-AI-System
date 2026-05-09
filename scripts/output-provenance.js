@@ -38,18 +38,36 @@ function verifyOutputProvenance(output) {
   const firstLines = text.trimStart().split(/\r?\n/).slice(0, 10);
   const header = firstLines.join("\n");
 
-  const required = [
+  const requiredPlaintext = [
     "OUTPUT_PROVENANCE:",
     "agent:",
     "lane:",
     "target:"
   ];
-  const missing = required.filter((token) => !header.includes(token));
+  const missingPlaintext = requiredPlaintext.filter((token) => !header.includes(token));
+  if (missingPlaintext.length === 0) {
+    return { ok: true, missing: [], status: "OK" };
+  }
+
+  try {
+    const parsed = JSON.parse(text.trimStart());
+    if (parsed && typeof parsed === "object" && parsed.OUTPUT_PROVENANCE) {
+      const op = parsed.OUTPUT_PROVENANCE;
+      const missingJson = [];
+      if (!op.agent) missingJson.push("agent:");
+      if (!op.lane) missingJson.push("lane:");
+      if (!op.target) missingJson.push("target:");
+      if (missingJson.length === 0) {
+        return { ok: true, missing: [], status: "OK" };
+      }
+      return { ok: false, missing: missingJson, status: "FORMAT_VIOLATION" };
+    }
+  } catch (_) {}
 
   return {
-    ok: missing.length === 0,
-    missing,
-    status: missing.length === 0 ? "OK" : "FORMAT_VIOLATION"
+    ok: false,
+    missing: missingPlaintext,
+    status: "FORMAT_VIOLATION"
   };
 }
 
