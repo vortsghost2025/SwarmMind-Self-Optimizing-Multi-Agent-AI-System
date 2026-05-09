@@ -10,11 +10,23 @@ const { ExecutionGate } = require('./execution-gate');
 const { evaluateVerificationDomain } = require('./verification-domain-gate');
 const { getCodeVersionHash } = require('./code-version-hash');
 const { getRoots } = require('./util/lane-discovery');
-const { newTrace, addDecision, checkpoint, addConstraintEval, finalizeTrace, writeTrace } = require('./util/trace');
-const { ConstraintEngine, ConstitutionViolation } = require('./constraint-lattice');
-const { driftScore, verifyTraceIntegrity } = require('./swarmmind-verify');
 const { verifyOutputProvenance } = require('./output-provenance');
-const { DualVerification } = require('./dual-verification');
+
+function runStoreJournalAppend(laneRoot, lane, event, subject, taskId) {
+  var scriptPath = path.join(laneRoot, 'scripts', 'store-journal.js');
+  if (!fs.existsSync(scriptPath)) return;
+  try {
+    var execSync = require('child_process').execSync;
+    var agent = (process.env.AGENT_INSTANCE_ID || 'lane-worker');
+    var safeSubject = String(subject || 'unknown').replace(/"/g, '').slice(0, 80);
+    var safeTaskId = String(taskId || 'unknown').replace(/"/g, '').slice(0, 60);
+    execSync('node "' + scriptPath + '" append --lane ' + lane +
+      ' --event ' + event +
+      ' --agent "' + agent + '"' +
+      ' --subject "' + safeSubject + '"' +
+      ' --task_id "' + safeTaskId + '"', { cwd: laneRoot, timeout: 10000 });
+  } catch (e) {}
+}
 
 const ACTIONABLE_TYPES = new Set(['task', 'escalation', 'request']);
 const NON_ASCII_PATTERN = /[^\x00-\x7F]/;
@@ -48,7 +60,6 @@ function normalizeToAscii(str) {
 
 const SKIP_FILENAMES = new Set(['heartbeat.json', 'watcher.log', 'watcher.pid', 'readme.md']);
 const HEARTBEAT_PATTERN = /^heartbeat-.+\.json$/i;
-const LANE_WORKER_COPY_PATTERN = /\.lane-worker-\d{4}-\d{2}-\d{2}T/;
 
 const SESSION_ID = process.env.LANE_SESSION_ID || `sess_${Date.now().toString(36)}_${process.pid}`;
 const SESSION_EPOCH = new Date().toISOString();
@@ -118,14 +129,41 @@ function logAudit(sourcePath, targetPath, reason, workerId, sessionId, context =
   }
 }
 
+// NFM-020: NACK chain prevention.
+// Guard 1: never send NACK to yourself (senderLane === targetLane).
+// Guard 2: never send NACK for a message that is already a NACK (nack_reason present).
+// Guard 3: never send NACK for a message that carries exempt_from_nack flag.
+// Guard 4: rate-limit — at most one NACK per (sender, original_task_id) per 60s window.
+const NACK_RATE_LIMIT = new Map(); // key: `${senderLane}::${originalTaskId}`, value: last_nack_timestamp
+const NACK_COOLDOWN_MS = 60000;
+
 function sendNack(originalMsg, rejectionReason, rejectionDetail, targetLane, fromLane) {
   try {
     const senderLane = String(originalMsg.from || fromLane || 'unknown').toLowerCase();
     if (senderLane === String(targetLane || '').toLowerCase()) {
       return null;
     }
-    if (originalMsg.type === 'notification' && originalMsg.task_kind === 'status' && originalMsg.nack_reason) {
+    // Guard 2: original is already a NACK — break the chain
+    if (originalMsg.nack_reason) {
       return null;
+    }
+    // Guard 3: message carries anti-chain exemption
+    if (originalMsg.exempt_from_nack === true) {
+      return null;
+    }
+    // Guard 4: rate-limit NACKs per (sender, original task_id)
+    const rateKey = `${senderLane}::${originalMsg.task_id || 'unknown'}`;
+    const lastNack = NACK_RATE_LIMIT.get(rateKey);
+    const now = Date.now();
+    if (lastNack && (now - lastNack) < NACK_COOLDOWN_MS) {
+      return null;
+    }
+    NACK_RATE_LIMIT.set(rateKey, now);
+    // Clean stale rate-limit entries periodically
+    if (NACK_RATE_LIMIT.size > 500) {
+      for (const [k, t] of NACK_RATE_LIMIT) {
+        if (now - t > NACK_COOLDOWN_MS * 2) NACK_RATE_LIMIT.delete(k);
+      }
     }
     const senderRoot = LANE_ROOTS[senderLane];
     if (!senderRoot) {
@@ -159,6 +197,7 @@ function sendNack(originalMsg, rejectionReason, rejectionDetail, targetLane, fro
       nack_for_task_id: originalMsg.task_id || null,
       nack_reason: rejectionReason,
       nack_detail: rejectionDetail || null,
+      exempt_from_nack: true,  // NFM-020: prevent NACK chains — NACKs are terminal
     };
     const nackPath = path.join(senderInbox, `nack-${nackMsg.task_id}.json`);
     fs.writeFileSync(nackPath, JSON.stringify(nackMsg, null, 2), 'utf8');
@@ -416,11 +455,6 @@ class LaneWorker {
     this.lastRun = null;
     this.sessionId = SESSION_ID;
     this.isOwner = false;
-    this.dualVerification = new DualVerification({
-      repoRoot: this.repoRoot,
-      resolver: this.artifactResolver,
-      codeVersionHash: this.codeVersionHash,
-    });
     if (!this.dryRun) {
       const existing = getActiveOwner(this.repoRoot);
       if (!existing || existing.session_id === SESSION_ID || (Date.now() - new Date(existing.claimed_at).getTime()) > 900000) {
@@ -493,19 +527,18 @@ class LaneWorker {
     const files = [];
     const inboxDir = this.config.queues.inbox;
 
-  // Scan inbox root
-  if (fs.existsSync(inboxDir)) {
-    const entries = fs.readdirSync(inboxDir, { withFileTypes: true });
-    for (const ent of entries) {
-      if (!ent.isFile()) continue;
-      const lower = ent.name.toLowerCase();
-      if (!lower.endsWith('.json')) continue;
-      if (SKIP_FILENAMES.has(lower)) continue;
-      if (HEARTBEAT_PATTERN.test(lower)) continue;
-      if (LANE_WORKER_COPY_PATTERN.test(ent.name)) continue;
-      files.push(path.join(inboxDir, ent.name));
+    // Scan inbox root
+    if (fs.existsSync(inboxDir)) {
+      const entries = fs.readdirSync(inboxDir, { withFileTypes: true });
+      for (const ent of entries) {
+        if (!ent.isFile()) continue;
+        const lower = ent.name.toLowerCase();
+        if (!lower.endsWith('.json')) continue;
+        if (SKIP_FILENAMES.has(lower)) continue;
+        if (HEARTBEAT_PATTERN.test(lower)) continue;
+        files.push(path.join(inboxDir, ent.name));
+      }
     }
-  }
 
   // action-required/ is NOT scanned — it is the executor's domain.
   // The lane-worker routes new tasks there; re-scanning would cause
@@ -524,8 +557,8 @@ class LaneWorker {
     if (!signatureResult.valid) {
       return { queue: 'blocked', reason: 'SIGNATURE_INVALID', detail: signatureResult.reason || 'Signature validation failed' };
     }
-  if (!isEnglishOnly(msg)) {
-    return { queue: 'quarantine', reason: 'FORMAT_VIOLATION_NON_ASCII', detail: 'Message contains non-ASCII content. Re-request in English per governance constraint.' };
+    if (!isEnglishOnly(msg)) {
+      return { queue: 'quarantine', reason: 'FORMAT_VIOLATION_NON_ASCII', detail: 'Message contains non-ASCII content. Re-request in English per governance constraint.' };
     }
 
     if (typeof msg.body === 'string') {
@@ -535,7 +568,7 @@ class LaneWorker {
       }
     }
 
-    // NFM-022 fix: skip hasUnresolvableEvidence for actionable tasks
+  // NFM-022 fix: skip hasUnresolvableEvidence for actionable tasks
   // A new task (requires_action=true) hasn't been executed yet, so
   // evidence.required=true with no artifact is expected, not a violation.
   if (!isActionable(msg) && cp.hasUnresolvableEvidence(msg)) {
@@ -599,43 +632,41 @@ class LaneWorker {
 
   // Artifact resolution check: any message claiming completion proof MUST verify.
   // Fail-closed: if proof exists but cannot be verified, route to blocked.
+  // Legacy artifact paths bypass the verification domain gate and go directly
+  // to execution gate verification, since they lack the structured fields
+  // (evidence_exchange, timestamps) that the domain gate validates.
   if (gate.pass && cp.hasCompletionProof(msg)) {
-    const domain = evaluateVerificationDomain(msg, {
-      resolver: this.artifactResolver,
-      localCodeVersionHash: this.codeVersionHash,
-      repoRoot: this.repoRoot,
-    });
-    if (!domain.domain_valid) {
-      if (domain.phase === 'post_execution') {
-        return {
-          queue: 'processed',
-          reason: 'INVALID_DOMAIN_POST_EXECUTION',
-          detail: domain.invalid_domain_reason,
-          execution_verified: false,
-          execution_would_verify: false,
-          domain_gate_executed: true,
-          verification_outcome: 'INVALID_DOMAIN',
-          execution_preserved: true,
-          domain_validation: domain,
-          verification_path: ['domain_gate', 'execution_check', 'response_validation'],
-          ownership,
-          ownership_notes: ownershipNotes,
-        };
+    const proofClassification = this.artifactResolver.classifyProof(msg);
+    const isLegacyPath = proofClassification.type === 'LEGACY_ARTIFACT_PATH';
+
+    if (!isLegacyPath) {
+      const domain = evaluateVerificationDomain(msg, {
+        resolver: this.artifactResolver,
+        localCodeVersionHash: this.codeVersionHash,
+        repoRoot: this.repoRoot,
+      });
+      if (!domain.domain_valid) {
+        // If the failure is due to observability (artifact not observable), allow execution verification to handle it.
+        if (domain.observability && !domain.observability.valid) {
+          // fall through to execution verification
+        } else {
+          // Fail-closed for other domain validation failures.
+          return {
+            queue: 'blocked',
+            reason: domain.phase === 'post_execution' ? 'INVALID_DOMAIN_POST_EXECUTION' : 'INVALID_DOMAIN_PRE_EXECUTION',
+            detail: domain.invalid_domain_reason,
+            execution_verified: false,
+            execution_would_verify: false,
+            domain_gate_executed: true,
+            verification_outcome: domain.verification_outcome || 'INVALID_DOMAIN',
+            execution_preserved: domain.phase === 'post_execution',
+            domain_validation: domain,
+            verification_path: ['domain_gate', 'execution_check', 'response_validation'],
+            ownership,
+            ownership_notes: ownershipNotes,
+          };
+        }
       }
-      return {
-        queue: 'blocked',
-        reason: 'INVALID_DOMAIN_PRE_EXECUTION',
-        detail: domain.invalid_domain_reason,
-        execution_verified: false,
-        execution_would_verify: false,
-        domain_gate_executed: true,
-        verification_outcome: domain.verification_outcome,
-        execution_preserved: false,
-        domain_validation: domain,
-        verification_path: ['domain_gate', 'execution_check', 'response_validation'],
-        ownership,
-        ownership_notes: ownershipNotes,
-      };
     }
     const executionResult = this.executionGate.verify(msg);
     if (!executionResult.execution_verified) {
@@ -645,9 +676,10 @@ class LaneWorker {
         detail: `Execution verification failed: type=${executionResult.verification_type} reason=${executionResult.reason} artifact_path=${executionResult.artifact_path || 'null'}`,
         execution_verified: false,
         execution_would_verify: executionResult.would_verify === true,
-        domain_gate_executed: true,
+        domain_gate_executed: !isLegacyPath,
         verification_outcome: 'FAIL',
-        verification_path: ['domain_gate', 'execution_check', 'response_validation'],
+        verification_path: isLegacyPath ? ['execution_check', 'response_validation'] : ['domain_gate', 'execution_check', 'response_validation'],
+        domain_validation: isLegacyPath ? null : undefined,
         ownership,
         ownership_notes: ownershipNotes,
       };
@@ -655,59 +687,53 @@ class LaneWorker {
   }
   // Non-actionable messages claiming completion without verifiable artifact = blocked
   if (gate.pass && !isActionable(msg) && cp.hasCompletionProof(msg)) {
-    const domain = evaluateVerificationDomain(msg, {
-      resolver: this.artifactResolver,
-      localCodeVersionHash: this.codeVersionHash,
-      repoRoot: this.repoRoot,
-    });
-    if (!domain.domain_valid) {
-      if (domain.phase === 'post_execution') {
-        return {
-          queue: 'processed',
-          reason: 'INVALID_DOMAIN_POST_EXECUTION',
-          detail: domain.invalid_domain_reason,
-          execution_verified: false,
-          execution_would_verify: false,
-          domain_gate_executed: true,
-          verification_outcome: 'INVALID_DOMAIN',
-          execution_preserved: true,
-          domain_validation: domain,
-          verification_path: ['domain_gate', 'execution_check', 'response_validation'],
-          ownership,
-          ownership_notes: ownershipNotes,
-        };
+    const proofClassification2 = this.artifactResolver.classifyProof(msg);
+    const isLegacyPath2 = proofClassification2.type === 'LEGACY_ARTIFACT_PATH';
+
+    if (!isLegacyPath2) {
+      const domain = evaluateVerificationDomain(msg, {
+        resolver: this.artifactResolver,
+        localCodeVersionHash: this.codeVersionHash,
+        repoRoot: this.repoRoot,
+      });
+      if (!domain.domain_valid) {
+        if (domain.observability && !domain.observability.valid) {
+          // fall through to execution verification
+        } else {
+          return {
+            queue: 'blocked',
+            reason: domain.phase === 'post_execution' ? 'INVALID_DOMAIN_POST_EXECUTION' : 'INVALID_DOMAIN_PRE_EXECUTION',
+            detail: domain.invalid_domain_reason,
+            execution_verified: false,
+            execution_would_verify: false,
+            domain_gate_executed: true,
+            verification_outcome: domain.verification_outcome || 'INVALID_DOMAIN',
+            execution_preserved: domain.phase === 'post_execution',
+            domain_validation: domain,
+            verification_path: ['domain_gate', 'execution_check', 'response_validation'],
+            ownership,
+            ownership_notes: ownershipNotes,
+          };
+        }
       }
-      return {
-        queue: 'blocked',
-        reason: 'INVALID_DOMAIN_PRE_EXECUTION',
-        detail: domain.invalid_domain_reason,
-        execution_verified: false,
-        execution_would_verify: false,
-        domain_gate_executed: true,
-        verification_outcome: domain.verification_outcome,
-        execution_preserved: false,
-        domain_validation: domain,
-        verification_path: ['domain_gate', 'execution_check', 'response_validation'],
-        ownership,
-        ownership_notes: ownershipNotes,
-      };
     }
     const executionResult = this.executionGate.verify(msg);
     if (!executionResult.execution_verified) {
       return {
         queue: 'blocked',
         reason: 'EXECUTION_NOT_VERIFIED',
-          detail: `Execution verification failed: type=${executionResult.verification_type} reason=${executionResult.reason} artifact_path=${executionResult.artifact_path || 'null'}`,
-          execution_verified: false,
-          execution_would_verify: executionResult.would_verify === true,
-          domain_gate_executed: true,
-          verification_outcome: 'FAIL',
-          verification_path: ['domain_gate', 'execution_check', 'response_validation'],
-          ownership,
-          ownership_notes: ownershipNotes,
-        };
-      }
+        detail: `Execution verification failed: type=${executionResult.verification_type} reason=${executionResult.reason} artifact_path=${executionResult.artifact_path || 'null'}`,
+        execution_verified: false,
+        execution_would_verify: executionResult.would_verify === true,
+        domain_gate_executed: !isLegacyPath2,
+        verification_outcome: 'FAIL',
+        verification_path: isLegacyPath2 ? ['execution_check', 'response_validation'] : ['domain_gate', 'execution_check', 'response_validation'],
+        domain_validation: isLegacyPath2 ? null : undefined,
+        ownership,
+        ownership_notes: ownershipNotes,
+      };
     }
+  }
 
     return {
       queue: 'processed',
@@ -881,6 +907,11 @@ processFile(filePath) {
         lane: this.lane,
       });
       fs.unlinkSync(filePath);
+      var sjEvent = decision.queue === 'actionRequired' ? 'work_started' :
+                    decision.queue === 'processed' ? 'work_completed' :
+                    decision.queue === 'blocked' ? 'work_blocked' :
+                    decision.queue === 'quarantine' ? 'work_quarantined' : 'work_routed';
+      runStoreJournalAppend(this.repoRoot, this.lane, sjEvent, msg.subject || msg.task_id, msg.task_id);
       if (decision.queue === 'quarantine' || decision.queue === 'blocked') {
         sendNack(msg, decision.reason, decision.detail, this.lane, this.lane);
       }
@@ -926,64 +957,13 @@ _routeRaw(filePath, queueKey, meta) {
 }
 
   processOnce() {
-    const trace = newTrace();
-    trace.lane = this.lane;
-    trace.repo_root = this.repoRoot;
-    trace.dry_run = this.dryRun;
-    addDecision(trace, { decision: 'PROCESS_CYCLE_START', scanned: 0 });
-
-    let constraintEngine = null;
-    try {
-      const policyPath = path.join(this.repoRoot, 'config', 'resilience-policy.json');
-      if (fs.existsSync(policyPath)) {
-        constraintEngine = new ConstraintEngine({ policyPath });
-        constraintEngine.load();
-      }
-    } catch (_) {
-      constraintEngine = null;
-    }
-
-    if (constraintEngine) {
-      const preCtx = { tool: 'lane-worker-processOnce', tool_call_count: 0 };
-      const preResult = constraintEngine.evaluateStage('pre_action', preCtx);
-      addConstraintEval(trace, { stage: 'pre_action', constraint_set: constraintEngine.constraintSet ? constraintEngine.constraintSet.set_id : null, result: preResult.all_pass ? 'pass' : 'fail', violations: preResult.violations });
-      if (!preResult.all_pass) {
-        addDecision(trace, { decision: 'BLOCK', reason: 'pre_action constraint violation' });
-        checkpoint(trace, 'process_cycle_blocked', { stage: 'pre_action', violations: preResult.violations.length });
-        if (!this.dryRun) {
-          try {
-            const traceDir = path.join(this.repoRoot, 'lanes', this.lane, 'state', 'traces');
-            writeTrace(finalizeTrace(trace), traceDir);
-	} catch (loadErr) {
-		process.stderr.write(`[lane-worker] Identity enforcer module load failed: ${loadErr.message}\n`);
-	}
-        }
-        return {
-          lane: this.lane, repo_root: this.repoRoot, dry_run: this.dryRun,
-          scanned: 0, routed: { action_required: 0, in_progress: 0, processed: 0, blocked: 0, quarantine: 0 },
-          blocked_by_constraint: true, constraint_stage: 'pre_action', violations: preResult.violations,
-          timestamp: nowIso(),
-        };
-      }
-      addDecision(trace, { decision: 'PROCEED', reason: 'pre_action constraints pass' });
-    }
-
     this.ensureQueues();
     const files = this.listInboxFiles();
-    trace.scanned = files.length;
-    addDecision(trace, { decision: 'FILES_SCANNED', count: files.length });
-
     const routes = [];
 
     for (const filePath of files) {
       try {
-        const record = this.processFile(filePath);
-        routes.push(record);
-        if (constraintEngine) {
-          const postCtx = { status: record.target_queue === 'processed' ? 'ok' : record.reason, tool_call_count: routes.length };
-          const postResult = constraintEngine.evaluateStage('post_action', postCtx);
-          addConstraintEval(trace, { stage: 'post_action', constraint_set: constraintEngine.constraintSet ? constraintEngine.constraintSet.set_id : null, result: postResult.all_pass ? 'pass' : 'fail', violations: postResult.violations });
-        }
+        routes.push(this.processFile(filePath));
       } catch (err) {
         routes.push({
           source: filePath,
@@ -992,12 +972,6 @@ _routeRaw(filePath, queueKey, meta) {
           reason: 'PROCESSING_EXCEPTION',
           detail: err.message,
           dry_run: this.dryRun,
-        });
-        addConstraintEval(trace, {
-          stage: 'post_action',
-          constraint_set: 'lane-worker',
-          result: 'fail',
-          violations: [{ constraint_id: 'PROCESSING_EXCEPTION', severity: 'high', evidence: { file: filePath, error: err.message } }]
         });
       }
     }
@@ -1024,44 +998,6 @@ _routeRaw(filePath, queueKey, meta) {
       routes,
       timestamp: nowIso(),
     };
-
-    if (constraintEngine) {
-      const preOutputCtx = { degraded: routes.some(r => r.target_queue === 'quarantine' || r.target_queue === 'blocked') };
-      const preOutputResult = constraintEngine.evaluateStage('pre_output', preOutputCtx);
-      addConstraintEval(trace, { stage: 'pre_output', constraint_set: constraintEngine.constraintSet ? constraintEngine.constraintSet.set_id : null, result: preOutputResult.all_pass ? 'pass' : 'fail', violations: preOutputResult.violations });
-    }
-
-    addDecision(trace, { decision: 'PROCESS_CYCLE_END', routed: summary.routed });
-    checkpoint(trace, 'process_cycle', { scanned: summary.scanned, routed: summary.routed });
-
-    const finalTrace = finalizeTrace(trace);
-    const drift = driftScore(finalTrace);
-    summary.drift_score = drift.score;
-    summary.drift_interpretation = drift.interpretation;
-
-    const integrity = verifyTraceIntegrity(finalTrace);
-    summary.trace_integrity = integrity.valid;
-
-    const lastMsg = routes.length > 0 ? routes[routes.length - 1] : null;
-    const dualResult = this.dualVerification.verify(lastMsg, finalTrace);
-    summary.dual_verification = {
-      lane_l: dualResult.lane_l.result,
-      lane_r: dualResult.lane_r.result,
-      action: dualResult.action,
-      consensus_confidence: dualResult.consensus_confidence,
-      lane_l_confidence: dualResult.lane_l.confidence,
-      lane_r_confidence: dualResult.lane_r.confidence,
-    };
-    if (dualResult.action === 'ESCALATE') {
-      summary.escalation_required = true;
-    }
-
-    if (!this.dryRun) {
-      try {
-        const traceDir = path.join(this.repoRoot, 'lanes', this.lane, 'state', 'traces');
-        writeTrace(finalTrace, traceDir);
-      } catch (_) {}
-    }
 
     this.lastRun = summary;
     return summary;
