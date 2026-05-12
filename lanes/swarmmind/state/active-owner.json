@@ -1,8 +1,10 @@
 {
-  "session_id": "sess_moxkyc3n_227504",
+  "session_id": "sess_mp22r1l2_284376",
   "lane": "swarmmind",
-  "claimed_at": "2026-05-09T00:02:44.309Z",
-  "pid": 227504,
-  "origin_runtime": "opencode",
-  "origin_workspace": "/home/we4free/agent/repos/SwarmMind"
+  "claimed_at": "2026-05-12T03:32:01.862Z",
+  "renewed_at": "2026-05-12T03:32:01.866Z",
+  "expires_at": "2026-05-12T03:47:01.866Z",
+  "pid": 284376,
+  "origin_runtime": "kilo",
+  "origin_workspace": "S:\\SwarmMind"
 }
