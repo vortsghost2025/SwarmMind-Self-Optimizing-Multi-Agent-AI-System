@@ -20,8 +20,6 @@ function safeUnlink(filePath, context) {
   }
 }
 
-const fs = require('fs');
-const path = require('path');
 const {
   loadPolicy,
   assertWatcherConfig,
