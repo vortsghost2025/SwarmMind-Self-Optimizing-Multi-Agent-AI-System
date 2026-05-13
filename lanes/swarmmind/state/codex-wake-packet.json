@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "lane": "swarmmind",
-  "generated_at": "2026-05-13T16:42:00Z",
+  "generated_at": "2026-05-13T17:25:00Z",
   "pending_count": 1,
   "pending": [
     {
@@ -26,16 +26,22 @@
       "title": "sync-gate-verify: SwarmMind snapshot.json missing",
       "status": "resolved",
       "resolution": "Created .identity/snapshot.json with key_id c707d41a7bb96d96 matching trust-store. sync-gate-verify now reports 0 issues for SwarmMind."
+    },
+    {
+      "id": "ISSUE-NACK-RECUR",
+      "priority": "P1",
+      "title": "Recurring NACKs: outbound messages rejected for OUTPUT_PROVENANCE_MISSING",
+      "status": "resolved",
+      "resolution": "Root cause: prior cycle reports did not include OUTPUT_PROVENANCE text header in body field. Fixed by prepending 'OUTPUT_PROVENANCE: agent: ... lane: ... target: ...' to body. Stale NACKs moved from blocked/ to processed/. Resubmitted cycle report with correct header and signed delivery."
     }
   ],
-  "last_session_summary": "Cycle 20260513-164000: Created .identity/snapshot.json (resolved SNAPSHOT_MISSING). Added .nvmrc. Kernel snapshot key_id mismatch identified but requires kernel lane to fix. All tests pass: 17/17, 64/64. System consistent, 0 contradictions.",
+  "last_session_summary": "Cycle 20260513-172000: Fixed NACK root cause (OUTPUT_PROVENANCE_MISSING in body), cleaned stale blocked/ NACKs to processed/, resubmitted signed cycle report with correct header. Found and noted atomicWriteWithLease parameter bug in create-signed-message.js (laneId passed where data expected). All tests pass: 17/17, 64/64. System consistent, 0 contradictions. 1 open issue: kernel key_id mismatch.",
   "instructions": [
     "Open this file when activating Codex as SwarmMind.",
     "Kernel key_id mismatch needs handoff to kernel lane or Archivist.",
-    "Stale NACK in blocked/ can be cleaned up.",
+    "Atomic write bug in create-signed-message.js:259 — atomicWriteWithLease(filePath, signed, laneId, 30000) passes 4 args but function only takes (filePath, data, leaseTimeoutMs). This caused prior outbox writes to silently fail.",
     "Scheduled tasks may need PATH fix for Node v18.",
-    "Send signed response to Archivist inbox with convergence_gate.",
-    "Move completed SwarmMind inbox items to processed."
+    "No actionable inbox items remain."
   ],
   "packet_hash": ""
 }
