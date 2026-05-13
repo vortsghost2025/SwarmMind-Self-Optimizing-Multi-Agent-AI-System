@@ -192,15 +192,15 @@ function executeGrepTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const grepMatch = body.match(/(?:grep\s+|search\s+(?:for\s+)?)["']([^"']+)["']\s+(?:in|path|file|dir)\s+["']?([^"'\s]+)["']?/i)
-    || body.match(/(?:grep\s+|search\s+(?:for\s+)?)["']([^"']+)["']/i)
-    || body.match(/find\s+["']([^"']+)["']\s+(?:in|path|file|dir)\s+["']?([^"'\s]+)["']?/i)
-    || body.match(/find\s+["']([^"']+)["']/i);
+  || body.match(/(?:grep\s+|search\s+(?:for\s+)?)["']([^"']+)["']/i)
+  || body.match(/find\s+["']([^"']+)["']\s+(?:in|path|file|dir)\s+["']?([^"'\s]+)["']?/i)
+  || body.match(/find\s+["']([^"']+)["']/i);
   if (!grepMatch) {
     return { task_kind: 'report', results: { error: 'No search pattern specified. Use: "grep \\"pattern\\" in <path>" or "search \\"pattern\\""' }, summary: 'Error: no search pattern in task body' };
   }
   const pattern = grepMatch[1];
   const searchPath = grepMatch[2] ? grepMatch[2] : '.';
-  const resolved = searchPath.startsWith('/') || searchPath.match(/^[A-Za-z]:/) ? searchPath : path.join(root, searchPath);
+  const resolved = searchPath.startsWith('/') || searchPath.match(/^[A-Za-z]:/) ? translatePath(searchPath.replace(/\\/g, '/')) : path.join(root, searchPath);
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Search path outside allowed roots: ${resolved}` }, summary: 'Error: search path outside allowed roots' };
@@ -213,7 +213,12 @@ function executeGrepTask(msg, lane) {
       if (isWindows) {
         output = execSync(`findstr /s /n /i "${pattern.replace(/"/g, '')}" "${resolved}\\*.md" "${resolved}\\*.json" "${resolved}\\*.js" "${resolved}\\*.yaml" "${resolved}\\*.yml" "${resolved}\\*.txt"`, { cwd: root, timeout: 15000, encoding: 'utf8', maxBuffer: 30000 });
       } else {
-        output = execSync(`rg --max-count 20 --max-filesize 1M -n "${pattern.replace(/"/g, '\\"')}" "${resolved}"`, { cwd: root, timeout: 15000, encoding: 'utf8', maxBuffer: 30000 });
+        const hasRg = (() => { try { execSync('which rg', { timeout: 3000, encoding: 'utf8' }); return true; } catch (_) { return false; } })();
+        if (hasRg) {
+          output = execSync(`rg --max-count 20 --max-filesize 1M -n "${pattern.replace(/"/g, '\\"')}" "${resolved}"`, { cwd: root, timeout: 15000, encoding: 'utf8', maxBuffer: 30000 });
+        } else {
+          output = execSync(`grep -rn "${pattern.replace(/"/g, '\\"')}" "${resolved}" 2>/dev/null | head -20`, { cwd: root, timeout: 15000, encoding: 'utf8', maxBuffer: 30000 });
+        }
       }
     } catch (e) {
       if ((e.status === 1 && (e.stdout === '' || !e.stdout)) || (isWindows && (e.stdout || '').trim() === '')) {
