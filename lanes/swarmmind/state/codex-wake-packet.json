@@ -1,10 +1,23 @@
 {
   "schema_version": "1.0",
   "lane": "swarmmind",
-  "generated_at": "2026-05-04T21:44:00Z",
-  "pending_count": 0,
-  "pending": [],
-  "last_session_summary": "Quarantine re-validation (3 kernel msgs moved to processed). HARDEN-4 notification sent to Archivist. Kernel audit rec #1 ACKed. Heartbeat updated. Governance items queued.",
+  "generated_at": "2026-05-13T16:11:21Z",
+  "pending_count": 2,
+  "pending": [
+    {
+      "id": "ISSUE-1",
+      "priority": "P1",
+      "title": "Default Node.js v12.22.9 breaks scripts using ?? and ?. syntax",
+      "status": "open"
+    },
+    {
+      "id": "ISSUE-3",
+      "priority": "P2",
+      "title": "sync-gate-verify reports FAIL: SwarmMind snapshot.json missing, kernel snapshot key_id mismatch",
+      "status": "open"
+    }
+  ],
+  "last_session_summary": "Fixed all 15 executor v3 test failures. Root cause: S:/ Windows paths not translated to Linux local paths. Added translatePath() helper and rg fallback. Tests now 64/64 PASS, 17/17 PASS. NACK in blocked/ is stale (prior health cycle evidence artifact issue, now resolved). Remaining: ISSUE-1 (Node v12 PATH), ISSUE-3 (identity snapshots).",
   "instructions": [
     "Open this file when activating Codex as SwarmMind.",
     "Process pending items in priority order.",
