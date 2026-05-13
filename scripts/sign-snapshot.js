@@ -118,7 +118,7 @@ const signatureB64 = base64UrlEncode(signature);
 
 const jws = `${headerB64}.${payloadB64}.${signatureB64}`;
 
-await atomicWriteWithLease(SNAPSHOT_JWS_PATH, jws, 'archivist', 30000);
+await atomicWriteWithLease(SNAPSHOT_JWS_PATH, jws, 30000);
 
 console.log('\nSigned snapshot written to:', SNAPSHOT_JWS_PATH);
 console.log('JWS length:', jws.length, 'characters');

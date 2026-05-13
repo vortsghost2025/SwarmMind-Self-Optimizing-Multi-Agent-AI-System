@@ -30,7 +30,7 @@ function ensureParentDir(filePath) {
 
 async function writeWithLease(filePath, content, laneId, timeoutMs = 30000) {
   ensureParentDir(filePath);
-  return atomicWriteWithLease(filePath, content, laneId, timeoutMs);
+  return atomicWriteWithLease(filePath, content, timeoutMs);
 }
 
 async function moveFileWithLease(sourcePath, destPath, laneId, timeoutMs = 30000) {

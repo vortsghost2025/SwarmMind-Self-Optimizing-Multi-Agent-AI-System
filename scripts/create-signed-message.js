@@ -256,7 +256,7 @@ max_renewals: 3
 }
 guardWrite(signed, outboxPath, filename);
 // Atomic write with mandatory lease
-await atomicWriteWithLease(filePath, signed, laneId, 30000);
+await atomicWriteWithLease(filePath, signed, 30000);
 return { filePath, keyId: signed.key_id, filename };
 }
 
