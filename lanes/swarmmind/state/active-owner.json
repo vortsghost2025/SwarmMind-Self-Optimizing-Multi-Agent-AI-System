@@ -1,10 +1,10 @@
 {
-  "session_id": "sess_mp4873w4_1087349",
+  "session_id": "sess_mp2oybi7_1107559",
   "lane": "swarmmind",
-  "claimed_at": "2026-05-13T15:40:01.780Z",
-  "renewed_at": "2026-05-13T15:40:01.797Z",
-  "expires_at": "2026-05-13T15:55:01.797Z",
-  "pid": 1087349,
+  "claimed_at": "2026-05-12T13:53:32.863Z",
+  "renewed_at": "2026-05-13T15:44:00.737Z",
+  "expires_at": "2026-05-13T15:59:00.737Z",
+  "pid": 1107559,
   "origin_runtime": "kilo",
-  "origin_workspace": "/home/we4free"
+  "origin_workspace": "/home/we4free/agent/repos/SwarmMind"
 }
