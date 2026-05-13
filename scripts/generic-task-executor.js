@@ -35,10 +35,17 @@ const TRUTH_CRITICAL_PATH_MARKERS = [
 
 function nowIso() { return new Date().toISOString(); }
 function ensureDir(d) { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); }
+function translatePath(p) {
+  if (process.platform === 'win32') return p;
+  const sMatch = p.match(/^S:\/(.+)$/);
+  if (sMatch) return path.join(os.homedir(), 'agent', 'repos', sMatch[1]).replace(/\\/g, '/');
+  return p;
+}
 function isPathAllowed(normalized) {
+  const translated = translatePath(normalized.replace(/\\/g, '/'));
   const allowedRoots = Object.values(LANE_REGISTRY).map(r => r.root.replace(/\\/g, '/'));
   allowedRoots.push(os.tmpdir().replace(/\\/g, '/'));
-  return allowedRoots.some(ar => normalized.startsWith(ar));
+  return allowedRoots.some(ar => translated.startsWith(ar));
 }
 
 function safeReadJson(p) {
@@ -84,10 +91,15 @@ function executeFileReadTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const targetPath = body.match(/read\s+file\s+["']?([^"'\s]+)["']?/i)?.[1]
-    || body.match(/read\s+["']?([^"'\s]+)["']?/i)?.[1]
-    || body.match(/file[:=]\s*["']?([^"'\s]+)["']?/i)?.[1];
+  || body.match(/read\s+["']?([^"'\s]+)["']?/i)?.[1]
+  || body.match(/file[:=]\s*["']?([^"'\s]+)["']?/i)?.[1];
   if (!targetPath) {
     return { task_kind: 'report', results: { error: 'No file path specified. Use: "read file <path>" or "file: <path>"' }, summary: 'Error: no file path in task body' };
+  }
+  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
+  const normalized = resolved.replace(/\\/g, '/');
+  if (!isPathAllowed(normalized)) {
+    return { task_kind: 'report', results: { error: `Path outside allowed roots: ${resolved}` }, summary: 'Error: path outside allowed roots' };
   }
   const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath);
   const normalized = resolved.replace(/\\/g, '/');
