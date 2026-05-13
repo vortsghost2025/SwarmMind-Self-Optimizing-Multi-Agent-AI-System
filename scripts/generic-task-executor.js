@@ -436,7 +436,7 @@ function executeCountTask(msg, lane) {
   }
   const pattern = countMatch[1];
   const searchPath = countMatch[2] || '.';
-  const resolved = searchPath.startsWith('/') || searchPath.match(/^[A-Za-z]:/) ? searchPath : path.join(root, searchPath);
+  const resolved = searchPath.startsWith('/') || searchPath.match(/^[A-Za-z]:/) ? translatePath(searchPath.replace(/\\/g, '/')) : path.join(root, searchPath);
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Search path outside allowed roots: ${resolved}` }, summary: 'Error: search path outside allowed roots' };
