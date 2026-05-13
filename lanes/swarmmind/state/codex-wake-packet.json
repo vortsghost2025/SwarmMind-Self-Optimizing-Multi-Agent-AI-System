@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "lane": "swarmmind",
-  "generated_at": "2026-05-13T19:40:00Z",
+  "generated_at": "2026-05-13T20:15:00Z",
   "pending_count": 0,
   "pending": [],
   "resolved": [
@@ -39,15 +39,22 @@
       "title": "sync-gate-verify: kernel snapshot key_id mismatch",
       "status": "resolved",
       "resolution": "sync-gate-verify now reports 0 issues. Kernel snapshot key_id 2effb49ea02dff5b matches trust-store. The old mismatched key_id (d475d23aeed6c7b8) referenced in the previous wake packet was stale; kernel lane has since regenerated its snapshot.json with the current Ed25519 key. No handoff needed."
+    },
+    {
+      "id": "ISSUE-OUTBOX-ARTIFACT-EVAPORATION",
+      "priority": "P2",
+      "title": "Cycle reports written to outbox/ get deleted before archivist verification, causing recurring FILE_NOT_FOUND NACKs",
+      "status": "resolved",
+      "resolution": "Cycle reports now written to journal/ (persisted in git) with evidence_path pointing to journal/. Outbox is cleaned by housekeeping but journal persists. This cycle's report at lanes/swarmmind/journal/2026-05-13-cycle-report-5.json."
     }
   ],
-  "last_session_summary": "Cycle 20260513-194000: Health/observation cycle. All previously tracked issues now resolved. All tests pass: lane-worker 17/17, executor 64/64, sync-gate-verify PASS (0 issues). Trust store 4/4 lanes OK. System consistent, 0 contradictions. 1 informational blocked NACK in inbox (exempt_from_nack=true). Cycle report with OUTPUT_PROVENANCE written to outbox/cycle-report-20260513-194000.json.",
+  "last_session_summary": "Cycle 20260513-201000: Health/observation cycle. No actionable inbox. System consistent, 0 contradictions. All tests pass: lane-worker 17/17, executor 64/64, sync-gate-verify PASS (0 issues). Trust store 4/4 OK. 1 informational blocked NACK moved to processed. Identified and addressed outbox artifact evaporation pattern by writing cycle report to journal/ instead. Report at lanes/swarmmind/journal/2026-05-13-cycle-report-5.json.",
   "instructions": [
     "All issues resolved. No pending Codex-required work.",
-    "Cycle report at lanes/swarmmind/outbox/cycle-report-20260513-194000.json",
-    "1 blocked NACK in inbox (informational, exempt - no action needed)",
+    "Cycle report at lanes/swarmmind/journal/2026-05-13-cycle-report-5.json",
+    "No blocked items remaining in inbox",
     "Scheduled tasks may need PATH fix for Node v18 (system default still v12)",
-    "Next cycle: continue health observation or consider adding Node version guard to scheduled task scripts"
+    "Next cycle: consider adding Node version guard to scheduled task scripts or outbox retention logic"
   ],
   "packet_hash": ""
 }
