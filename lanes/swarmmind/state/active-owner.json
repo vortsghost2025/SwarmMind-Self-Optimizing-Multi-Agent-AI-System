@@ -2,8 +2,8 @@
   "session_id": "sess_mp2oybi7_1107559",
   "lane": "swarmmind",
   "claimed_at": "2026-05-12T13:53:32.863Z",
-  "renewed_at": "2026-05-13T23:07:26.211Z",
-  "expires_at": "2026-05-13T23:22:26.211Z",
+  "renewed_at": "2026-05-13T23:15:26.647Z",
+  "expires_at": "2026-05-13T23:30:26.647Z",
   "pid": 1107559,
   "origin_runtime": "kilo",
   "origin_workspace": "/home/we4free/agent/repos/SwarmMind"
