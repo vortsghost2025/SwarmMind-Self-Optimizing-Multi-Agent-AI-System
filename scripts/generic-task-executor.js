@@ -99,11 +99,6 @@ function executeFileReadTask(msg, lane) {
   const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
-    return { task_kind: 'report', results: { error: `Path outside allowed roots: ${resolved}` }, summary: 'Error: path outside allowed roots' };
-  }
-  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath);
-  const normalized = resolved.replace(/\\/g, '/');
-  if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Path outside allowed roots: ${resolved}` }, summary: `Error: path outside allowed roots` };
   }
   try {
