@@ -237,7 +237,7 @@ function executeWriteTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const writeMatch = body.match(/write\s+file\s+["']?([^"'\s]+)["']?\s*\n([\s\S]*)/i)
-    || body.match(/write\s+["']?([^"'\s]+)["']?\s*[:=]\s*\n?([\s\S]*)/i);
+  || body.match(/write\s+["']?([^"'\s]+)["']?\s*[:=]\s*\n?([\s\S]*)/i);
   if (!writeMatch) {
     return { task_kind: 'report', results: { error: 'No write target specified. Use: "write file <path>\\n<content>"' }, summary: 'Error: no write target in task body' };
   }
@@ -246,7 +246,7 @@ function executeWriteTask(msg, lane) {
   if (content.length > 10240) {
     return { task_kind: 'report', results: { error: `Content exceeds 10KB limit (${content.length} bytes). Write operations are bounded.` }, summary: 'Error: content too large for write' };
   }
-  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath);
+  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
   const normalized = resolved.replace(/\\/g, '/');
   if (!normalized.startsWith(root.replace(/\\/g, '/'))) {
     return { task_kind: 'report', results: { error: `Write target outside own lane root: ${resolved}. Writes only allowed within own lane.` }, summary: 'Error: write path outside own lane' };
@@ -310,13 +310,13 @@ function executeListDirTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const dirMatch = body.match(/list\s+(?:dir|directory|folder)\s+["']?([^"'\s]+)["']?/i)
-    || body.match(/ls\s+["']?([^"'\s]+)["']?/i)
-    || body.match(/list\s+["']?([^"'\s]+)["']?/i);
+  || body.match(/ls\s+["']?([^"'\s]+)["']?/i)
+  || body.match(/list\s+["']?([^"'\s]+)["']?/i);
   if (!dirMatch) {
     return { task_kind: 'report', results: { error: 'No directory specified. Use: "list dir <path>" or "ls <path>"' }, summary: 'Error: no directory in task body' };
   }
   const targetPath = dirMatch[1];
-  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath);
+  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Path outside allowed roots: ${resolved}` }, summary: 'Error: path outside allowed roots' };
@@ -345,13 +345,13 @@ function executeHashTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const hashMatch = body.match(/hash\s+(?:file\s+)?["']?([^"'\s]+)["']?/i)
-    || body.match(/sha(?:256)?\s+["']?([^"'\s]+)["']?/i)
-    || body.match(/checksum\s+["']?([^"'\s]+)["']?/i);
+  || body.match(/sha(?:256)?\s+["']?([^"'\s]+)["']?/i)
+  || body.match(/checksum\s+["']?([^"'\s]+)["']?/i);
   if (!hashMatch) {
     return { task_kind: 'report', results: { error: 'No file specified. Use: "hash file <path>" or "sha256 <path>"' }, summary: 'Error: no file in task body' };
   }
   const targetPath = hashMatch[1];
-  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath);
+  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Path outside allowed roots: ${resolved}` }, summary: 'Error: path outside allowed roots' };
@@ -384,7 +384,7 @@ function executeDiffTask(msg, lane) {
   const path1 = diffMatch[1];
   const path2 = diffMatch[2];
   const resolve = (p) => {
-    if (p.startsWith('/') || p.match(/^[A-Za-z]:/)) return p;
+    if (p.startsWith('/') || p.match(/^[A-Za-z]:/)) return translatePath(p.replace(/\\/g, '/'));
     return path.join(root, p);
   };
   const resolved1 = resolve(path1);
