@@ -229,3 +229,48 @@
 [2026-05-12T23:51:16.198Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
 [2026-05-12T23:51:16.199Z] [task-chain] No tasks in inbox — iteration 0 idle
 [2026-05-12T23:51:16.199Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-12T23:55:40.122Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-12T23:55:40.123Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-12T23:55:40.123Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:00:00.895Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:00:00.895Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:00:00.896Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:03:17.641Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:03:17.642Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:03:17.642Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:06:34.299Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:06:34.300Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:06:34.300Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:10:57.211Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:10:57.212Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:10:57.212Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:15:17.157Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:15:17.157Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:15:17.157Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:19:36.511Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:19:36.512Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:19:36.512Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:24:06.197Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:24:06.198Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:24:06.198Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:28:29.184Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:28:29.185Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:28:29.185Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:32:48.026Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:32:48.027Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:32:48.027Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:36:18.816Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:36:18.817Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:36:18.817Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:39:49.032Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:39:49.033Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:39:49.034Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:43:19.407Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:43:19.408Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:43:19.408Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:46:49.350Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:46:49.351Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:46:49.351Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
+[2026-05-13T00:50:12.337Z] [task-chain] Starting task-chain-engine run (lane=swarmmind, dry_run=false)
+[2026-05-13T00:50:12.338Z] [task-chain] No tasks in inbox — iteration 0 idle
+[2026-05-13T00:50:12.338Z] [task-chain] Run complete: iterations=1 processed=0 chains_active=0 chains_completed=0 followups=0
