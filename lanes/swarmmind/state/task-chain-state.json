@@ -1,5 +1,16 @@
 {
-  "active_chains": {},
+  "active_chains": {
+    "nack-1778695102161-ezyud4": {
+      "chain_id": "nack-1778695102161-ezyud4",
+      "origin_task": "nack-1778695102161-ezyud4",
+      "origin_priority": "P2",
+      "depth": 1,
+      "followups": [],
+      "started_at": "2026-05-13T17:58:23.421Z",
+      "last_task": "nack-1778695102161-ezyud4",
+      "last_updated": "2026-05-13T17:58:23.421Z"
+    }
+  },
   "completed_chains": [],
-  "last_run": "2026-05-13T17:53:44.788Z"
+  "last_run": "2026-05-13T17:58:23.422Z"
 }
