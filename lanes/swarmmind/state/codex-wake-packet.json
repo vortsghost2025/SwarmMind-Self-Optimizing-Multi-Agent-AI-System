@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "lane": "swarmmind",
-  "generated_at": "2026-05-13T17:25:00Z",
+  "generated_at": "2026-05-13T18:30:00Z",
   "pending_count": 1,
   "pending": [
     {
@@ -33,13 +33,20 @@
       "title": "Recurring NACKs: outbound messages rejected for OUTPUT_PROVENANCE_MISSING",
       "status": "resolved",
       "resolution": "Root cause: prior cycle reports did not include OUTPUT_PROVENANCE text header in body field. Fixed by prepending 'OUTPUT_PROVENANCE: agent: ... lane: ... target: ...' to body. Stale NACKs moved from blocked/ to processed/. Resubmitted cycle report with correct header and signed delivery."
+    },
+    {
+      "id": "ISSUE-ATOMIC-WRITE-BUG",
+      "priority": "P1",
+      "title": "atomicWriteWithLease called with 4 args (laneId as leaseTimeoutMs) causing NaN expiry and silent outbox write failures",
+      "status": "resolved",
+      "resolution": "Fixed 3 call sites: create-signed-message.js:259, lease-write.js:33, sign-snapshot.js:121. Removed laneId arg so leaseTimeoutMs receives the correct numeric value. Note: sign-outbox-message.js uses different atomic-write-util.js with 4-arg signature and was NOT affected."
     }
   ],
-  "last_session_summary": "Cycle 20260513-172000: Fixed NACK root cause (OUTPUT_PROVENANCE_MISSING in body), cleaned stale blocked/ NACKs to processed/, resubmitted signed cycle report with correct header. Found and noted atomicWriteWithLease parameter bug in create-signed-message.js (laneId passed where data expected). All tests pass: 17/17, 64/64. System consistent, 0 contradictions. 1 open issue: kernel key_id mismatch.",
+  "last_session_summary": "Cycle 20260513-182900: Fixed atomicWriteWithLease parameter bug across 3 scripts (create-signed-message.js, lease-write.js, sign-snapshot.js). The 3-arg util/atomic-write.js was being called with 4 args, passing laneId string as leaseTimeoutMs. All tests pass: 17/17, 64/64. Trust store verified. System consistent, 0 contradictions. 1 remaining open issue: kernel key_id mismatch (P2, needs handoff).",
   "instructions": [
     "Open this file when activating Codex as SwarmMind.",
     "Kernel key_id mismatch needs handoff to kernel lane or Archivist.",
-    "Atomic write bug in create-signed-message.js:259 — atomicWriteWithLease(filePath, signed, laneId, 30000) passes 4 args but function only takes (filePath, data, leaseTimeoutMs). This caused prior outbox writes to silently fail.",
+    "Verify signed outbox writes now succeed after the atomicWriteWithLease fix.",
     "Scheduled tasks may need PATH fix for Node v18.",
     "No actionable inbox items remain."
   ],
