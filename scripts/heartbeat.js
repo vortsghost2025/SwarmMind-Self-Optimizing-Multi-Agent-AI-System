@@ -1,5 +1,8 @@
 'use strict';
 
+const { checkNodeVersion } = require('./node-version-guard');
+checkNodeVersion();
+
 const fs = require('fs');
 const path = require('path');
 const { loadPolicy, assertWatcherConfig } = require('./concurrency-policy');
