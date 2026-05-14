@@ -10,12 +10,12 @@ const crypto = require('crypto');
 const { getLane } = require('./util/lane-discovery');
 
 const LANE = 'swarmmind';
-const ROOT = getLane('swarmmind').root;
+const ROOT = getLane('swarmmind').local_path;
 const INBOX = path.join(ROOT, 'lanes', LANE, 'inbox');
 const ACTION_REQUIRED = path.join(INBOX, 'action-required');
 const STATE_DIR = path.join(ROOT, 'lanes', LANE, 'state');
 const WAKE_PATH = path.join(STATE_DIR, 'codex-wake-packet.json');
-const ARCHIVIST_SIGNAL_DIR = path.join(getLane('archivist').root, 'lanes', 'archivist', 'inbox');
+const ARCHIVIST_SIGNAL_DIR = path.join(getLane('archivist').local_path, 'lanes', 'archivist', 'inbox');
 
 function nowIso() {
   return new Date().toISOString();
