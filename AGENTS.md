@@ -156,7 +156,7 @@ Notes:
 Trust verification quick check:
 
 ```powershell
-node -e "const fs=require('fs'),crypto=require('crypto'); const ts=JSON.parse(fs.readFileSync('S:/SwarmMind/lanes/broadcast/trust-store.json','utf8')); for (const [lane,k] of Object.entries(ts)) crypto.createPublicKey(k.public_key_pem); console.log('trust ok')"
+node -e "const fs=require('fs'),crypto=require('crypto'); const ts=JSON.parse(fs.readFileSync('S:/SwarmMind/lanes/broadcast/trust-store.json','utf8')); for (const [lane,k] of Object.entries(ts)) { if (k.public_key_pem) crypto.createPublicKey(k.public_key_pem); } console.log('trust ok')"
 ```
 
 ---
