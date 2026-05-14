@@ -1,18 +1,16 @@
 #!/usr/bin/env node
 'use strict';
 
-const { checkNodeVersion } = require('./node-version-guard');
-checkNodeVersion();
-
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
 const { getCodeVersionHash } = require('./code-version-hash');
-const { LaneDiscovery } = require('./util/lane-discovery');
+const { LaneDiscovery, sToLocal } = require('./util/lane-discovery');
+const { sanitizeFilename } = require('./util/sanitize-filename');
 const { ensureOutputProvenance, verifyOutputProvenance } = require('./output-provenance');
 
-const EXECUTOR_VERSION = '3.1.0';
+const EXECUTOR_VERSION = '3.2.0';
 const FEATURE_FLAGS = {
 v3_enabled: true,
 nlp_routing: true,
@@ -38,17 +36,16 @@ const TRUTH_CRITICAL_PATH_MARKERS = [
 
 function nowIso() { return new Date().toISOString(); }
 function ensureDir(d) { if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true }); }
-function translatePath(p) {
-  if (process.platform === 'win32') return p;
-  const sMatch = p.match(/^S:\/(.+)$/);
-  if (sMatch) return path.join(os.homedir(), 'agent', 'repos', sMatch[1]).replace(/\\/g, '/');
-  return p;
+function resolveLocalPath(p) {
+  if (!p) return p;
+  return sToLocal(p.replace(/\\/g, '/'));
 }
+
 function isPathAllowed(normalized) {
-  const translated = translatePath(normalized.replace(/\\/g, '/'));
+  const resolved = sToLocal(normalized.replace(/\\/g, '/'));
   const allowedRoots = Object.values(LANE_REGISTRY).map(r => r.root.replace(/\\/g, '/'));
   allowedRoots.push(os.tmpdir().replace(/\\/g, '/'));
-  return allowedRoots.some(ar => translated.startsWith(ar));
+  return allowedRoots.some(ar => resolved.startsWith(ar));
 }
 
 function safeReadJson(p) {
@@ -94,12 +91,12 @@ function executeFileReadTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const targetPath = body.match(/read\s+file\s+["']?([^"'\s]+)["']?/i)?.[1]
-  || body.match(/read\s+["']?([^"'\s]+)["']?/i)?.[1]
-  || body.match(/file[:=]\s*["']?([^"'\s]+)["']?/i)?.[1];
+    || body.match(/read\s+["']?([^"'\s]+)["']?/i)?.[1]
+    || body.match(/file[:=]\s*["']?([^"'\s]+)["']?/i)?.[1];
   if (!targetPath) {
     return { task_kind: 'report', results: { error: 'No file path specified. Use: "read file <path>" or "file: <path>"' }, summary: 'Error: no file path in task body' };
   }
-  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
+  const resolved = resolveLocalPath(targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath));
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Path outside allowed roots: ${resolved}` }, summary: `Error: path outside allowed roots` };
@@ -190,15 +187,15 @@ function executeGrepTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const grepMatch = body.match(/(?:grep\s+|search\s+(?:for\s+)?)["']([^"']+)["']\s+(?:in|path|file|dir)\s+["']?([^"'\s]+)["']?/i)
-  || body.match(/(?:grep\s+|search\s+(?:for\s+)?)["']([^"']+)["']/i)
-  || body.match(/find\s+["']([^"']+)["']\s+(?:in|path|file|dir)\s+["']?([^"'\s]+)["']?/i)
-  || body.match(/find\s+["']([^"']+)["']/i);
+    || body.match(/(?:grep\s+|search\s+(?:for\s+)?)["']([^"']+)["']/i)
+    || body.match(/find\s+["']([^"']+)["']\s+(?:in|path|file|dir)\s+["']?([^"'\s]+)["']?/i)
+    || body.match(/find\s+["']([^"']+)["']/i);
   if (!grepMatch) {
     return { task_kind: 'report', results: { error: 'No search pattern specified. Use: "grep \\"pattern\\" in <path>" or "search \\"pattern\\""' }, summary: 'Error: no search pattern in task body' };
   }
   const pattern = grepMatch[1];
   const searchPath = grepMatch[2] ? grepMatch[2] : '.';
-  const resolved = searchPath.startsWith('/') || searchPath.match(/^[A-Za-z]:/) ? translatePath(searchPath.replace(/\\/g, '/')) : path.join(root, searchPath);
+  const resolved = resolveLocalPath(searchPath.startsWith('/') || searchPath.match(/^[A-Za-z]:/) ? searchPath : path.join(root, searchPath));
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Search path outside allowed roots: ${resolved}` }, summary: 'Error: search path outside allowed roots' };
@@ -211,12 +208,7 @@ function executeGrepTask(msg, lane) {
       if (isWindows) {
         output = execSync(`findstr /s /n /i "${pattern.replace(/"/g, '')}" "${resolved}\\*.md" "${resolved}\\*.json" "${resolved}\\*.js" "${resolved}\\*.yaml" "${resolved}\\*.yml" "${resolved}\\*.txt"`, { cwd: root, timeout: 15000, encoding: 'utf8', maxBuffer: 30000 });
       } else {
-        const hasRg = (() => { try { execSync('which rg', { timeout: 3000, encoding: 'utf8' }); return true; } catch (_) { return false; } })();
-        if (hasRg) {
-          output = execSync(`rg --max-count 20 --max-filesize 1M -n "${pattern.replace(/"/g, '\\"')}" "${resolved}"`, { cwd: root, timeout: 15000, encoding: 'utf8', maxBuffer: 30000 });
-        } else {
-          output = execSync(`grep -rn "${pattern.replace(/"/g, '\\"')}" "${resolved}" 2>/dev/null | head -20`, { cwd: root, timeout: 15000, encoding: 'utf8', maxBuffer: 30000 });
-        }
+        output = execSync(`rg --max-count 20 --max-filesize 1M -n "${pattern.replace(/"/g, '\\"')}" "${resolved}"`, { cwd: root, timeout: 15000, encoding: 'utf8', maxBuffer: 30000 });
       }
     } catch (e) {
       if ((e.status === 1 && (e.stdout === '' || !e.stdout)) || (isWindows && (e.stdout || '').trim() === '')) {
@@ -235,7 +227,7 @@ function executeWriteTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const writeMatch = body.match(/write\s+file\s+["']?([^"'\s]+)["']?\s*\n([\s\S]*)/i)
-  || body.match(/write\s+["']?([^"'\s]+)["']?\s*[:=]\s*\n?([\s\S]*)/i);
+    || body.match(/write\s+["']?([^"'\s]+)["']?\s*[:=]\s*\n?([\s\S]*)/i);
   if (!writeMatch) {
     return { task_kind: 'report', results: { error: 'No write target specified. Use: "write file <path>\\n<content>"' }, summary: 'Error: no write target in task body' };
   }
@@ -244,7 +236,7 @@ function executeWriteTask(msg, lane) {
   if (content.length > 10240) {
     return { task_kind: 'report', results: { error: `Content exceeds 10KB limit (${content.length} bytes). Write operations are bounded.` }, summary: 'Error: content too large for write' };
   }
-  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
+  const resolved = resolveLocalPath(targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath));
   const normalized = resolved.replace(/\\/g, '/');
   if (!normalized.startsWith(root.replace(/\\/g, '/'))) {
     return { task_kind: 'report', results: { error: `Write target outside own lane root: ${resolved}. Writes only allowed within own lane.` }, summary: 'Error: write path outside own lane' };
@@ -254,6 +246,16 @@ function executeWriteTask(msg, lane) {
   if (forbidden.some(f => normalized.includes(f))) {
     return { task_kind: 'report', results: { error: `Write to governance/critical file blocked: ${targetPath}` }, summary: 'Error: write to protected file' };
   }
+
+  try {
+    const { isSharedScript, isSchemaFile } = require(path.join(root, 'scripts', 'edit-lease-manager.js'));
+    if (isSharedScript(targetPath) && lane !== 'archivist') {
+      return { task_kind: 'report', results: { error: `SHARED_SCRIPT_WRITE_BLOCKED: "${targetPath}" is a shared canonical script owned by archivist. Lane "${lane}" cannot write directly. Propose changes via convergence protocol (send proposal message to archivist inbox).` }, summary: 'Error: shared script write blocked — use convergence protocol' };
+    }
+    if (isSchemaFile(targetPath) && lane !== 'archivist') {
+      return { task_kind: 'report', results: { error: `SCHEMA_RATIFICATION_REQUIRED: "${targetPath}" is a schema/governance file. Changes require convergence protocol ratification. Send a proposal message to archivist inbox.` }, summary: 'Error: schema write blocked — ratification required' };
+    }
+  } catch (_) {}
   try {
     const lockCheck = acquireTruthCriticalLockIfNeeded(normalized, lane);
     if (!lockCheck.ok) {
@@ -308,13 +310,13 @@ function executeListDirTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const dirMatch = body.match(/list\s+(?:dir|directory|folder)\s+["']?([^"'\s]+)["']?/i)
-  || body.match(/ls\s+["']?([^"'\s]+)["']?/i)
-  || body.match(/list\s+["']?([^"'\s]+)["']?/i);
+    || body.match(/ls\s+["']?([^"'\s]+)["']?/i)
+    || body.match(/list\s+["']?([^"'\s]+)["']?/i);
   if (!dirMatch) {
     return { task_kind: 'report', results: { error: 'No directory specified. Use: "list dir <path>" or "ls <path>"' }, summary: 'Error: no directory in task body' };
   }
   const targetPath = dirMatch[1];
-  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
+  const resolved = resolveLocalPath(targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath));
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Path outside allowed roots: ${resolved}` }, summary: 'Error: path outside allowed roots' };
@@ -343,13 +345,13 @@ function executeHashTask(msg, lane) {
   const root = LANE_REGISTRY[lane].root;
   const body = (msg.body || '');
   const hashMatch = body.match(/hash\s+(?:file\s+)?["']?([^"'\s]+)["']?/i)
-  || body.match(/sha(?:256)?\s+["']?([^"'\s]+)["']?/i)
-  || body.match(/checksum\s+["']?([^"'\s]+)["']?/i);
+    || body.match(/sha(?:256)?\s+["']?([^"'\s]+)["']?/i)
+    || body.match(/checksum\s+["']?([^"'\s]+)["']?/i);
   if (!hashMatch) {
     return { task_kind: 'report', results: { error: 'No file specified. Use: "hash file <path>" or "sha256 <path>"' }, summary: 'Error: no file in task body' };
   }
   const targetPath = hashMatch[1];
-  const resolved = targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? translatePath(targetPath.replace(/\\/g, '/')) : path.join(root, targetPath);
+  const resolved = resolveLocalPath(targetPath.startsWith('/') || targetPath.match(/^[A-Za-z]:/) ? targetPath : path.join(root, targetPath));
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Path outside allowed roots: ${resolved}` }, summary: 'Error: path outside allowed roots' };
@@ -382,8 +384,7 @@ function executeDiffTask(msg, lane) {
   const path1 = diffMatch[1];
   const path2 = diffMatch[2];
   const resolve = (p) => {
-    if (p.startsWith('/') || p.match(/^[A-Za-z]:/)) return translatePath(p.replace(/\\/g, '/'));
-    return path.join(root, p);
+    return resolveLocalPath(p.startsWith('/') || p.match(/^[A-Za-z]:/) ? p : path.join(root, p));
   };
   const resolved1 = resolve(path1);
   const resolved2 = resolve(path2);
@@ -434,7 +435,7 @@ function executeCountTask(msg, lane) {
   }
   const pattern = countMatch[1];
   const searchPath = countMatch[2] || '.';
-  const resolved = searchPath.startsWith('/') || searchPath.match(/^[A-Za-z]:/) ? translatePath(searchPath.replace(/\\/g, '/')) : path.join(root, searchPath);
+  const resolved = resolveLocalPath(searchPath.startsWith('/') || searchPath.match(/^[A-Za-z]:/) ? searchPath : path.join(root, searchPath));
   const normalized = resolved.replace(/\\/g, '/');
   if (!isPathAllowed(normalized)) {
     return { task_kind: 'report', results: { error: `Search path outside allowed roots: ${resolved}` }, summary: 'Error: search path outside allowed roots' };
@@ -849,4 +850,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { GenericTaskExecutor, executeTask, createResponse, LANE_REGISTRY, NLP_ROUTES, isPathAllowed, EXECUTOR_VERSION, FEATURE_FLAGS };
+module.exports = { GenericTaskExecutor, executeTask, createResponse, LANE_REGISTRY, NLP_ROUTES, isPathAllowed, resolveLocalPath, EXECUTOR_VERSION, FEATURE_FLAGS };

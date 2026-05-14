@@ -1,8 +1,5 @@
 'use strict';
 
-const { checkNodeVersion } = require('./node-version-guard');
-checkNodeVersion();
-
 const fs = require('fs');
 const path = require('path');
 const { loadPolicy, assertWatcherConfig } = require('./concurrency-policy');
@@ -230,8 +227,9 @@ class Heartbeat {
       ...JSON.parse(baseMessage.body),
       identity_status: 'ratified'
     });
-  } catch (err) {
-    // Keys not available — emit unsigned diagnostic heartbeat (no fake JWS, no fake RS256)
+    } catch (err) {
+      console.error('[heartbeat] Signing failed for lane', this.config.laneName + ':', err.message, err.stack);
+      // Keys not available — emit unsigned diagnostic heartbeat (no fake JWS, no fake signature)
     message = {
       ...baseMessage,
       signature: null,

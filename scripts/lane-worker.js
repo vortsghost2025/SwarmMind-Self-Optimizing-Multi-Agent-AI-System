@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 'use strict';
 
-const { checkNodeVersion } = require('./node-version-guard');
-checkNodeVersion();
-
 const fs = require('fs');
 const path = require('path');
 
@@ -583,6 +580,17 @@ class LaneWorker {
     }
     if (!signatureResult.valid) {
       return { queue: 'blocked', reason: 'SIGNATURE_INVALID', detail: signatureResult.reason || 'Signature validation failed' };
+    }
+    // Law 5: Confidence Ratings Mandatory check
+    const confidence = msg && typeof msg === 'object' ? msg.confidence : null;
+    if (confidence === null || typeof confidence !== 'number' || confidence < 1 || confidence > 10 || !Number.isInteger(confidence)) {
+      return { queue: 'quarantine', reason: 'CONFIDENCE_REQUIRED', detail: 'Assessment must include confidence rating as integer between 1-10' };
+    }
+    if (confidence < 7) {
+      const investigation = msg && typeof msg === 'object' ? msg.investigation : null;
+      if (!investigation || typeof investigation !== 'string' || investigation.trim() === '') {
+        return { queue: 'blocked', reason: 'LOW_CONFIDENCE_NO_INVESTIGATION', detail: 'Assessment with confidence < 7 requires investigation evidence' };
+      }
     }
     if (!isEnglishOnly(msg)) {
       return { queue: 'quarantine', reason: 'FORMAT_VIOLATION_NON_ASCII', detail: 'Message contains non-ASCII content. Re-request in English per governance constraint.' };

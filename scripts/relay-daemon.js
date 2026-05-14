@@ -1,9 +1,6 @@
 #!/usr/bin/env node
 'use strict';
 
-const { checkNodeVersion } = require('./node-version-guard');
-checkNodeVersion();
-
 const fs = require('fs');
 const path = require('path');
 
@@ -286,14 +283,14 @@ async function runCli() {
         const out = result.outbound;
         const inc = result.incoming;
         const cx = result.cross_inbox;
-        if (out.delivered > 0 || inc.collected > 0 || cx.collected > 0) {
-          console.log(`[relay-daemon] lane=${lane} tick=${result.tick} outbound: delivered=${out.delivered} incoming: collected=${inc.collected} cross_inbox: collected=${cx.collected}`);
-        }
-      if (result.adjudication) {
-          const adj = result.adjudication;
-          const stats = adj.stats || {};
-          console.log(`[relay-daemon] adjudication: edges=${stats.total_edges || 0} contradicts=${stats.contradicts_edges || 0} adjudicated=${stats.adjudicated || 0}${adj.error ? ' ERROR=' + adj.error : ''}`);
-        }
+          if (out.delivered > 0 || inc.collected > 0 || cx.collected > 0) {
+            console.log(`[relay-daemon] lane=${lane} tick=${result.tick} outbound: delivered=${out.delivered} incoming: collected=${inc.collected} cross_inbox: collected=${cx.collected}`);
+          }
+          if (result.adjudication) {
+            const adj = result.adjudication;
+            const stats = adj.stats || {};
+            console.log(`[relay-daemon] adjudication: edges=${stats.total_edges || 0} contradicts=${stats.contradicts_edges || 0} adjudicated=${stats.adjudicated || 0}${adj.error ? ' ERROR=' + adj.error : ''}`);
+          }
       } catch (err) {
         console.error(`[relay-daemon] tick error: ${err.message}`);
       }
@@ -326,7 +323,7 @@ if (require.main === module) {
 // TaskChainEngine is NOT embedded in relay-daemon because it is a full inbox
 // processor that competes with lane-worker's own processing. Run it as a
 // standalone CLI from runner-v3.sh or a systemd timer instead:
-// node scripts/task-chain-engine.js --lane <lane> --apply
-// node scripts/task-chain-engine.js --lane swarmmind --apply --max-chain-depth 5
+//   node scripts/task-chain-engine.js --lane <lane> --apply
+//   node scripts/task-chain-engine.js --lane archivist --apply --max-chain-depth 5
 
 module.exports = { RelayDaemon, ALL_LANES };
