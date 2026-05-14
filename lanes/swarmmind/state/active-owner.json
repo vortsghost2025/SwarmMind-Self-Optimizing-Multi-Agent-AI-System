@@ -1,10 +1,10 @@
 {
-  "session_id": "sess_mp50rwzp_23257",
+  "session_id": "sess_mp50yc26_196890",
   "lane": "swarmmind",
-  "claimed_at": "2026-05-14T05:00:01.861Z",
-  "renewed_at": "2026-05-14T05:00:01.880Z",
-  "expires_at": "2026-05-14T05:15:01.880Z",
-  "pid": 23257,
+  "claimed_at": "2026-05-14T05:05:01.326Z",
+  "renewed_at": "2026-05-14T05:05:01.349Z",
+  "expires_at": "2026-05-14T05:20:01.349Z",
+  "pid": 196890,
   "origin_runtime": "kilo",
   "origin_workspace": "/home/we4free"
 }
