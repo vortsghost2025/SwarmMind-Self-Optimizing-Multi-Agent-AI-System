@@ -8,6 +8,15 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LANE_ROOT="$(dirname "$SCRIPT_DIR")"
 LOG_FILE="${LOG_FILE:-$SCRIPT_DIR/inbox-watcher.log}"
+
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+if [[ -s "$NVM_DIR/nvm.sh" ]]; then
+  source "$NVM_DIR/nvm.sh"
+fi
+NVMRC="$LANE_ROOT/.nvmrc"
+if [[ -f "$NVMRC" ]]; then
+  nvm use "$(cat "$NVMRC")" >/dev/null 2>&1 || true
+fi
 NODE_EXE="${NODE_EXE:-$(which node)}"
 SKIP_EXECUTOR="${SKIP_EXECUTOR:-0}"
 LANES="${LANES:-swarmmind}"

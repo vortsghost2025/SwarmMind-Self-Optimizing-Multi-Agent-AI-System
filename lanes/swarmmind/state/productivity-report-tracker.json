@@ -1,43 +1,16 @@
 {
   "previous_requests": [
-    {
-      "request_id": "637a8443-8416-4d69-b6bd-b1d7a816ea75",
-      "description": "Awaiting CONTRADICTS edge evidence for 5 nodes (SwarmMind-assigned contradiction nodes)",
-      "category": "knowledge_gaps",
-      "impact": "medium",
-      "requested_at": "2026-04-30T13:33:34.438Z",
-      "status": "pending",
-      "lane": "swarmmind"
-    },
-    {
-      "request_id": "248d0996-feaf-44e3-9358-fb46ca3344eb",
-      "description": "0 blocked, 8 quarantined files need attention",
-      "category": "incoming_messages",
-      "impact": "medium",
-      "requested_at": "2026-05-02T13:00:04.140Z",
-      "status": "resolved",
-      "lane": "swarmmind",
-      "resolved_at": "2026-05-03T13:00:02.277Z"
-    },
-    {
-      "request_id": "0a749317-097e-4c27-b86a-44b10aeacef6",
-      "description": "0 blocked, 9 quarantined files need attention",
-      "category": "incoming_messages",
-      "impact": "medium",
-      "requested_at": "2026-05-03T13:00:02.277Z",
-      "status": "resolved",
-      "lane": "swarmmind",
-      "resolved_at": "2026-05-04T13:00:02.319Z"
-    },
-    {
-      "request_id": "acd84213-ea5e-47b9-930a-61ccba3ada33",
-      "description": "4 blocked, 1 quarantined files need attention",
-      "category": "incoming_messages",
-      "impact": "medium",
-      "requested_at": "2026-05-09T13:00:05.127Z",
-      "status": "pending",
-      "lane": "swarmmind"
-    }
+{
+  "request_id": "acd84213-ea5e-47b9-930a-61ccba3ada33",
+  "description": "4 blocked, 1 quarantined files need attention",
+  "category": "incoming_messages",
+  "impact": "medium",
+  "requested_at": "2026-05-09T13:00:05.127Z",
+  "status": "resolved",
+  "lane": "swarmmind",
+  "resolved_at": "2026-05-14T08:00:00.000Z",
+  "resolution": "Stale entry: current state is 0 blocked, 0 quarantined. Items were cleared by prior cycle processing."
+}
   ],
   "last_report_date": "2026-05-11T13:00:02.526Z",
   "report_cycle": 15
