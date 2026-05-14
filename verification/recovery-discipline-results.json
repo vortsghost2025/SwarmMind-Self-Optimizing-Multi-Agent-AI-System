@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-05-14T06:54:00.000Z",
+  "generated_by": "swarmmind-kilo-cycle-14",
+  "lane": "swarmmind",
+  "recoveries": {
+    "ISSUE-1": {
+      "title": "Default Node.js v12.22.9 breaks scripts",
+      "status": "resolved",
+      "resolution": "Added .nvmrc pinning Node 18 (now v20). nvm default aligned.",
+      "verified": true
+    },
+    "ISSUE-3-SWARMIND": {
+      "title": "sync-gate-verify: SwarmMind snapshot.json missing",
+      "status": "resolved",
+      "resolution": "Created .identity/snapshot.json with key_id c707d41a7bb96d96",
+      "verified": true
+    },
+    "ISSUE-NACK-RECUR": {
+      "title": "Recurring NACKs for OUTPUT_PROVENANCE_MISSING",
+      "status": "resolved",
+      "resolution": "All reports now include OUTPUT_PROVENANCE header",
+      "verified": true
+    },
+    "ISSUE-ATOMIC-WRITE-BUG": {
+      "title": "atomicWriteWithLease 4-arg bug causing NaN expiry",
+      "status": "resolved",
+      "resolution": "Fixed 3 call sites to remove extra laneId arg",
+      "verified": true
+    },
+    "ISSUE-3-KERNEL": {
+      "title": "sync-gate-verify: kernel snapshot key_id mismatch",
+      "status": "resolved",
+      "resolution": "Kernel regenerated snapshot.json with current key",
+      "verified": true
+    },
+    "ISSUE-OUTBOX-ARTIFACT-EVAPORATION": {
+      "title": "Cycle reports deleted before archivist verification",
+      "status": "resolved",
+      "resolution": "Reports now written to journal/ instead of outbox/",
+      "verified": true
+    }
+  },
+  "convergence_gate": {
+    "claim": "6 historical issues resolved and verified. No open recovery items.",
+    "evidence": "verification/recovery-discipline-results.json",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  }
+}

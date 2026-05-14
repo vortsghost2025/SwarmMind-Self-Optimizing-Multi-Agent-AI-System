@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-05-14T06:54:00.000Z",
+  "generated_by": "swarmmind-kilo-cycle-14",
+  "lane": "swarmmind",
+  "drills": {
+    "atomic_write_fix": {
+      "description": "atomicWriteWithLease 4-arg bug fixed in create-signed-message.js, lease-write.js, sign-snapshot.js",
+      "status": "resolved",
+      "verified": true
+    },
+    "output_provenance_compliance": {
+      "description": "All outbound messages now include OUTPUT_PROVENANCE header per contract",
+      "status": "compliant",
+      "verified": true
+    },
+    "outbox_evaporation": {
+      "description": "Cycle reports written to journal/ (git-persisted) instead of outbox/ (ephemeral)",
+      "status": "resolved",
+      "verified": true
+    },
+    "nvmrc_alignment": {
+      "description": "nvm default aligned to v20 matching .nvmrc",
+      "status": "resolved",
+      "verified": true
+    }
+  },
+  "convergence_gate": {
+    "claim": "4 hardening drills verified: atomic-write fix, output provenance, outbox evaporation, nvmrc alignment.",
+    "evidence": "verification/hardening-drill-results.json",
+    "verified_by": "swarmmind",
+    "contradictions": [],
+    "status": "proven"
+  }
+}
