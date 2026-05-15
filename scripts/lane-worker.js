@@ -578,10 +578,21 @@ class LaneWorker {
     if (!schemaResult.valid) {
       return { queue: 'quarantine', reason: 'SCHEMA_INVALID', detail: schemaResult.errors.join('; ') };
     }
-  if (!signatureResult.valid) {
-    return { queue: 'blocked', reason: 'SIGNATURE_INVALID', detail: signatureResult.reason || 'Signature validation failed' };
-  }
-  if (!isEnglishOnly(msg)) {
+    if (!signatureResult.valid) {
+      return { queue: 'blocked', reason: 'SIGNATURE_INVALID', detail: signatureResult.reason || 'Signature validation failed' };
+    }
+    // Law 5: Confidence Ratings Mandatory check
+    const confidence = msg && typeof msg === 'object' ? msg.confidence : null;
+    if (confidence === null || typeof confidence !== 'number' || confidence < 1 || confidence > 10 || !Number.isInteger(confidence)) {
+      return { queue: 'quarantine', reason: 'CONFIDENCE_REQUIRED', detail: 'Assessment must include confidence rating as integer between 1-10' };
+    }
+    if (confidence < 7) {
+      const investigation = msg && typeof msg === 'object' ? msg.investigation : null;
+      if (!investigation || typeof investigation !== 'string' || investigation.trim() === '') {
+        return { queue: 'blocked', reason: 'LOW_CONFIDENCE_NO_INVESTIGATION', detail: 'Assessment with confidence < 7 requires investigation evidence' };
+      }
+    }
+    if (!isEnglishOnly(msg)) {
       return { queue: 'quarantine', reason: 'FORMAT_VIOLATION_NON_ASCII', detail: 'Message contains non-ASCII content. Re-request in English per governance constraint.' };
     }
 
@@ -648,27 +659,10 @@ class LaneWorker {
         detail: gate.detail,
         ownership,
         ownership_notes: ownershipNotes
-    };
-  }
-
-  // Law 5: Confidence Ratings Mandatory check
-  // Applies only to messages making an assessment claim (responses, reports, status with completion proof).
-  // Does NOT apply to: actionable tasks (routed above), terminal informational messages (acks, status without proof).
-  const _isAssessment = !isActionable(msg) && (cp.hasCompletionProof(msg) || !cp.isTerminalInformational(msg));
-  if (_isAssessment) {
-    const confidence = msg && typeof msg === 'object' ? msg.confidence : null;
-    if (confidence === null || typeof confidence !== 'number' || confidence < 1 || confidence > 10 || !Number.isInteger(confidence)) {
-      return { queue: 'quarantine', reason: 'CONFIDENCE_REQUIRED', detail: 'Assessment must include confidence rating as integer between 1-10' };
+      };
     }
-    if (confidence < 7) {
-      const investigation = msg && typeof msg === 'object' ? msg.investigation : null;
-      if (!investigation || typeof investigation !== 'string' || investigation.trim() === '') {
-        return { queue: 'blocked', reason: 'LOW_CONFIDENCE_NO_INVESTIGATION', detail: 'Assessment with confidence < 7 requires investigation evidence' };
-      }
-    }
-  }
 
-  if (!gate.pass) {
+    if (!gate.pass) {
       return { queue: 'blocked', reason: gate.reason, detail: gate.detail, ownership, ownership_notes: ownershipNotes };
     }
 
