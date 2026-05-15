@@ -48,6 +48,11 @@ function buildCanonicalMessage({
     verified_by: null,
     verified_at: null
   },
+  evidence_exchange = {
+    artifact_path: null,
+    artifact_type: null,
+    delivered_at: null
+  },
   heartbeat = {
     status: 'pending',
     last_heartbeat_at: null,
@@ -55,6 +60,8 @@ function buildCanonicalMessage({
     timeout_seconds: 900
   },
   convergence_gate = null,
+  confidence = 8,
+  investigation = null,
   timestamp = new Date().toISOString(),
   idempotency_key = null
 }) {
@@ -73,6 +80,7 @@ function buildCanonicalMessage({
     payload,
     execution,
     evidence,
+    evidence_exchange,
     heartbeat,
     convergence_gate: convergence_gate || {
       claim: null,
@@ -80,7 +88,9 @@ function buildCanonicalMessage({
       verified_by: null,
       contradictions: [],
       status: 'unproven'
-    }
+    },
+    confidence,
+    investigation
   };
 
   return message;
