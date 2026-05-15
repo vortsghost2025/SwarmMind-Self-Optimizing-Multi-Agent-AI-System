@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const { checkNodeVersion } = require('./node-version-guard');
-checkNodeVersion();
+require('./node-version-guard').check();
 
 const fs = require('fs');
 const path = require('path');

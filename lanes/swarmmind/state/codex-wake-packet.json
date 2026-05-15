@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "lane": "swarmmind",
-  "generated_at": "2026-05-15T01:39:24Z",
+  "generated_at": "2026-05-15T02:31:00Z",
   "pending_count": 1,
   "pending": [
     {
@@ -63,14 +63,21 @@
       "resolution": "Repositioned confidence gate after actionable routing with _isAssessment scope check. Only assessment messages (non-actionable with completion proof or non-terminal-informational) require confidence rating. 6 previously failing tests now pass (17/17)."
     },
     {
-      "id": "ISSUE-NACK-TASK-KIND",
+      "id": "ISSUE-CONFIDENCE-GATE-RE-REGRESSION",
+    "priority": "P1",
+    "title": "Lane-worker confidence gate re-regression: unscoped check re-added before actionable routing",
+    "status": "resolved",
+    "resolution": "Cycle 13: Removed duplicate unscoped confidence check that was re-introduced at line ~584 before actionable routing. Scoped check at line ~654 retained. 17/17 tests pass."
+  },
+  {
+    "id": "ISSUE-NACK-TASK-KIND",
       "priority": "P2",
       "title": "Outbound handoffs NACK'd for invalid task_kind=drift_remediation",
       "status": "resolved",
       "resolution": "Resubmitted library handoff with task_kind=handoff (valid value). Stale NACKs moved to processed/."
     }
   ],
-  "last_session_summary": "Cycle 12 (20260515-013924): Fixed lane-worker confidence gate regression (6 test failures). Moved 4 stale quarantine/blocked items to processed. Created corrected library handoff for missing snapshot.json. All tests pass (17/17 + 64/64). sync-gate-verify: 1 issue (library SNAPSHOT_MISSING). Report at lanes/swarmmind/journal/cycle-report-2026-05-15T01-39-24Z.json.",
+  "last_session_summary": "Cycle 13 (20260515-023100): Fixed confidence gate re-regression (unscoped check re-added before actionable routing, causing 6 test failures). Removed duplicate unscoped check, kept scoped check after actionable routing. 17/17 + 64/64 pass. Processed 2 quarantine items. Report at lanes/swarmmind/journal/cycle-report-2026-05-15T02-31-00Z.json.",
   "instructions": [
     "Commit lane-worker.js fix and sync to other lanes",
     "Monitor library lane for snapshot.json resolution",
