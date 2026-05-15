@@ -1,159 +1,166 @@
+#!/usr/bin/env node
+'use strict';
 /**
- * Atomic Write Utility (SwarmMind Local Copy)
- * ORIGIN: kernel-lane/scripts/atomic-write-util.js
- * PURPOSE: Sovereign implementation for SwarmMind autonomy
- * DATE: 2026-05-02
- * 
- * Note: This is a local copy to maintain lane sovereignty.
- * Updates to the canonical version should be propagated to all lanes.
+ * LOCAL ATOMIC WRITE UTILITY
+ * ORIGIN: S:/kernel-lane/scripts/atomic-write-util.js
+ * LOCALIZED: Archivist (2026-05-02)
+ * PURPOSE: Local implementation to avoid cross-lane require() from kernel-lane
  */
 
-const fs = require('fs').promises;
-const fsSync = require('fs');
+const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
-/**
- * Atomically write JSON with lease protection
- * Prevents race conditions in multi-process environments
- */
-async function atomicWriteJson(filePath, data, leaseId = null) {
-  const dir = path.dirname(filePath);
-  const tempFile = path.join(dir, `.${path.basename(filePath)}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`);
-  
+const IS_WINDOWS = os.platform() === 'win32';
+const DEFAULT_TIMEOUT_MS = 30000;
+const LOCK_EXTENSION = '.lease';
+
+function readLockFile(lockPath) {
   try {
-    // Ensure directory exists
-    await fs.mkdir(dir, { recursive: true });
-    
-    // Write to temp file first
-    await fs.writeFile(tempFile, JSON.stringify(data, null, 2), 'utf8');
-    
-    // Verify write succeeded
-    const verify = JSON.parse(await fs.readFile(tempFile, 'utf8'));
-    if (!verify) {
-      throw new Error('Write verification failed');
-    }
-    
-    // Atomic rename (on same filesystem)
-    await fs.rename(tempFile, filePath);
-    
-    return { success: true, path: filePath, leaseId };
-  } catch (error) {
-    // Cleanup temp file on error
-    try {
-      await fs.unlink(tempFile);
-    } catch (e) {
-      // Ignore cleanup errors
-    }
-    
-    return { 
-      success: false, 
-      path: filePath, 
-      error: error.message,
-      leaseId 
-    };
+    const raw = fs.readFileSync(lockPath, 'utf8');
+    return JSON.parse(raw);
+  } catch (_) {
+    return null;
   }
 }
 
-/**
- * Synchronous atomic write (for initialization scripts)
- */
-function atomicWriteJsonSync(filePath, data, leaseId = null) {
-  const dir = path.dirname(filePath);
-  const tempFile = path.join(dir, `.${path.basename(filePath)}.tmp.${Date.now()}.${Math.random().toString(36).substr(2, 9)}`);
-  
-  try {
-    fsSync.mkdirSync(dir, { recursive: true });
-    fsSync.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf8');
-    
-    // Verify
-    const verify = JSON.parse(fsSync.readFileSync(tempFile, 'utf8'));
-    if (!verify) {
-      throw new Error('Write verification failed');
+function isLockStale(lock, now, timeoutMs) {
+  if (!lock || !lock.acquired_at) return true;
+  const acquiredAt = new Date(lock.acquired_at).getTime();
+  if (Number.isNaN(acquiredAt)) return true;
+  return (now - acquiredAt) > timeoutMs;
+}
+
+function tryAcquireLock(filePath, laneId, timeoutMs) {
+  const lockPath = filePath + LOCK_EXTENSION;
+  const now = Date.now();
+
+  if (fs.existsSync(lockPath)) {
+    const existing = readLockFile(lockPath);
+    if (!isLockStale(existing, now, timeoutMs)) {
+      if (existing.owner === laneId) {
+        return true;
+      }
+      return false;
     }
-    
-    fsSync.renameSync(tempFile, filePath);
-    
-    return { success: true, path: filePath, leaseId };
-  } catch (error) {
-    try {
-      fsSync.unlinkSync(tempFile);
-    } catch (e) {}
-    
-    return { 
-      success: false, 
-      path: filePath, 
-      error: error.message,
-      leaseId 
-    };
+    try { fs.unlinkSync(lockPath); } catch (_) {}
+  }
+
+  const lockData = {
+    owner: laneId,
+    acquired_at: new Date(now).toISOString(),
+    expiry_ms: timeoutMs,
+    target: filePath,
+    hostname: os.hostname(),
+    pid: process.pid
+  };
+
+  const tmpLock = lockPath + '.tmp';
+  fs.writeFileSync(tmpLock, JSON.stringify(lockData, null, 2), 'utf8');
+
+  try {
+    fs.renameSync(tmpLock, lockPath);
+    return true;
+  } catch (_) {
+    try { fs.unlinkSync(tmpLock); } catch (_2) {}
+    return false;
   }
 }
 
-/**
- * Atomic write with lease protection
- * Returns error if lease is held by another process
- */
-async function atomicWriteWithLease(filePath, data, leaseTimeoutMs = 900000) {
-  const leaseFile = `${filePath}.lease`;
-  
-  try {
-    // Check for existing lease
-    let existingLease = null;
-    try {
-      const leaseData = await fs.readFile(leaseFile, 'utf8');
-      existingLease = JSON.parse(leaseData);
-    } catch (e) {
-      // No existing lease, proceed
-    }
-    
-    // If lease exists and is recent, reject
-    if (existingLease && existingLease.expiresAt > Date.now()) {
-      return {
-        success: false,
-        error: 'Lease held by another process',
-        lease: existingLease
-      };
-    }
-    
-    // Acquire new lease
-    const newLease = {
-      processId: process.pid,
-      timestamp: Date.now(),
-      expiresAt: Date.now() + leaseTimeoutMs,
-      filePath
-    };
-    
-    await fs.writeFile(leaseFile, JSON.stringify(newLease, null, 2), 'utf8');
-    
-    // Perform atomic write
-    const result = await atomicWriteJson(filePath, data);
-    
-    // Release lease
-    try {
-      await fs.unlink(leaseFile);
-    } catch (e) {}
-    
-    return result;
-  } catch (error) {
-    // Release lease on error
-    try {
-      await fs.unlink(leaseFile);
-    } catch (e) {}
-    
-    return { 
-      success: false, 
-      error: error.message 
-    };
-  }
+function releaseLock(filePath) {
+  const lockPath = filePath + LOCK_EXTENSION;
+  try { fs.unlinkSync(lockPath); } catch (_) {}
 }
 
-module.exports = {
-  atomicWriteJson,
-  atomicWriteJsonSync,
-  atomicWriteWithLease
-};
+async function atomicWriteWithLease(filePath, content, laneId, timeoutMs) {
+  const effectiveTimeout = typeof timeoutMs === 'number' && timeoutMs > 0 ? timeoutMs : DEFAULT_TIMEOUT_MS;
+  const effectiveLane = laneId || 'unknown';
+  const startTime = Date.now();
+  const maxWait = effectiveTimeout + 5000;
+  const retryInterval = 200;
+  const MAX_RETRIES = 10;
+
+  let attempt = 0;
+  while (Date.now() - startTime < maxWait && attempt < MAX_RETRIES) {
+    attempt++;
+    const acquired = tryAcquireLock(filePath, effectiveLane, effectiveTimeout);
+    if (acquired) {
+      const tmpPath = filePath + '.tmp.' + process.pid;
+      try {
+        if (IS_WINDOWS) {
+          const fd = fs.openSync(tmpPath, 'wx');
+          try {
+            if (Buffer.isBuffer(content)) {
+              fs.writeSync(fd, content);
+            } else {
+              fs.writeSync(fd, content, 'utf8');
+            }
+            fs.fsyncSync(fd);
+          } finally {
+            fs.closeSync(fd);
+          }
+
+          try {
+            fs.renameSync(tmpPath, filePath);
+          } catch (renameErr) {
+            fs.copyFileSync(tmpPath, filePath);
+            fs.unlinkSync(tmpPath);
+          }
+        } else {
+          const fd = fs.openSync(tmpPath, 'wx');
+          try {
+            if (Buffer.isBuffer(content)) {
+              fs.writeSync(fd, content);
+            } else {
+              fs.writeSync(fd, content, 'utf8');
+            }
+            fs.fsyncSync(fd);
+          } finally {
+            fs.closeSync(fd);
+          }
+          fs.renameSync(tmpPath, filePath);
+        }
+
+        const verifyContent = fs.readFileSync(filePath, 'utf8');
+        if (verifyContent !== content && !Buffer.isBuffer(content) &&
+          !Buffer.from(verifyContent).equals(Buffer.from(content))) {
+          throw new Error('Write verification failed - content mismatch');
+        }
+
+        return { written: true, laneId: effectiveLane, timeoutMs: effectiveTimeout, attempt };
+      } catch (writeErr) {
+        try {
+          if (fs.existsSync(tmpPath)) {
+            fs.unlinkSync(tmpPath);
+          }
+        } catch (_) {}
+
+        if (attempt >= MAX_RETRIES) {
+          throw writeErr;
+        }
+
+        await new Promise(r => setTimeout(r, retryInterval * attempt));
+      } finally {
+        releaseLock(filePath);
+      }
+    }
+
+    await new Promise(r => setTimeout(r, retryInterval * attempt));
+  }
+
+  const lockPath = filePath + LOCK_EXTENSION;
+  const existing = readLockFile(lockPath);
+  const owner = existing ? existing.owner : 'unknown';
+  throw new Error(
+    `Lease acquisition timed out after ${attempt} attempts for ${filePath}. ` +
+    `Current lock owner: ${owner}, waited ${Date.now() - startTime}ms`
+  );
+}
+
+module.exports = { atomicWriteWithLease, tryAcquireLock, releaseLock, isLockStale, IS_WINDOWS };
 
 /**
- * ORIGIN NOTE: Adapted from kernel-lane/scripts/atomic-write-util.js
- * LOCAL COPY FOR SWARMMIND LANE SOVEREIGNTY
+ * ORIGIN NOTE: Adapted from S:/kernel-lane/scripts/atomic-write-util.js
+ * LOCAL COPY FOR ARCHIVIST LANE SOVEREIGNTY
  * Last sync: 2026-05-02
  */
