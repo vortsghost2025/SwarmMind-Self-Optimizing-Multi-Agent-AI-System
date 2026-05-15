@@ -305,14 +305,13 @@ function createMessage(template = {}) {
       },
       ...template.watcher,
     },
-  delivery_verification: {
-    verified: false,
-    verified_at: null,
-    retries: 0,
-    // NOTE: template.delivery_verification is NOT spread here.
-    // Bug 3 fix: caller cannot override verified=true during construction.
-    // Only deliverMessage() can set verified=true after validating + writing.
-  },
+    delivery_verification: {
+      verified: false,
+      verified_at: null,
+      retries: 0,
+    },
+    confidence: template.confidence !== undefined ? template.confidence : 8,
+    investigation: template.investigation || null,
   };
 
   const message = normalizeMessageForSchema({ ...defaults, ...template });

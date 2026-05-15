@@ -151,6 +151,7 @@ function writeArchivistSignal(packet) {
       contradictions: [],
       status: 'proven',
     },
+    confidence: 9,
   };
   const signalPath = path.join(ARCHIVIST_SIGNAL_DIR, 'swarmmind-codex-wake-pending.json');
   fs.writeFileSync(signalPath, JSON.stringify(signal, null, 2) + '\n', 'utf8');

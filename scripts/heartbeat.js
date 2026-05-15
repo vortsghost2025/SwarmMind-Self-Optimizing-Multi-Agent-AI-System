@@ -204,12 +204,18 @@ class Heartbeat {
       verified_by: null,
       verified_at: null
     },
+    evidence_exchange: {
+      artifact_path: null,
+      artifact_type: null,
+      delivered_at: null
+    },
     heartbeat: {
       interval_seconds: this.config.intervalSeconds,
       last_heartbeat_at: now.toISOString(),
       timeout_seconds: this.config.staleAfterSeconds,
       status: heartbeatStatus
     },
+    confidence: 9,
     system_state: systemState,
     active_contradictions: activeContradictions,
     processed_ok: processedOk,

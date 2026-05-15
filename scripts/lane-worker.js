@@ -208,6 +208,7 @@ function sendNack(originalMsg, rejectionReason, rejectionDetail, targetLane, fro
     evidence: { required: false, verified: false },
     evidence_exchange: {},
     heartbeat: { status: 'done', last_heartbeat_at: nowIso() },
+    confidence: 10,
     nack_for_task_id: originalMsg.task_id || null,
     nack_reason: rejectionReason,
     nack_detail: rejectionDetail || null,
