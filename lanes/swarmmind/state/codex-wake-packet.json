@@ -1,88 +1,14 @@
 {
   "schema_version": "1.0",
   "lane": "swarmmind",
-  "generated_at": "2026-05-15T02:31:00Z",
-  "pending_count": 1,
-  "pending": [
-    {
-      "id": "ISSUE-LIBRARY-SNAPSHOT",
-      "priority": "P2",
-      "title": "sync-gate-verify: library snapshot.json missing",
-      "status": "open",
-      "resolution": "Handoff delivered to library action-required with task_kind=handoff. Awaiting library lane action."
-    }
-  ],
-  "resolved": [
-    {
-      "id": "ISSUE-1",
-      "priority": "P1",
-      "title": "Default Node.js v12.22.9 breaks scripts using ?? and ?. syntax",
-      "status": "resolved",
-      "resolution": "Added .nvmrc pinning Node 18. Current shell uses v18.20.8 via nvm. System default remains v12 but nvm-managed v18 is functional. Scheduled tasks may still use system default."
-    },
-    {
-      "id": "ISSUE-3-SWARMIND",
-      "priority": "P2",
-      "title": "sync-gate-verify: SwarmMind snapshot.json missing",
-      "status": "resolved",
-      "resolution": "Created .identity/snapshot.json with key_id c707d41a7bb96d96 matching trust-store. sync-gate-verify now reports 0 issues for SwarmMind."
-    },
-    {
-      "id": "ISSUE-NACK-RECUR",
-      "priority": "P1",
-      "title": "Recurring NACKs: outbound messages rejected for OUTPUT_PROVENANCE_MISSING",
-      "status": "resolved",
-      "resolution": "Root cause: prior cycle reports did not include OUTPUT_PROVENANCE text header in body field. Fixed by prepending OUTPUT_PROVENANCE header to body."
-    },
-    {
-      "id": "ISSUE-ATOMIC-WRITE-BUG",
-      "priority": "P1",
-      "title": "atomicWriteWithLease called with 4 args (laneId as leaseTimeoutMs) causing NaN expiry and silent outbox write failures",
-      "status": "resolved",
-      "resolution": "Fixed 3 call sites. Removed laneId arg so leaseTimeoutMs receives correct numeric value."
-    },
-    {
-      "id": "ISSUE-3-KERNEL",
-      "priority": "P2",
-      "title": "sync-gate-verify: kernel snapshot key_id mismatch",
-      "status": "resolved",
-      "resolution": "sync-gate-verify now reports 0 issues. Kernel snapshot key_id matches trust-store."
-    },
-    {
-      "id": "ISSUE-OUTBOX-ARTIFACT-EVAPORATION",
-      "priority": "P2",
-      "title": "Cycle reports written to outbox/ get deleted before archivist verification",
-      "status": "resolved",
-      "resolution": "Cycle reports now written to journal/ (persisted in git). Outbox is cleaned by housekeeping but journal persists."
-    },
-    {
-      "id": "ISSUE-CONFIDENCE-GATE-REGRESSION",
-      "priority": "P1",
-      "title": "Lane-worker confidence gate blocks actionable tasks and terminal informational messages",
-      "status": "resolved",
-      "resolution": "Repositioned confidence gate after actionable routing with _isAssessment scope check. Only assessment messages (non-actionable with completion proof or non-terminal-informational) require confidence rating. 6 previously failing tests now pass (17/17)."
-    },
-    {
-      "id": "ISSUE-CONFIDENCE-GATE-RE-REGRESSION",
-    "priority": "P1",
-    "title": "Lane-worker confidence gate re-regression: unscoped check re-added before actionable routing",
-    "status": "resolved",
-    "resolution": "Cycle 13: Removed duplicate unscoped confidence check that was re-introduced at line ~584 before actionable routing. Scoped check at line ~654 retained. 17/17 tests pass."
-  },
-  {
-    "id": "ISSUE-NACK-TASK-KIND",
-      "priority": "P2",
-      "title": "Outbound handoffs NACK'd for invalid task_kind=drift_remediation",
-      "status": "resolved",
-      "resolution": "Resubmitted library handoff with task_kind=handoff (valid value). Stale NACKs moved to processed/."
-    }
-  ],
-  "last_session_summary": "Cycle 13 (20260515-023100): Fixed confidence gate re-regression (unscoped check re-added before actionable routing, causing 6 test failures). Removed duplicate unscoped check, kept scoped check after actionable routing. 17/17 + 64/64 pass. Processed 2 quarantine items. Report at lanes/swarmmind/journal/cycle-report-2026-05-15T02-31-00Z.json.",
+  "generated_at": "2026-05-15T03:09:08.337Z",
+  "pending_count": 0,
+  "pending": [],
   "instructions": [
-    "Commit lane-worker.js fix and sync to other lanes",
-    "Monitor library lane for snapshot.json resolution",
-    "P3 finding (carried): .nvmrc specifies Node 20 but v18 active",
-    "Next cycle: health observation or await Control Plane direction"
+    "Open this file when activating Codex as SwarmMind.",
+    "Process pending items in priority order.",
+    "Send signed response to Archivist inbox with convergence_gate.",
+    "Move completed SwarmMind inbox items to processed."
   ],
-  "packet_hash": ""
+  "packet_hash": "60dec087ab5b0b4ad3218b9e6de9d82cf62edd1b4c757a9c7d6e5d7817d8df80"
 }
