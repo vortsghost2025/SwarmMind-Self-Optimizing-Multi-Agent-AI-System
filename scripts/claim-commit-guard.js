@@ -61,14 +61,14 @@ class ClaimCommitGuard {
   _extractClaimedPaths(msg) {
     const paths = [];
     const ep = msg.evidence?.evidence_path;
-    if (ep && typeof ep === 'string' && ep.trim().length > 0) {
+    if (ep && typeof ep === 'string' && ep.trim().length > 0 && ep.trim() !== 'inline') {
       paths.push({ field: 'evidence.evidence_path', value: ep.trim() });
     }
     const cg = msg.convergence_gate?.evidence;
-    if (cg && typeof cg === 'string' && cg.trim().length > 0) {
+    if (cg && typeof cg === 'string' && cg.trim().length > 0 && cg.trim() !== 'inline') {
       paths.push({ field: 'convergence_gate.evidence', value: cg.trim() });
     }
-    if (msg.evidence_exchange?.artifact_path && typeof msg.evidence_exchange.artifact_path === 'string') {
+    if (msg.evidence_exchange?.artifact_path && typeof msg.evidence_exchange.artifact_path === 'string' && msg.evidence_exchange.artifact_path.trim() !== 'inline') {
       paths.push({ field: 'evidence_exchange.artifact_path', value: msg.evidence_exchange.artifact_path.trim() });
     }
     if (msg.body && typeof msg.body === 'string') {
@@ -143,16 +143,18 @@ class ClaimCommitGuard {
       return { allowed: true, ...result };
     }
 
-    const outboxBase = outboxDir || path.join(repoRoot, 'lanes', msg.from || 'unknown', 'outbox');
+    const laneId = msg.from || 'unknown';
+    const outboxBase = outboxDir || path.join(repoRoot, 'lanes', laneId, 'outbox');
+    const journalBase = path.join(repoRoot, 'lanes', laneId, 'journal');
     const selfReferential = result.details
       .filter(d => !d.on_disk || !d.in_git)
       .filter(d => {
         const absPath = path.isAbsolute(d.path) ? d.path : path.join(repoRoot, d.path);
-        return absPath.startsWith(outboxBase);
+        return absPath.startsWith(outboxBase) || absPath.startsWith(journalBase);
       });
     if (selfReferential.length > 0 && selfReferential.length === result.details.filter(d => !d.on_disk || !d.in_git).length) {
-      this._log(`PASS ${msgId}: self-referential outbox evidence (allowed)`);
-      return { allowed: true, ...result, note: 'self_referential_outbox_evidence' };
+      this._log(`PASS ${msgId}: self-referential outbox/journal evidence (allowed)`);
+      return { allowed: true, ...result, note: 'self_referential_lane_evidence' };
     }
 
     const uncommitted = result.details
