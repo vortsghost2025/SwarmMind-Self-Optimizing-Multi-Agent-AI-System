@@ -94,7 +94,9 @@ System state:
     read_only_mode: true,
     allowed_roots: ['S:/workspace', 'S:/projects'],
     blocked_roots: ['C:/Windows', 'C:/Program Files', 'C:/Users/Sean/AppData']
-  }
+  },
+  confidence: 8,
+  investigation: null
 };
 
 // Sign the message using the same method as IdentityEnforcer

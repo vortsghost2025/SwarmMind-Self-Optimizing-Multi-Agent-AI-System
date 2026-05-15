@@ -65,12 +65,14 @@ All outbound cross-lane SwarmMind messages are signed via create-signed-message.
     status: "done"
   },
   convergence_gate: {
-    claim: "Signed-Message Monitor task accepted; signature validation operational with P0 alert path proven",
-    evidence: sToLocal("S:/SwarmMind/evidence/signed-message-monitor/evidence-summary.json"),
-    verified_by: "swarmmind",
-    contradictions: [],
-    status: "proven"
-  }
+  claim: "Signed-Message Monitor task accepted; signature validation operational with P0 alert path proven",
+  evidence: sToLocal("S:/SwarmMind/evidence/signed-message-monitor/evidence-summary.json"),
+  verified_by: "swarmmind",
+  contradictions: [],
+  status: "proven"
+  },
+  confidence: 9,
+  investigation: null
 };
 
 fs.writeFileSync("S:/temp/monitor_completion_response_raw.json", JSON.stringify(response, null, 2));

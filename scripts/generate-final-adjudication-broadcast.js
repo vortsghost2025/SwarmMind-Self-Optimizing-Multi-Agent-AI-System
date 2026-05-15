@@ -131,7 +131,9 @@ Merge table: S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge
   evidence: { required: true, verified: false },
   evidence_exchange: { artifact_type: 'report', artifact_path: sToLocal('S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md') },
   heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 900, status: 'done' },
-  convergence_gate: { claim: 'CONTRADICTION_SIGNATURE_39 adjudication complete: 10 proven_spurious, 7 needs_lane_review (pending Archivist edge evidence)', evidence: sToLocal('S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md'), verified_by: 'swarmmind', contradictions: [], status: 'proven' }
+  convergence_gate: { claim: 'CONTRADICTION_SIGNATURE_39 adjudication complete: 10 proven_spurious, 7 needs_lane_review (pending Archivist edge evidence)', evidence: sToLocal('S:/Archivist-Agent/context-buffer/contradiction-batch-unified-merge-table-20260430.md'), verified_by: 'swarmmind', contradictions: [], status: 'proven' },
+  confidence: 9,
+  investigation: null
 };
 
 const outPath = sToLocal('S:/Archivist-Agent/lanes/broadcast/contradiction-resolution-final-20260430.json');
