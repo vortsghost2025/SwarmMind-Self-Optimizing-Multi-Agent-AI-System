@@ -75,6 +75,8 @@ const batch1Wrapper = {
   evidence: { required: true, verified: false },
   evidence_exchange: { artifact_type: 'batch_response', artifact_path: evidenceDir + '/swarmmind-batch-1-responses-20260430.json' },
   heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 900, status: 'done' },
+  confidence: 7,
+  investigation: null,
   responses: batch1Response
 };
 
@@ -98,6 +100,8 @@ const batch3Wrapper = {
   evidence: { required: true, verified: false },
   evidence_exchange: { artifact_type: 'batch_response', artifact_path: evidenceDir + '/swarmmind-batch-3-responses-20260430.json' },
   heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 900, status: 'done' },
+  confidence: 7,
+  investigation: null,
   responses: batch3Response
 };
 

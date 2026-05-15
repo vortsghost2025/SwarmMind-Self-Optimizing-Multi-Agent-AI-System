@@ -270,12 +270,14 @@ const report = {
   evidence_exchange: { artifact_type: 'report', artifact_path: 'inline', delivered_at: new Date().toISOString() },
   heartbeat: { interval_seconds: 86400, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 3600, status: 'done' },
   convergence_gate: {
-    claim: `${LANE} daily productivity report generated`,
-    evidence: EVIDENCE_BASE,
-    verified_by: LANE,
-    contradictions: [],
-    status: 'proven'
-  }
+  claim: `${LANE} daily productivity report generated`,
+  evidence: EVIDENCE_BASE,
+  verified_by: LANE,
+  contradictions: [],
+  status: 'proven'
+  },
+  confidence: 8,
+  investigation: null
 };
 
 saveTracker(updatedTracker);

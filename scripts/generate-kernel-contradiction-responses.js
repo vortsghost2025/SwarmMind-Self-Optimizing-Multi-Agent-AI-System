@@ -24,8 +24,10 @@ function createBatchWrapper(batchId, lane, nodeResponses) {
     retry: { attempt: 1, max_attempts: 3, last_error: null, last_attempt_at: null },
     evidence: { required: true, verified: false },
     evidence_exchange: { artifact_type: 'batch_response', artifact_path: `S:/${lane}/evidence/contradiction-resolution/batch${batchId}-responses-20260430.json` },
-    heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 900, status: 'done' },
-    responses: nodeResponses
+  heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 900, status: 'done' },
+  confidence: 7,
+  investigation: null,
+  responses: nodeResponses
   };
 }
 
