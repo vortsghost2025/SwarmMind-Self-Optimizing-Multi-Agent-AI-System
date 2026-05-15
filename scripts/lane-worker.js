@@ -578,9 +578,9 @@ class LaneWorker {
     if (!schemaResult.valid) {
       return { queue: 'quarantine', reason: 'SCHEMA_INVALID', detail: schemaResult.errors.join('; ') };
     }
-    if (!signatureResult.valid) {
-      return { queue: 'blocked', reason: 'SIGNATURE_INVALID', detail: signatureResult.reason || 'Signature validation failed' };
-    }
+if (!signatureResult.valid) {
+    return { queue: 'blocked', reason: 'SIGNATURE_INVALID', detail: signatureResult.reason || 'Signature validation failed' };
+  }
   if (!isEnglishOnly(msg)) {
       return { queue: 'quarantine', reason: 'FORMAT_VIOLATION_NON_ASCII', detail: 'Message contains non-ASCII content. Re-request in English per governance constraint.' };
     }
@@ -637,13 +637,13 @@ class LaneWorker {
       };
     }
 
-  const gate = completionGateApprove(msg);
-  if (isActionable(msg) && !cp.hasCompletionProof(msg)) {
-    if (!this.manualCadence && shouldAutoStart(msg)) {
-      return { queue: 'inProgress', reason: 'ACTIONABLE_NO_PROOF_AUTO_START', detail: gate.detail, ownership, ownership_notes: ownershipNotes };
-    }
-    return {
-      queue: 'actionRequired',
+    const gate = completionGateApprove(msg);
+    if (isActionable(msg) && !cp.hasCompletionProof(msg)) {
+      if (!this.manualCadence && shouldAutoStart(msg)) {
+        return { queue: 'inProgress', reason: 'ACTIONABLE_NO_PROOF_AUTO_START', detail: gate.detail, ownership, ownership_notes: ownershipNotes };
+      }
+      return {
+        queue: 'actionRequired',
       reason: this.manualCadence ? 'ACTIONABLE_NO_PROOF_MANUAL_CADENCE' : 'ACTIONABLE_NO_PROOF',
       detail: gate.detail,
       ownership,
