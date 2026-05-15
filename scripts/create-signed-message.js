@@ -71,8 +71,10 @@ lease = {},
 retry = {},
 evidence = {},
 evidence_exchange = {},
-heartbeat = {},
-extra = {},
+  confidence = 8,
+  investigation = null,
+  heartbeat = {},
+  extra = {},
 } = options;
 
 const now = new Date().toISOString();
@@ -128,9 +130,11 @@ execution: mergedExecution,
 lease: mergedLease,
 retry: mergedRetry,
 evidence: mergedEvidence,
-evidence_exchange: mergedEvidenceExchange,
-heartbeat: mergedHeartbeat,
-...extra,
+  evidence_exchange: mergedEvidenceExchange,
+  heartbeat: mergedHeartbeat,
+  confidence,
+  ...(confidence < 7 && investigation ? { investigation } : {}),
+  ...extra,
 };
 debugLog('[buildCanonicalMessage] to field:', built.to);
 return built;
