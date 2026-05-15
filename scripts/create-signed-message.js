@@ -81,16 +81,23 @@ const now = new Date().toISOString();
 const resolvedTaskId = task_id || canonicalId('task');
 const resolvedIdempotency = idempotency_key || `${from}-${to}-${resolvedTaskId}`;
 
-const profileDefaults = (() => {
-if (profile === 'control_actionable_pre_execution') {
-return {
-requires_action: true,
-evidence: { required: false, verified: false },
-evidence_exchange: {},
-};
-}
-return {};
-})();
+  const profileDefaults = (() => {
+    if (profile === 'control_actionable_pre_execution') {
+      return {
+        requires_action: true,
+        evidence: { required: false, verified: false },
+        evidence_exchange: {},
+      };
+    }
+    if (profile === 'inline_evidence') {
+      return {
+        evidence: { required: true, evidence_path: 'inline', verified: true },
+        evidence_exchange: { artifact_path: 'inline', artifact_type: 'report' },
+        convergence_gate_evidence: 'inline',
+      };
+    }
+    return {};
+  })();
 
 const mergedPayload = { ...DEFAULT_PAYLOAD, ...payload };
 const mergedExecution = { ...DEFAULT_EXECUTION, ...execution };
