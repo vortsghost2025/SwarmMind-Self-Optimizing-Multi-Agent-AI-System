@@ -11,22 +11,22 @@ const batch1Response = [
     node_id: 'e2d590843468dbe7',
     status: 'needs_lane_review',
     edge_evidence: `No explicit CONTRADICTS edges located for this node in Archivist-Agent graph snapshot. Node appears in contradiction hub with contradictionCount=65, status=CONFLICTED, tagged with Swarmmind/Governance/Verification/Failure Mode/Drift. Requires Archivist to provide explicit CONTRADICTS edge artifacts (source→target relationship IDs) demonstrating the semantic conflict.`,
-    confidence: 'medium',
-    next_action: 'Archivist to supply CONTRADICTS edge provenance and lineage validation for Archivist-origin node e2d590843468dbe7'
+  confidence: 7,
+  next_action: 'Archivist to supply CONTRADICTS edge provenance and lineage validation for Archivist-origin node e2d590843468dbe7'
   },
   {
     node_id: 'f536c15cc2486eea',
     status: 'needs_lane_review',
     edge_evidence: `Node "Implementation Compass" (Archivist-Agent) shows contradictionCount=65, status=CONFLICTED, tags: Governance/Swarmmind/Archivist/Library/Phenotype/Failure Mode/Covenant/Drift/Constraint Lattice/Rosetta Stone/Ensemble/WE4FREE. No direct CONTRADICTS edges in graph snapshot. Requires Archivist to specify which artifact-derived CONTRADICTS edges SwarmMind should validate.`,
-    confidence: 'medium',
-    next_action: 'Archivist to provide explicit CONTRADICTS edge artifacts for f536c15cc2486eea; SwarmMind review deferred pending evidence'
+  confidence: 7,
+  next_action: 'Archivist to provide explicit CONTRADICTS edge artifacts for f536c15cc2486eea; SwarmMind review deferred pending evidence'
   },
   {
     node_id: '3023460d99160a03',
     status: 'needs_lane_review',
     edge_evidence: `Node appears in Archivist-Agent hub (contradictionCount=65, CONFLICTED). Interconnected with e2d590843468dbe7, f536c15cc2486eea via shared-tag network; no CONTRADICTS edges resolvable from current snapshot. Cross-lane validation requires explicit edge artifact from Archivist.`,
-    confidence: 'medium',
-    next_action: 'Archivist to submit CONTRADICTS edge evidence for 3023460d99160a03; SwarmMind cannot classify without semantic conflict data'
+  confidence: 7,
+  next_action: 'Archivist to submit CONTRADICTS edge evidence for 3023460d99160a03; SwarmMind cannot classify without semantic conflict data'
   }
 ];
 
@@ -36,15 +36,15 @@ const batch3Response = [
     node_id: 'fb8212e128adc1c5',
     status: 'needs_lane_review',
     edge_evidence: `Node "APR15" (Archivist-Agent) marked CONFLICTED with 65 contradictions; tag set includes Multi-Agent/Governance/Verification/Swarmmind/Archivist/Failure Mode/Drift/Ensemble. No explicit CONTRADICTS edges found in Archivist-Agent graph snapshot (only shared-tag/authority/link types present). Requires Archivist to produce edge-level conflict artifacts.`,
-    confidence: 'medium',
-    next_action: 'Archivist to deliver CONTRADICTS edge artifacts for fb8212e128adc1c5; SwarmMind review blocked until explicit contradictions are provided'
+    confidence: 7,
+  next_action: 'Archivist to deliver CONTRADICTS edge artifacts for fb8212e128adc1c5; SwarmMind review blocked until explicit contradictions are provided'
   },
   {
     node_id: '1bda9962fbd5ca75',
     status: 'needs_lane_review',
     edge_evidence: `Node "Paper Outline: When AI Systems Lie About Their Own State" (Archivist-Agent) flagged CONFLICTED (65 contradictions); tags: Multi-Agent/Governance/Verification/Swarmmind/Archivist/Library/Phenotype/Failure Mode/Drift/Constitutional AI/NFM-019/NFM-020. Edge snapshot shows only authority/shared-tag relations; CONTRADICTS edges not visible in current Archivist-Agent artifact set.`,
-    confidence: 'medium',
-    next_action: 'Archivist to provide explicit CONTRADICTS edge artifacts and lineage chain; SwarmMind cannot adjudicate without edge-level conflict evidence'
+    confidence: 7,
+  next_action: 'Archivist to provide explicit CONTRADICTS edge artifacts and lineage chain; SwarmMind cannot adjudicate without edge-level conflict evidence'
   }
 ];
 

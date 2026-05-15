@@ -36,7 +36,7 @@ const libraryBatch1 = createBatchWrapper(1, 'library', [{
   node_id: '45d50e60309ef11c',
   status: 'needs_lane_review',
   edge_evidence: 'Archivist-Agent artifact (contradictionCount=65, CONFLICTED) with Library cross-tagging; no explicit CONTRADICTS edges found in Archivist-Agent graph snapshot analysis. Library cannot produce edge provenance without Archivist supplying the semantic conflict artifacts.',
-  confidence: 'medium',
+  confidence: 7,
   next_action: 'Await Archivist CONTRADICTS edge evidence for 45d50e60309ef11c'
 }]);
 
@@ -47,8 +47,8 @@ const libraryBatch2 = createBatchWrapper(2, 'library', [
     node_id: '8f11fb5f4a3a5efc',
     status: 'needs_lane_review',
     edge_evidence: 'Library-assigned node from Archivist-Agent; appears in contradiction hub with CONFLICTED status and 65 contradictions; Library cross-tagged. No CONTRADICTS edges found in graph snapshot; Library cannot produce provenance without Archivist edge artifacts.',
-    confidence: 'medium',
-    next_action: 'Await Archivist CONTRADICTS edge evidence for 8f11fb5f4a3a5efc'
+  confidence: 7,
+  next_action: 'Await Archivist CONTRADICTS edge evidence for 8f11fb5f4a3a5efc'
   }
 ]);
 

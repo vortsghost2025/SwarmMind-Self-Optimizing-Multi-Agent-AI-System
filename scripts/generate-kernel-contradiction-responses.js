@@ -38,15 +38,15 @@ const kernelBatch1 = createBatchWrapper(1, 'kernel', [
     node_id: '1d846649979dcec1',
     status: 'needs_lane_review',
     edge_evidence: 'Archivist-origin node in Batch 1; no CONTRADICTS edges found in Archivist-Agent graph snapshot. Kernel cannot validate lineage without Archivist-provided edge artifacts.',
-    confidence: 'medium',
-    next_action: 'Await Archivist CONTRADICTS edge evidence for 1d846649979dcec1'
+  confidence: 7,
+  next_action: 'Await Archivist CONTRADICTS edge evidence for 1d846649979dcec1'
   },
   {
     node_id: '45d50e60309ef11c',
     status: 'needs_lane_review',
     edge_evidence: 'Library-assigned node in Batch 1; Archivist-origin artifact; no CONTRADICTS edges visible in current snapshot. Requires Archivist to supply explicit edge-level conflict evidence.',
-    confidence: 'medium',
-    next_action: 'Archivist to provide CONTRADICTS edge artifacts for 45d50e60309ef11c'
+  confidence: 7,
+  next_action: 'Archivist to provide CONTRADICTS edge artifacts for 45d50e60309ef11c'
   }
 ]);
 
@@ -57,15 +57,15 @@ const kernelBatch2 = createBatchWrapper(2, 'kernel', [
     node_id: 'a88504c97e8f2e4f',
     status: 'needs_lane_review',
     edge_evidence: 'Node appears in contradiction hub (Archivist-Agent) with CONFLICTED status and 65 contradictions; no explicit CONTRADICTS edges resolvable from current graph snapshot. Cannot adjudicate without semantic conflict edge evidence.',
-    confidence: 'medium',
-    next_action: 'Archivist to provide CONTRADICTS edge artifacts for a88504c97e8f2e4f'
+  confidence: 7,
+  next_action: 'Archivist to provide CONTRADICTS edge artifacts for a88504c97e8f2e4f'
   },
   {
     node_id: 'b6a19d32a8604205',
     status: 'needs_lane_review',
     edge_evidence: 'Archivist-origin node marked CONFLICTED (contradictionCount=65); CONTRADICTS edge chain not visible in available snapshot. Requires explicit edge-level evidence from Archivist.',
-    confidence: 'medium',
-    next_action: 'Archivist to submit CONTRADICTS edge provenance for b6a19d32a8604205'
+  confidence: 7,
+  next_action: 'Archivist to submit CONTRADICTS edge provenance for b6a19d32a8604205'
   }
 ]);
 
@@ -75,7 +75,7 @@ const kernelBatch3 = createBatchWrapper(3, 'kernel', [{
   node_id: 'e0e603e85e1972ea',
   status: 'proven_spurious',
   edge_evidence: 'CONFIRMED: Kernel-origin node previously ratified as proven_spurious based on truth-routing.ts K(40) artifact in Failure Mode tag; semantic conflict disproven. Evidence: truth-routing.ts lines 79-82,251-252,284-289; K(40) artifact in Failure Mode tag.',
-  confidence: 'high',
+  confidence: 9,
   next_action: 'Mark as artifact-derived contradiction; suppress escalation; already accepted in merge table'
 }]);
 

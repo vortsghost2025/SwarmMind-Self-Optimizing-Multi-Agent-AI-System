@@ -35,7 +35,7 @@ const archivistBatch1 = createBatchWrapper(1, 'archivist', [{
   node_id: '1d846649979dcec1',
   status: 'proven_spurious',
   edge_evidence: 'Archivist self-review: Node is internal documentation artifact (LANEMESSAGEINDEX.md region). No CONTRADICTS edges exist in any graph snapshot; contradictionCount=65 is a false-positive cluster tag overlap. CONFLICTED status is artifact-derived classification noise; semantic conflict non-credible. Lineage: local doc → governance annex.',
-  confidence: 'high',
+  confidence: 9,
   next_action: 'Mark as proven_spurious; suppress escalation; archive as false-positive artifact classification'
 }]);
 
@@ -45,21 +45,21 @@ const archivistBatch2 = createBatchWrapper(2, 'archivist', [
     node_id: 'a88504c97e8f2e4f',
     status: 'proven_spurious',
     edge_evidence: 'Archivist self-review: Node is internal Archivist-Agent governance artifact; no CONTRADICTS edges to external lanes exist. contradictionCount=65 reflects shared-tag co-occurrence, not semantic conflict. Classified as false-positive; artifact provenance is internal governance documentation.',
-    confidence: 'high',
-    next_action: 'Mark as proven_spurious; suppress escalation'
+  confidence: 9,
+  next_action: 'Mark as proven_spurious; suppress escalation'
   },
   {
     node_id: 'b6a19d32a8604205',
     status: 'proven_spurious',
     edge_evidence: 'Archivist self-review: Internal governance artifact; no CONTRADICTS edges present in any graph snapshot. Status CONFLICTED is false-positive artifact classification; 65 contradiction tags are metadata-level co-occurrence, not semantic conflict.',
-    confidence: 'high',
-    next_action: 'Mark as proven_spurious; archive as artifact-class contradiction'
+  confidence: 9,
+  next_action: 'Mark as proven_spurious; archive as artifact-class contradiction'
   },
   {
     node_id: '044d760a04bbfa30',
     status: 'proven_spurious',
-    edge_evidence: 'Archivist self-review: Node is Archivist-Agent internal governance artifact; no CONTRADICTS edge chain exists. ContradictionCount=65 is tag-based clustering artifact, not semantic conflict. Classified as proven_spurious with high confidence.',
-    confidence: 'high',
+  edge_evidence: 'Archivist self-review: Node is Archivist-Agent internal governance artifact; no CONTRADICTS edge chain exists. ContradictionCount=65 is tag-based clustering artifact, not semantic conflict. Classified as proven_spurious with high confidence.',
+  confidence: 9,
     next_action: 'Suppress escalation; mark as false-positive artifact classification'
   }
 ]);
@@ -69,7 +69,7 @@ const archivistBatch3 = createBatchWrapper(3, 'archivist', [{
   node_id: 'd52d670ab9d41169',
   status: 'proven_spurious',
   edge_evidence: 'Archivist self-review: Internal governance artifact; no CONTRADICTS edges exist. CONFLICTED status and contradictionCount=65 are artifact-derived false positives from shared-tag clustering; semantic conflict absent. Classified as proven_spurious.',
-  confidence: 'high',
+  confidence: 9,
   next_action: 'Archive as proven_spurious; no further action'
 }]);
 
