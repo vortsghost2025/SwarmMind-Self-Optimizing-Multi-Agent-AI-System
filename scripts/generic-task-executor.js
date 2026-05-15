@@ -711,13 +711,11 @@ function createResponse(originalMsg, executionResult, lane) {
       artifact_type: 'response',
       delivered_at: nowIso(),
     },
-        heartbeat: { status: 'done', last_heartbeat_at: nowIso(), interval_seconds: 300, timeout_seconds: 900 },
-        confidence: 8,
-        investigation: null,
-        _original_task_id: originalMsg.task_id,
-        _execution_result: executionResult.results,
-        _governance: { executor_version: EXECUTOR_VERSION, content_hash: contentHash, code_version_hash: codeVersionHash, timestamp: nowIso() },
-    };
+    heartbeat: { status: 'done', last_heartbeat_at: nowIso(), interval_seconds: 300, timeout_seconds: 900 },
+    _original_task_id: originalMsg.task_id,
+    _execution_result: executionResult.results,
+    _governance: { executor_version: EXECUTOR_VERSION, content_hash: contentHash, code_version_hash: codeVersionHash, timestamp: nowIso() },
+  };
 }
 
 function signAndDeliver(response, lane) {

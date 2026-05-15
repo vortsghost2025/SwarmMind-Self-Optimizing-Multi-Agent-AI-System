@@ -120,6 +120,7 @@ function buildBroadcastMessage(options) {
       interval_seconds: 300,
       timeout_seconds: 900
     },
+    confidence: 9,
     broadcast_metadata: {
       broadcast_id: resolvedBroadcastId,
       originator: LANE_ID,

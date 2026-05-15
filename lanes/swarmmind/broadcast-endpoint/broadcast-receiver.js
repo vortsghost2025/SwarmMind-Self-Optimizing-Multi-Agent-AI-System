@@ -96,6 +96,7 @@ function buildAckMessage(originalMsg, processingTimeMs, actionsTaken = []) {
     evidence: { required: false, verified: false },
     evidence_exchange: { artifact_path: `lanes/${LANE_ID}/broadcast-endpoint/broadcast-received.log`, artifact_type: 'log', delivered_at: ts },
     heartbeat: { status: 'done', last_heartbeat_at: ts, interval_seconds: 300, timeout_seconds: 900 },
+    confidence: 10,
     broadcast_ack: {
       original_broadcast_id: broadcastId,
       original_task_id: originalMsg.task_id,

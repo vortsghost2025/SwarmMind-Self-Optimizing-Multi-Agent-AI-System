@@ -63,7 +63,8 @@ Ready when you are.`,
   evidence: { required: false, verified: false },
   evidence_exchange: { artifact_type: 'proposal', artifact_path: 'inline', delivered_at: new Date().toISOString() },
   heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 900, status: 'done' },
-  convergence_gate: { claim: 'Offer of automation assistance sent to Library', evidence: 'S:/SwarmMind/evidence/graph-automation-offer/', verified_by: 'swarmmind', contradictions: [], status: 'proven' }
+  convergence_gate: { claim: 'Offer of automation assistance sent to Library', evidence: 'S:/SwarmMind/evidence/graph-automation-offer/', verified_by: 'swarmmind', contradictions: [], status: 'proven' },
+  confidence: 8
 };
 
 fs.writeFileSync(path.join(os.tmpdir(), 'library-graph-automation-offer.json'), JSON.stringify(message, null, 2));
