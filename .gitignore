@@ -83,3 +83,11 @@ lanes/broadcast/operator_alert_*.json
 
 # Lane journal (local-only, broadcast summaries sync via git)
 lanes/swarmmind/journal/
+
+# Volatile runtime state (rewritten by scheduled tasks every cycle)
+lanes/swarmmind/state/offline-telemetry.json
+lanes/swarmmind/state/codex-wake-packet.json
+swarm-night-queue.json
+
+# Volatile offline reports (regenerated every cycle)
+reports/swarm/

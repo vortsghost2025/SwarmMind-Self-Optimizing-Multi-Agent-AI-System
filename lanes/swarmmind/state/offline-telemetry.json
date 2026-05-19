@@ -1,9 +1,0 @@
-{
-  "offline_checks_run": 7267,
-  "drift_findings_created": 8057,
-  "wake_packets_enriched": 1452,
-  "stale_items_escalated": 0,
-  "executor_tasks_completed": 0,
-  "model_required_work_queued": 0,
-  "last_updated": "2026-05-19T07:54:24.788Z"
-}
