@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SwarmMindNightQueue",
+  "description": "Authorized standing work items for SwarmMind offline productivity. Separate from inbox mail. These are pre-approved recurring duties aligned with SwarmMind's lane identity.",
+  "_comment": {
+    "_output_provenance": {
+      "agent": "kilo/z-ai/glm-5.1",
+      "lane": "swarmmind",
+      "target": "swarm-night-queue.schema.json",
+      "generated_at": "2026-05-19T03:30:00Z",
+      "session_id": "swarm-offline-phase1"
+    }
+  },
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "queue": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/nightQueueItem"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "queue"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "nightQueueItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the night queue item.",
+          "examples": [
+            "swarm-night-drift-sweep"
+          ]
+        },
+        "task_kind": {
+          "type": "string",
+          "enum": [
+            "cross_lane_drift_audit",
+            "watcher_health_audit",
+            "robustness_regression_scan",
+            "stale_work_detection",
+            "wake_packet_enrichment",
+            "custom"
+          ],
+          "description": "Category of work this item performs."
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "P0",
+            "P1",
+            "P2",
+            "P3"
+          ],
+          "default": "P2",
+          "description": "Priority level. P0 is highest urgency."
+        },
+        "safe_offline": {
+          "type": "boolean",
+          "default": true,
+          "description": "Can this run without a live model?"
+        },
+        "requires_model": {
+          "type": "boolean",
+          "default": false,
+          "description": "Does this need a reasoning session?"
+        },
+        "requires_operator": {
+          "type": "boolean",
+          "default": false,
+          "description": "Does this need human approval before execution?"
+        },
+        "executor": {
+          "type": "string",
+          "enum": [
+            "generic-task-executor",
+            "swarm-offline-runner",
+            "kilo-night-agent"
+          ],
+          "default": "swarm-offline-runner",
+          "description": "Which executor should handle this item."
+        },
+        "expected_artifact": {
+          "type": "string",
+          "description": "Pattern for artifact path. Supports YYYY-MM-DD placeholders.",
+          "examples": [
+            "reports/swarm/drift-sweep-YYYY-MM-DD.md"
+          ]
+        },
+        "schedule_hint": {
+          "type": "string",
+          "enum": [
+            "daily",
+            "every_4h",
+            "every_12h",
+            "on_idle",
+            "manual"
+          ],
+          "default": "daily",
+          "description": "Suggested execution cadence."
+        },
+        "max_duration_seconds": {
+          "type": "integer",
+          "minimum": 10,
+          "default": 120,
+          "description": "Maximum allowed runtime in seconds."
+        },
+        "last_run_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "description": "ISO-8601 timestamp of the most recent run, or null if never run."
+        },
+        "last_result": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "success",
+            "failure",
+            "skipped",
+            "partial",
+            null
+          ],
+          "description": "Outcome of the most recent run."
+        },
+        "last_artifact_path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Path to the artifact produced by the most recent run, or null."
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether this item is active in the night queue."
+        },
+        "description": {
+          "type": "string",
+          "description": "Brief human-readable description of the item's purpose."
+        },
+        "convergence_gate_required": {
+          "type": "boolean",
+          "default": true,
+          "description": "Must a convergence gate be produced upon completion?"
+        },
+        "idempotency_key_template": {
+          "type": "string",
+          "description": "Template for generating idempotency keys. Supports {{DATE}} placeholder.",
+          "examples": [
+            "drift-sweep-{{DATE}}"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "task_kind",
+        "expected_artifact",
+        "description",
+        "idempotency_key_template"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

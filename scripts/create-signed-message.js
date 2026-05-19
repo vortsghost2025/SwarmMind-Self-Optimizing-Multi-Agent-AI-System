@@ -265,9 +265,9 @@ renewal_count: 0,
 max_renewals: 3
 };
 }
-guardWrite(signed, outboxPath, filename);
-// Atomic write with mandatory lease
-await atomicWriteWithLease(filePath, signed, 30000);
+  guardWrite(signed, outboxPath, filename);
+  const serialized = JSON.stringify(signed, null, 2);
+  await atomicWriteWithLease(filePath, serialized, 30000);
 return { filePath, keyId: signed.key_id, filename };
 }
 

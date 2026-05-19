@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "lane": "swarmmind",
-  "generated_at": "2026-05-15T03:09:08.337Z",
+  "generated_at": "2026-05-19T06:44:26.552Z",
   "pending_count": 0,
   "pending": [],
   "instructions": [
@@ -10,5 +10,30 @@
     "Send signed response to Archivist inbox with convergence_gate.",
     "Move completed SwarmMind inbox items to processed."
   ],
-  "packet_hash": "60dec087ab5b0b4ad3218b9e6de9d82cf62edd1b4c757a9c7d6e5d7817d8df80"
+  "packet_hash": "60dec087ab5b0b4ad3218b9e6de9d82cf62edd1b4c757a9c7d6e5d7817d8df80",
+  "offline_findings": {
+    "swarm-night-drift-sweep": {
+      "findings": 0,
+      "escalations": 0,
+      "artifact": "S:\\SwarmMind\\reports\\swarm\\drift-sweep-2026-05-19.md"
+    },
+    "swarm-night-watcher-health": {
+      "findings": 7,
+      "escalations": 0,
+      "artifact": "S:\\SwarmMind\\reports\\swarm\\watcher-health-2026-05-19.md"
+    },
+    "swarm-night-robustness-scan": {
+      "findings": 1,
+      "escalations": 0,
+      "artifact": "S:\\SwarmMind\\reports\\swarm\\robustness-scan-2026-05-19.md"
+    },
+    "swarm-night-stale-work": {
+      "findings": 24,
+      "escalations": 0,
+      "artifact": "S:\\SwarmMind\\reports\\swarm\\stale-work-2026-05-19.md"
+    }
+  },
+  "next_session_recommendation": "No urgent items — routine maintenance or feature work",
+  "enriched_at": "2026-05-19T07:41:39.403Z",
+  "enriched_by": "swarm-offline-runner/1.0.0"
 }

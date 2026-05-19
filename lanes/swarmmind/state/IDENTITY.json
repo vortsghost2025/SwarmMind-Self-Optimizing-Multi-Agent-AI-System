@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "emitted_at": "2026-05-16T01:51:47.642Z",
+  "generator": "emit-identity.js",
+  "whoami": {
+    "lane_id": "swarmmind",
+    "role": "optimization",
+    "repo": "https://github.com/vortsghost2025/SwarmMind",
+    "local_path": "S:/SwarmMind",
+    "key_id": "c707d41a7bb96d96"
+  },
+  "session": {
+    "active": true,
+    "session_id": "agent-1777477476243",
+    "acquired_at": "2026-04-29T15:44:36.243Z",
+    "expires_at": null
+  },
+  "watcher": {
+    "mode": "auto",
+    "will_process": false
+  },
+  "last_activity": {
+    "commit": "0f83226",
+    "commit_subject": "[CI:swarmmind] Auto-commit: housekeeping cycle 20260515-145300",
+    "commit_time": "2026-05-15T15:06:36Z",
+    "branch": "main",
+    "dirty_files": 8,
+    "unpushed_commits": 0
+  },
+  "health": {
+    "inbox_unread": 0,
+    "outbox_pending": 0,
+    "heartbeat_age_sec": 16838,
+    "garbage_collect": false
+  },
+  "inbox": {
+    "unprocessed": 0,
+    "processed": 0,
+    "invalid": 1
+  },
+  "governance": {
+    "cps_score": null,
+    "active_blocker": null
+  },
+  "system": {
+    "topology_ok": true,
+    "drift_status": "EXPECTED_DRIFT_CANONICAL_CHANGED",
+    "drift_aligned": 60,
+    "drift_count": 3,
+    "drift_regressions": null,
+    "ledger_time": "2026-05-16T00:29:26.313Z"
+  }
+}
