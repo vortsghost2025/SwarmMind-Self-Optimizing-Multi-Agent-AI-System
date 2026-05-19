@@ -2,7 +2,7 @@ OUTPUT_PROVENANCE:
 agent: swarm-offline-runner/1.0.0
 lane: swarmmind
 target: SWARM_OFFLINE_READINESS_REPORT-2026-05-19
-generated_at: 2026-05-19T07:41:39.405Z
+generated_at: 2026-05-19T07:54:24.789Z
 session_id: offline-2026-05-19
 
 # SwarmMind Offline Readiness Report — 2026-05-19
@@ -25,13 +25,13 @@ session_id: offline-2026-05-19
 
 ```json
 {
-  "offline_checks_run": 7222,
+  "offline_checks_run": 7267,
   "drift_findings_created": 8057,
-  "wake_packets_enriched": 1443,
+  "wake_packets_enriched": 1452,
   "stale_items_escalated": 0,
   "executor_tasks_completed": 0,
   "model_required_work_queued": 0,
-  "last_updated": "2026-05-19T07:41:39.404Z"
+  "last_updated": "2026-05-19T07:54:24.788Z"
 }
 ```
 

@@ -2,7 +2,7 @@ OUTPUT_PROVENANCE:
 agent: swarm-offline-runner/1.0.0
 lane: swarmmind
 target: stale-work-2026-05-19
-generated_at: 2026-05-19T07:41:39.400Z
+generated_at: 2026-05-19T07:54:24.786Z
 session_id: offline-2026-05-19
 
 # Cross-Lane Stale Work Detection Report — 2026-05-19

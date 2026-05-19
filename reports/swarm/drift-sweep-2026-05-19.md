@@ -2,7 +2,7 @@ OUTPUT_PROVENANCE:
 agent: swarm-offline-runner/1.0.0
 lane: swarmmind
 target: drift-sweep-2026-05-19
-generated_at: 2026-05-19T07:41:40.540Z
+generated_at: 2026-05-19T07:54:21.526Z
 session_id: offline-2026-05-19
 
 # Cross-Lane Drift Sweep Report — 2026-05-19
