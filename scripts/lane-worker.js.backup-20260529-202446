@@ -626,49 +626,42 @@ class LaneWorker {
       return { queue: 'blocked', reason: 'OUTPUT_PROVENANCE_MISSING', detail: 'body lacks OUTPUT_PROVENANCE header. Missing: ' + prov.missing.join(', ') + '. All agent output must include OUTPUT_PROVENANCE:, agent:, lane:, target:.' };
     }
   }
-    // Law 5: Confidence Ratings Mandatory check
-    // Exempt system message types (notification, heartbeat, status) from confidence requirement
-    const exemptTypes = new Set(['notification', 'heartbeat', 'status']);
-    const msgType = (msg && typeof msg === 'object' ? String(msg.type || '') : '').toLowerCase();
-    
-    if (!exemptTypes.has(msgType)) {
-      const confidence = msg && typeof msg === 'object' ? msg.confidence : null;
-      if (confidence === null || typeof confidence !== 'number' || confidence < 1 || confidence > 10 || !Number.isInteger(confidence)) {
-        return { queue: 'quarantine', reason: 'CONFIDENCE_REQUIRED', detail: 'Assessment must include confidence rating as integer between 1-10' };
-      }
-      if (confidence < 7) {
-        const investigation = msg && typeof msg === 'object' ? msg.investigation : null;
-        if (!investigation || typeof investigation !== 'string' || investigation.trim() === '') {
-          return { queue: 'blocked', reason: 'LOW_CONFIDENCE_NO_INVESTIGATION', detail: 'Assessment with confidence < 7 requires investigation evidence' };
-        }
-      }
+
+  // NFM-022 fix: skip hasUnresolvableEvidence for actionable tasks
+  // A new task (requires_action=true) hasn't been executed yet, so
+  // evidence.required=true with no artifact is expected, not a violation.
+  if (!isActionable(msg) && cp.hasUnresolvableEvidence(msg)) {
+    return { queue: 'blocked', reason: 'EVIDENCE_REQUIRED_NO_ARTIFACT', detail: 'evidence.required=true but no evidence_exchange.artifact_path provided' };
+  }
+
+    if (cp.hasFakeProof(msg)) {
+      return { queue: 'blocked', reason: 'FAKE_COMPLETION_PROOF', detail: 'terminal_decision/disposition present without evidence_exchange or legacy artifact' };
     }
 
-    // CONFIDENCE_DERIVATION_CONTRACT enforcement (graduated: flag, don't block yet)
-    // High confidence (>=7) without derivation is performative confidence — a governance violation.
-    // Per S:/.global/CONFIDENCE_DERIVATION_CONTRACT.md Rule 1: confidence MUST include
-    // what measured, how measured, what produced, how mapped. Missing = PROHIBITED.
-    // Graduated phase: attach PERFORMATIVE_CONFIDENCE flag to metadata, log to cps_log.
-    if (msg.confidence !== undefined && msg.confidence >= 7) {
-      const derivation = msg && typeof msg === 'object' ? msg.confidence_derivation : null;
-      if (!derivation || typeof derivation !== 'object' || Array.isArray(derivation)) {
-        if (!msg._governance_flags) msg._governance_flags = [];
-        msg._governance_flags.push('PERFORMATIVE_CONFIDENCE');
-        const cpsEntry = {
-          timestamp: new Date().toISOString(),
-          event: 'PERFORMATIVE_CONFIDENCE',
-          agent: msg.from || 'unknown',
-          task_id: msg.task_id || 'unknown',
-          confidence: msg.confidence,
-          has_derivation: false,
-          detail: 'confidence >= 7 without confidence_derivation object — performative confidence per CONFIDENCE_DERIVATION_CONTRACT Rule 1',
-        };
-        try {
-          const cpsPath = path.join(this.laneRoot || path.resolve(__dirname, '..'), 'context-buffer', 'cps_log.jsonl');
-          fs.appendFileSync(cpsPath, JSON.stringify(cpsEntry) + '\n');
-        } catch (_) {}
-      }
+    const ownership = evaluateOwnership(msg);
+    const ownershipNotes = [];
+    if (!ownership.present) ownershipNotes.push('OWNERSHIP_MISSING');
+    if (ownership.present && ownership.lease_expired) ownershipNotes.push('OWNERSHIP_LEASE_EXPIRED');
+    if (ownership.present && ownership.owner_mismatch) ownershipNotes.push('OWNERSHIP_OWNER_MISMATCH');
+
+    if (ownership.malformed) {
+      return {
+        queue: 'quarantine',
+        reason: 'OWNERSHIP_MALFORMED',
+        detail: ownership.reason || 'ownership object malformed',
+        ownership,
+        ownership_notes: ownershipNotes.concat(['OWNERSHIP_MALFORMED'])
+      };
     }
+
+    if (
+      this.enforceOwnership &&
+      ownership.present &&
+      ownership.owner_agent_id &&
+      ownership.lease_expires_at &&
+      !ownership.lease_expired &&
+      ownership.owner_mismatch
+    ) {
       return {
         queue: 'blocked',
         reason: 'OWNERSHIP_ENFORCED_MISMATCH',
