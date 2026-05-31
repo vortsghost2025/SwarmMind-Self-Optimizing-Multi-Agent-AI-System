@@ -25,7 +25,7 @@ const { loadPrivateKey: loadPrivateKeyHelper, getAlgorithmParams, sign: algoSign
 
 const ROOT = path.join(__dirname, '..');
 const IDENTITY_DIR = path.join(ROOT, '.identity');
-const TRUST_STORE_PATH = path.join(ROOT, '.trust', 'keys.json');
+const TRUST_STORE_PATH = path.join(ROOT, 'lanes', 'broadcast', 'trust-store.json');
 const SNAPSHOT_PATH = path.join(IDENTITY_DIR, 'snapshot.json');
 const SNAPSHOT_JWS_PATH = path.join(IDENTITY_DIR, 'snapshot.jws');
 const PRIVATE_KEY_PATH = path.join(IDENTITY_DIR, 'private.pem');
@@ -66,13 +66,15 @@ throw new Error('Failed to load private key: ' + e.message);
 }
 }
 
+const LANE_ID = process.env.LANE_ID || 'swarmmind';
+
 function getKeyIdFromTrustStore() {
-const trustStore = JSON.parse(fs.readFileSync(TRUST_STORE_PATH, 'utf8'));
-const archivistEntry = trustStore.keys && trustStore.keys.archivist;
-if (!archivistEntry) {
-throw new Error('Archivist key not found in trust store');
-}
-return archivistEntry.key_id;
+  const trustStore = JSON.parse(fs.readFileSync(TRUST_STORE_PATH, 'utf8'));
+  const laneEntry = (trustStore.keys && trustStore.keys[LANE_ID]) || trustStore[LANE_ID];
+  if (!laneEntry) {
+    throw new Error(LANE_ID + ' key not found in trust store');
+  }
+  return laneEntry.key_id;
 }
 
 async function signSnapshot() {
