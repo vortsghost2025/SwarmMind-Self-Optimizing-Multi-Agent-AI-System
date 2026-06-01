@@ -23,12 +23,13 @@ function fileAgeMin(fpath) {
 
 const results = { timestamp: now(), lanes: {}, summary: { healthy: 0, degraded: 0, down: 0 } };
 
+const psOutput = execSync('ps -eo pid,args 2>/dev/null').toString();
+
 for (const [lane, repo] of Object.entries(REPOS)) {
   const laneResult = { lane, repo, checks: {} };
 
   // 1. Process check — is a lane-worker process actually running?
   try {
-    const psOutput = execSync(`ps -eo pid,args 2>/dev/null`).toString();
     const running = psOutput.split('\n').some(line =>
       line.includes('lane-worker') && line.includes(`--lane ${lane}`)
     );
