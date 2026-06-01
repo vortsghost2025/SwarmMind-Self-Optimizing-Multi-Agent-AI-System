@@ -563,27 +563,40 @@ class LaneWorker {
     };
   }
 
-  _loadSignatureValidator() {
-    try {
-      const mod = require(path.join(this.repoRoot, 'scripts', 'identity-enforcer'));
-      if (mod && typeof mod.IdentityEnforcer === 'function') {
-        const enforcer = new mod.IdentityEnforcer({ enforcementMode: 'warn' });
-        return (msg) => {
-          try {
-            const result = enforcer.enforceMessage(msg);
-            const valid = !!result && result.decision !== 'reject';
-            return { valid, reason: valid ? null : (result.reason || 'IDENTITY_REJECT'), details: result };
-          } catch (err) {
-            return { valid: false, reason: err.message, details: null };
-          }
-        };
-      }
-    } catch (_) {}
+   _loadSignatureValidator() {
+     try {
+       const mod = require(path.join(this.repoRoot, 'scripts', 'identity-enforcer'));
+       if (mod && typeof mod.IdentityEnforcer === 'function') {
+         const enforcer = new mod.IdentityEnforcer({ enforcementMode: 'warn' });
+         return (msg) => {
+           try {
+             const result = enforcer.enforceMessage(msg);
+             const valid = !!result && result.decision !== 'reject';
+             return { valid, reason: valid ? null : (result.reason || 'IDENTITY_REJECT'), details: result };
+           } catch (err) {
+             return { valid: false, reason: err.message, details: null };
+           }
+         };
+       }
+     } catch (_) {}
+ 
+     return () => ({ valid: false, reason: 'IDENTITY_ENFORCER_UNAVAILABLE_FAIL_CLOSED', details: null });
+   }
 
-    return () => ({ valid: false, reason: 'IDENTITY_ENFORCER_UNAVAILABLE_FAIL_CLOSED', details: null });
-  }
+   _loadAdaptiveAlertConfig() {
+     try {
+       const configPath = path.join(this.repoRoot, 'config', 'adaptive-alerts.json');
+       if (fs.existsSync(configPath)) {
+         const raw = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+         return Object.assign({}, AdaptiveCpuAlerts.DEFAULT_CONFIG, raw);
+       }
+     } catch (e) {
+       process.stderr.write(`[lane-worker] Failed to load adaptive alert config: ${e.message}\n`);
+     }
+     return {};
+   }
 
-  ensureQueues() {
+   ensureQueues() {
     const q = this.config.queues;
     if (!fs.existsSync(q.inbox)) {
       if (this.dryRun) {
