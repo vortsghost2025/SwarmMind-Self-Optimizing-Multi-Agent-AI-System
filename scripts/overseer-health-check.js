@@ -14,7 +14,6 @@ const REPOS = {
 const STALE_THRESHOLD_MIN = 30;
 const LOG_DIR = '/home/we4free/agent/logs';
 const REPORT_PATH = path.join(LOG_DIR, 'overseer-health.json');
-const DBUS = 'DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus';
 
 function now() { return new Date().toISOString(); }
 function fileAgeMin(fpath) {
@@ -69,7 +68,7 @@ for (const [lane, repo] of Object.entries(REPOS)) {
 
   // 6. Daemon liveness — use journald for the relay-daemon since log files are stale
   try {
-    const jctlOut = execSync(`journalctl --user -u "we4free-relay-daemon@${lane}.service" --since "5 min ago" --no-pager -q 2>&1`).toString().trim();
+    const jctlOut = execSync(`journalctl -u "we4free-relay-daemon@${lane}.service" --since "${STALE_THRESHOLD_MIN} min ago" --no-pager -q 2>&1`).toString().trim();
     laneResult.checks.daemon_log = jctlOut.length > 0 ? 'RECENT' : 'STALE';
   } catch (_) {
     try {
