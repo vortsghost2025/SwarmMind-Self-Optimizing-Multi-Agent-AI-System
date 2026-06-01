@@ -67,12 +67,17 @@ for (const [lane, repo] of Object.entries(REPOS)) {
     laneResult.checks.inbox_blocked = -1;
   }
 
-  // 6. Recent daemon log entries
-  const daemonLog = path.join(LOG_DIR, `${lane}-lane-worker.log`);
+  // 6. Daemon liveness — use journald for the relay-daemon since log files are stale
   try {
-    const logAge = fileAgeMin(daemonLog);
-    laneResult.checks.daemon_log = logAge < 10 ? 'RECENT' : `STALE_${logAge}min`;
-  } catch (_) { laneResult.checks.daemon_log = 'MISSING'; }
+    const jctlOut = execSync(`journalctl --user -u "we4free-relay-daemon@${lane}.service" --since "5 min ago" --no-pager -q 2>&1`).toString().trim();
+    laneResult.checks.daemon_log = jctlOut.length > 0 ? 'RECENT' : 'STALE';
+  } catch (_) {
+    try {
+      const relayLog = path.join(LOG_DIR, `${lane}-relay.log`);
+      const logAge = fileAgeMin(relayLog);
+      laneResult.checks.daemon_log = logAge < STALE_THRESHOLD_MIN ? 'RECENT' : `STALE_${logAge}min`;
+    } catch (_) { laneResult.checks.daemon_log = 'MISSING'; }
+  }
 
   // Health determination — process running is the primary signal, not systemd
   const criticalPass = laneResult.checks.process === 'PASS' && laneResult.checks.trust_store === 'PASS';
