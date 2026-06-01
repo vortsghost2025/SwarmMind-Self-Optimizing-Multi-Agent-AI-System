@@ -36,10 +36,12 @@ for (const [lane, repo] of Object.entries(REPOS)) {
     laneResult.checks.process = running ? 'PASS' : 'FAIL';
   } catch (_) { laneResult.checks.process = 'FAIL'; }
 
-  // 2. Systemd service (may fail from cron due to missing DBUS — that's OK)
+  // 2. Systemd service — check both lane-worker and relay-daemon template units
   try {
-    const status = execSync(`${DBUS} systemctl --user is-active ${lane}-lane-worker 2>&1`).toString().trim();
-    laneResult.checks.systemd = status === 'active' ? 'PASS' : 'FAIL';
+    const workerStatus = execSync(`systemctl is-active we4free-lane-worker@${lane}.lane.service 2>&1`).toString().trim();
+    const relayStatus = execSync(`systemctl is-active we4free-relay-daemon@${lane}.service 2>&1`).toString().trim();
+    const bothActive = workerStatus === 'active' && relayStatus === 'active';
+    laneResult.checks.systemd = bothActive ? 'PASS' : `FAIL(worker=${workerStatus},relay=${relayStatus})`;
   } catch (_) { laneResult.checks.systemd = 'FAIL'; }
 
   // 3. Heartbeat freshness
