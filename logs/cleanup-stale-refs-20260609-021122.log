@@ -1,0 +1,59 @@
+[2026-06-09T02:11:22-04:00] [INFO] === cleanup-stale-refs.ps1 START ===
+[2026-06-09T02:11:22-04:00] [INFO] Step 1: Deleting stale remote branches (5 branches)
+[2026-06-09T02:11:22-04:00] [INFO]   Deleting remote branch: origin/session/agent_96d099d7-d793-459e-9e38-4b6c3fcb643d
+[2026-06-09T02:11:25-04:00] [INFO]     OK: origin/session/agent_96d099d7-d793-459e-9e38-4b6c3fcb643d deleted
+[2026-06-09T02:11:25-04:00] [INFO]   Deleting remote branch: origin/session/agent_9fddc379-33f3-4133-b6b3-0ff5b25bae5b
+[2026-06-09T02:11:27-04:00] [INFO]     OK: origin/session/agent_9fddc379-33f3-4133-b6b3-0ff5b25bae5b deleted
+[2026-06-09T02:11:27-04:00] [INFO]   Deleting remote branch: origin/session/agent_e1df3c43-9929-437e-b67e-cd1440dd7189
+[2026-06-09T02:11:29-04:00] [INFO]     OK: origin/session/agent_e1df3c43-9929-437e-b67e-cd1440dd7189 deleted
+[2026-06-09T02:11:29-04:00] [INFO]   Deleting remote branch: origin/copilot/audit-self-optimizing-ai-system
+[2026-06-09T02:11:31-04:00] [INFO]     OK: origin/copilot/audit-self-optimizing-ai-system deleted
+[2026-06-09T02:11:31-04:00] [INFO]   Deleting remote branch: origin/master
+[2026-06-09T02:11:33-04:00] [INFO]     OK: origin/master deleted
+[2026-06-09T02:11:33-04:00] [INFO] Step 2: Pruning stale remote-tracking refs
+[2026-06-09T02:11:34-04:00] [INFO]   OK: remote prune origin completed
+[2026-06-09T02:11:34-04:00] [INFO] Step 3: Removing loose ref files
+[2026-06-09T02:11:34-04:00] [INFO]   SKIP: S:/SwarmMind/.git/refs/remotes/origin/session does not exist (already clean)
+[2026-06-09T02:11:34-04:00] [INFO]   SKIP: S:/SwarmMind/.git/refs/remotes/origin/copilot does not exist (already clean)
+[2026-06-09T02:11:34-04:00] [INFO]   SKIP: S:/SwarmMind/.git/refs/remotes/origin/master does not exist (already clean)
+[2026-06-09T02:11:34-04:00] [INFO] Step 4: Verifying remote branches
+[2026-06-09T02:11:34-04:00] [INFO]   Current remote branches:
+[2026-06-09T02:11:34-04:00] [INFO]     origin/HEAD -> origin/main
+[2026-06-09T02:11:34-04:00] [INFO]     origin/main
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Only origin/main and origin/HEAD remain
+[2026-06-09T02:11:34-04:00] [INFO] Step 5: Archiving unsigned productivity reports
+[2026-06-09T02:11:34-04:00] [INFO]   Found 20 productivity reports to archive
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-19.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-20.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-21.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-22.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-23.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-24.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-25.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-26.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-28.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-29.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-30.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-05-31.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-06-01.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-06-02.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-06-03.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-06-04.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-06-05.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-06-06.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-06-07.json
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Archived productivity-report-swarmmind-2026-06-08.json
+[2026-06-09T02:11:34-04:00] [INFO] Step 6: Removing tmp/ directory
+[2026-06-09T02:11:34-04:00] [INFO]   OK: Removed S:\SwarmMind\tmp
+[2026-06-09T02:11:34-04:00] [INFO] 
+[2026-06-09T02:11:34-04:00] [INFO] === SUMMARY ===
+[2026-06-09T02:11:34-04:00] [INFO]   Remote branches deleted:  5
+[2026-06-09T02:11:34-04:00] [INFO]   Remote branches skipped:  0
+[2026-06-09T02:11:34-04:00] [INFO]   Remote branches failed:   0
+[2026-06-09T02:11:34-04:00] [INFO]   Remote prune OK:          True
+[2026-06-09T02:11:34-04:00] [INFO]   Loose refs removed:       0
+[2026-06-09T02:11:34-04:00] [INFO]   Productivity reports archived: 20
+[2026-06-09T02:11:34-04:00] [INFO]   tmp/ directory removed:   True
+[2026-06-09T02:11:34-04:00] [INFO]   Errors:                   0
+[2026-06-09T02:11:34-04:00] [INFO] === cleanup-stale-refs.ps1 END ===
+[2026-06-09T02:11:34-04:00] [INFO] Log file: S:\SwarmMind\logs\cleanup-stale-refs-20260609-021122.log

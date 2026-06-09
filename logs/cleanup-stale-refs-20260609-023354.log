@@ -1,0 +1,74 @@
+[2026-06-09T02:33:54-04:00] [INFO] === cleanup-stale-refs.ps1 START ===
+[2026-06-09T02:33:54-04:00] [INFO] Step 1: Deleting stale remote branches (5 branches)
+[2026-06-09T02:33:54-04:00] [INFO]   Deleting remote branch: origin/session/agent_96d099d7-d793-459e-9e38-4b6c3fcb643d
+[2026-06-09T02:33:56-04:00] [INFO]     SKIP: origin/session/agent_96d099d7-d793-459e-9e38-4b6c3fcb643d does not exist on remote (git : error: unable to delete 'session/agent_96d099d7-d793-459e-9e38-4b6c3fcb643d': remote ref does not exist
+At S:\SwarmMind\scripts\cleanup-stale-refs.ps1:52 char:23
++ ...          $output = git -C $RepoRoot push origin --delete $Branch 2>&1
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: unable t... does not exist:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+error: failed to push some refs to 'https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System.git')
+[2026-06-09T02:33:56-04:00] [INFO]   Deleting remote branch: origin/session/agent_9fddc379-33f3-4133-b6b3-0ff5b25bae5b
+[2026-06-09T02:33:57-04:00] [INFO]     SKIP: origin/session/agent_9fddc379-33f3-4133-b6b3-0ff5b25bae5b does not exist on remote (git : error: unable to delete 'session/agent_9fddc379-33f3-4133-b6b3-0ff5b25bae5b': remote ref does not exist
+At S:\SwarmMind\scripts\cleanup-stale-refs.ps1:52 char:23
++ ...          $output = git -C $RepoRoot push origin --delete $Branch 2>&1
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: unable t... does not exist:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+error: failed to push some refs to 'https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System.git')
+[2026-06-09T02:33:57-04:00] [INFO]   Deleting remote branch: origin/session/agent_e1df3c43-9929-437e-b67e-cd1440dd7189
+[2026-06-09T02:33:58-04:00] [INFO]     SKIP: origin/session/agent_e1df3c43-9929-437e-b67e-cd1440dd7189 does not exist on remote (git : error: unable to delete 'session/agent_e1df3c43-9929-437e-b67e-cd1440dd7189': remote ref does not exist
+At S:\SwarmMind\scripts\cleanup-stale-refs.ps1:52 char:23
++ ...          $output = git -C $RepoRoot push origin --delete $Branch 2>&1
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: unable t... does not exist:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+error: failed to push some refs to 'https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System.git')
+[2026-06-09T02:33:58-04:00] [INFO]   Deleting remote branch: origin/copilot/audit-self-optimizing-ai-system
+[2026-06-09T02:33:59-04:00] [INFO]     SKIP: origin/copilot/audit-self-optimizing-ai-system does not exist on remote (git : error: unable to delete 'copilot/audit-self-optimizing-ai-system': remote ref does not exist
+At S:\SwarmMind\scripts\cleanup-stale-refs.ps1:52 char:23
++ ...          $output = git -C $RepoRoot push origin --delete $Branch 2>&1
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: unable t... does not exist:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+error: failed to push some refs to 'https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System.git')
+[2026-06-09T02:33:59-04:00] [INFO]   Deleting remote branch: origin/master
+[2026-06-09T02:34:01-04:00] [INFO]     SKIP: origin/master does not exist on remote (git : error: unable to delete 'master': remote ref does not exist
+At S:\SwarmMind\scripts\cleanup-stale-refs.ps1:52 char:23
++ ...          $output = git -C $RepoRoot push origin --delete $Branch 2>&1
++                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (error: unable t... does not exist:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+error: failed to push some refs to 'https://github.com/vortsghost2025/SwarmMind-Self-Optimizing-Multi-Agent-AI-System.git')
+[2026-06-09T02:34:01-04:00] [INFO] Step 2: Pruning stale remote-tracking refs
+[2026-06-09T02:34:01-04:00] [INFO]   OK: remote prune origin completed
+[2026-06-09T02:34:01-04:00] [INFO] Step 3: Removing loose ref files
+[2026-06-09T02:34:01-04:00] [INFO]   SKIP: S:/SwarmMind/.git/refs/remotes/origin/session does not exist (already clean)
+[2026-06-09T02:34:01-04:00] [INFO]   SKIP: S:/SwarmMind/.git/refs/remotes/origin/copilot does not exist (already clean)
+[2026-06-09T02:34:01-04:00] [INFO]   SKIP: S:/SwarmMind/.git/refs/remotes/origin/master does not exist (already clean)
+[2026-06-09T02:34:01-04:00] [INFO] Step 4: Verifying remote branches
+[2026-06-09T02:34:01-04:00] [INFO]   Current remote branches:
+[2026-06-09T02:34:01-04:00] [INFO]     origin/HEAD -> origin/main
+[2026-06-09T02:34:01-04:00] [INFO]     origin/main
+[2026-06-09T02:34:01-04:00] [INFO]   OK: Only origin/main and origin/HEAD remain
+[2026-06-09T02:34:01-04:00] [INFO] Step 5: Archiving unsigned productivity reports
+[2026-06-09T02:34:01-04:00] [INFO]   SKIP: No productivity reports found in outbox (already archived or none exist)
+[2026-06-09T02:34:01-04:00] [INFO] Step 6: Removing tmp/ directory
+[2026-06-09T02:34:01-04:00] [INFO]   SKIP: S:\SwarmMind\tmp does not exist (already clean)
+[2026-06-09T02:34:01-04:00] [INFO] 
+[2026-06-09T02:34:01-04:00] [INFO] === SUMMARY ===
+[2026-06-09T02:34:01-04:00] [INFO]   Remote branches deleted:  0
+[2026-06-09T02:34:01-04:00] [INFO]   Remote branches skipped:  5
+[2026-06-09T02:34:01-04:00] [INFO]   Remote branches failed:   0
+[2026-06-09T02:34:01-04:00] [INFO]   Remote prune OK:          True
+[2026-06-09T02:34:01-04:00] [INFO]   Loose refs removed:       0
+[2026-06-09T02:34:01-04:00] [INFO]   Productivity reports archived: 0
+[2026-06-09T02:34:01-04:00] [INFO]   tmp/ directory removed:   False
+[2026-06-09T02:34:01-04:00] [INFO]   Errors:                   0
+[2026-06-09T02:34:01-04:00] [INFO] === cleanup-stale-refs.ps1 END ===
+[2026-06-09T02:34:01-04:00] [INFO] Log file: S:\SwarmMind\logs\cleanup-stale-refs-20260609-023354.log
