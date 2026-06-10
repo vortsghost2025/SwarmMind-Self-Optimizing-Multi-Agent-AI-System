@@ -91,3 +91,7 @@ swarm-night-queue.json
 
 # Volatile offline reports (regenerated every cycle)
 reports/swarm/
+
+# Work claim registry (runtime coordination, advisory only)
+lanes/*/state/work-claim.json
+.work-claim.json
