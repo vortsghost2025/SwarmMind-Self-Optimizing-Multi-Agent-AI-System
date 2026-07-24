@@ -4,18 +4,10 @@
 const fs = require('fs');
 const path = require('path');
 
-// LOCAL IMPLEMENTATION - Avoid cross-lane require()
-// ORIGIN: Previously required S:/Archivist-Agent/.global/lane-discovery
-// LOCALIZED: 2026-05-02 for SwarmMind sovereignty
-const { LANES, getAllLanes } = require('./util/lane-discovery');
-
 let _discovery = null;
 try {
-  // Try to use local static lane config
-  _discovery = {
-    listLanes: () => Object.keys(LANES),
-		getLocalPath: (laneId) => (LANES[laneId] && LANES[laneId].root) || null
-  };
+  const { LaneDiscovery } = require('./util/lane-discovery');
+  _discovery = new LaneDiscovery();
 } catch (_) {}
 
 function _getDefaultAllowedRoots() {
@@ -26,20 +18,26 @@ function _getDefaultAllowedRoots() {
     }
     if (roots.length > 0) return roots;
   }
-
-  // Fallback: hardcoded roots for sovereignty
-  return [
-    'S:/Archivist-Agent',
-    'S:/self-organizing-library',
-    'S:/kernel-lane',
-    'S:/SwarmMind'
-  ];
+  return ['S:/Archivist-Agent', 'S:/kernel-lane', 'S:/self-organizing-library', 'S:/SwarmMind'];
 }
 
 const DEFAULT_ALLOWED_ROOTS = _getDefaultAllowedRoots();
 
 function normalizePath(p) {
   return p.replace(/\\/g, '/').toLowerCase();
+}
+
+function isAbsolutePath(p) {
+  if (!p || typeof p !== 'string') return false;
+  if (path.isAbsolute(p)) return true;
+  if (/^[A-Za-z]:[\/\\]/.test(p)) return true;
+  return false;
+}
+
+function hasDotDot(p) {
+  if (!p || typeof p !== 'string') return false;
+  const parts = p.replace(/\\/g, '/').split('/');
+  return parts.some(part => part === '..');
 }
 
 function isContainedWithin(childResolved, rootNormalized) {
@@ -102,53 +100,58 @@ class ArtifactResolver {
   }
 
   resolveRelativePath(artifactPath) {
-    if (!artifactPath || typeof artifactPath !== 'string') return null;
-    if (path.isAbsolute(artifactPath)) return artifactPath;
+    if (!artifactPath || typeof artifactPath !== 'string') return { path: null, withinRoots: false };
+    if (isAbsolutePath(artifactPath)) return { path: artifactPath, withinRoots: true };
 
     const candidates = [];
     for (const rawRoot of this._rawAllowedRoots) {
       const candidate = path.join(rawRoot, artifactPath);
       const resolved = path.resolve(candidate);
       if (!this.isWithinAllowedRoots(resolved)) continue;
-      if (fs.existsSync(candidate)) return candidate;
+      if (fs.existsSync(candidate)) return { path: candidate, withinRoots: true };
       candidates.push(candidate);
     }
-    return candidates.length > 0 ? candidates[0] : null;
-  }
+        return candidates.length > 0
+            ? { path: candidates[0], withinRoots: true }
+            : { path: null, withinRoots: false };
+    }
 
   resolveExists(artifactPath) {
     if (!artifactPath || typeof artifactPath !== 'string') {
       return { exists: false, reason: 'EMPTY_PATH' };
     }
 
-    if (this.hasPathTraversal(artifactPath)) {
-      return { exists: false, reason: 'PATH_TRAVERSAL_REJECTED' };
-    }
-
-    let resolvedPath = artifactPath;
-    if (!path.isAbsolute(artifactPath)) {
-      const resolved = this.resolveRelativePath(artifactPath);
-      if (!resolved) {
+    if (isAbsolutePath(artifactPath)) {
+      if (!this.isWithinAllowedRoots(artifactPath)) {
+        if (hasDotDot(artifactPath)) {
+          return { exists: false, reason: 'PATH_TRAVERSAL_REJECTED' };
+        }
         return { exists: false, reason: 'OUTSIDE_ALLOWED_ROOTS' };
       }
-      resolvedPath = resolved;
-    } else if (!this.isWithinAllowedRoots(artifactPath)) {
-      return { exists: false, reason: 'OUTSIDE_ALLOWED_ROOTS' };
+    } else {
+      const relResult = this.resolveRelativePath(artifactPath);
+      if (!relResult.withinRoots) {
+        return { exists: false, reason: 'OUTSIDE_ALLOWED_ROOTS' };
+      }
+      if (!relResult.path) {
+        return { exists: false, reason: 'OUTSIDE_ALLOWED_ROOTS' };
+      }
+      artifactPath = relResult.path;
     }
 
     if (this.dryRun) {
-      return { exists: true, reason: 'DRY_RUN_SKIP_FS_CHECK', path: resolvedPath };
+      return { exists: true, reason: 'DRY_RUN_SKIP_FS_CHECK', path: artifactPath };
     }
 
     try {
-      const stat = fs.statSync(resolvedPath);
-      return { exists: true, reason: 'FILE_EXISTS', path: resolvedPath, isFile: stat.isFile() };
+      const stat = fs.statSync(artifactPath);
+      return { exists: true, reason: 'FILE_EXISTS', path: artifactPath, isFile: stat.isFile() };
     } catch (_) {
-      return { exists: false, reason: 'FILE_NOT_FOUND', path: resolvedPath };
+      return { exists: false, reason: 'FILE_NOT_FOUND', path: artifactPath };
     }
-  }
+    }
 
-  classifyProof(msg) {
+    classifyProof(msg) {
     if (!msg || typeof msg !== 'object') return { type: 'NONE', path: null };
 
     if (msg.evidence_exchange && msg.evidence_exchange.artifact_path) {
@@ -195,12 +198,30 @@ class ArtifactResolver {
       };
     }
 
-    const fileResult = this.resolveExists(classification.path);
+    // Cross-repo resolution: if message has a 'from' lane, try that lane's repo first
+    var artifactPath = classification.path;
+    if (artifactPath && !path.isAbsolute(artifactPath) && msg.from && _discovery) {
+      var fromLaneRoot = _discovery.getLocalPath(msg.from);
+      if (fromLaneRoot) {
+        var fromCandidate = path.resolve(path.join(fromLaneRoot, artifactPath));
+        if (this.isWithinAllowedRoots(fromCandidate) && fs.existsSync(fromCandidate)) {
+          return {
+            resolved: true,
+            type: classification.type,
+            path: fromCandidate,
+            reason: 'CROSS_REPO_RESOLVED_FROM_LANE',
+            from_lane: msg.from,
+          };
+        }
+      }
+    }
+
+    const fileResult = this.resolveExists(artifactPath);
     if (!fileResult.exists) {
       return {
         resolved: false,
         type: classification.type,
-        path: classification.path,
+        path: artifactPath,
         reason: fileResult.reason,
       };
     }
@@ -208,7 +229,7 @@ class ArtifactResolver {
     return {
       resolved: true,
       type: classification.type,
-      path: classification.path,
+      path: fileResult.path || artifactPath,
       reason: fileResult.reason,
     };
   }

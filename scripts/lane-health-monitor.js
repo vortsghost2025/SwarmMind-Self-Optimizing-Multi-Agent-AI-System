@@ -4,12 +4,22 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+const os = require('os');
+const { sToLocal } = require('./util/lane-discovery');
 
+const isWin32 = process.platform === 'win32';
+const UBUNTU_ROOT = path.join(os.homedir(), 'agent', 'repos');
+
+function _resolvePath(p) {
+  if (isWin32) return p;
+  return sToLocal(p.replace(/\\/g, '/'));
+}
 
 const LANES = [
-  { name: 'library', path: getRoots()['library'] },
-  { name: 'swarmmind', path: getRoots()['swarmmind'] }
+  { name: 'archivist', path: _resolvePath('S:/Archivist-Agent') },
+  { name: 'kernel', path: _resolvePath('S:/kernel-lane') },
+  { name: 'library', path: _resolvePath('S:/self-organizing-library') },
+  { name: 'swarmmind', path: _resolvePath('S:/SwarmMind') }
 ];
 
 const THRESHOLDS = {

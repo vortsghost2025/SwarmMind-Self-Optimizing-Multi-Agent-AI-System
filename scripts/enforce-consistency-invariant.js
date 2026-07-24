@@ -8,11 +8,15 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getRoots } = require('./util/lane-discovery');
 
-const LANE_ROOTS = getRoots();
+const LANE_ROOTS = {
+  archivist: 'S:/Archivist-Agent',
+  kernel: 'S:/kernel-lane',
+  library: 'S:/self-organizing-library',
+  swarmmind: 'S:/SwarmMind'
+};
 
-const BROADCAT_PATH = 'S:/SwarmMind/lanes/broadcast';
+const BROADCAT_PATH = 'S:/Archivist-Agent/lanes/broadcast';
 
 function loadJSON(p) {
   try { return JSON.parse(fs.readFileSync(p, 'utf8')); }
@@ -50,6 +54,7 @@ function enforceInvariant(laneId, root) {
   } else if (contraCount > 0 && !allowedStatus.includes(state.system_status)) {
     console.error(`[${laneId}] ❌ INVARIANT VIOLATION - ${contraCount} active contraditions but system_status='${state.system_status}'`);
     
+  // Fix: report violation — only heartbeat.js may write system_state.json
   console.error(`[${laneId}] INVARIANT: Only heartbeat.js may write system_state.json. No auto-fix applied. Heartbeat will correct on next cycle.`);
   process.exit(1);
   }

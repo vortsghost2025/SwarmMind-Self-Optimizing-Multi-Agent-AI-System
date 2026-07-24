@@ -4,8 +4,6 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
-
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 
@@ -29,9 +27,9 @@ function buildStatePackage() {
   // Per-lane state
   const lanes = ['kernel', 'library', 'swarmmind'];
   const laneRoots = {
-    kernel: getRoots()['kernel'],
-    library: getRoots()['library'],
-    swarmmind: getRoots()['swarmmind'],
+    kernel: 'S:/kernel-lane',
+    library: 'S:/self-organizing-library',
+    swarmmind: 'S:/SwarmMind',
   };
 
   for (const lane of lanes) {

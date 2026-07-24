@@ -4,6 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { sanitizeFilename } = require('./util/sanitize-filename');
 
 const MAX_CHAIN_DEPTH = 5;
 const DEFAULT_POLL_SECONDS = 60;
@@ -230,12 +231,10 @@ class TaskChainEngine {
       execution: { mode: 'manual', engine: 'local', actor: this.lane + '-agent' },
       lease: { owner: this.lane, acquired_at: new Date().toISOString(), expires_at: new Date(Date.now() + 86400000).toISOString(), renew_count: 0, max_renewals: 3 },
       retry: { attempt: 1, max_attempts: 3 },
-        evidence: { required: true, evidence_path: '', verified: false, verified_by: this.lane },
-        evidence_exchange: { artifact_path: null, artifact_type: null, delivered_at: null },
-        heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), status: 'active' },
-        confidence: 8,
-        signature: 'eyJ1bmludmVyaWZpZWQifQ.eyJmcm9tIjoi' + this.lane + 'IiwidGFza19raW5kIjoicmV2aWV3In0.unsigned',
-      signature_alg: 'RS256',
+      evidence: { required: true, evidence_path: '', verified: false, verified_by: this.lane },
+      heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), status: 'active' },
+      signature: 'eyJ1bmludmVyaWZpZWQifQ.eyJmcm9tIjoi' + this.lane + 'IiwidGFza19raW5kIjoicmV2aWV3In0.unsigned',
+      signature_alg: 'EdDSA',
       key_id: 'self'
     };
   }
@@ -262,12 +261,10 @@ class TaskChainEngine {
       execution: { mode: 'manual', engine: 'local', actor: 'archivist-agent' },
       lease: { owner: 'archivist', acquired_at: new Date().toISOString(), expires_at: new Date(Date.now() + 86400000).toISOString(), renew_count: 0, max_renewals: 3 },
       retry: { attempt: 1, max_attempts: 3 },
-        evidence: { required: true, evidence_path: '', verified: false, verified_by: 'archivist' },
-        evidence_exchange: { artifact_path: null, artifact_type: null, delivered_at: null },
-        heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), status: 'active' },
-        confidence: 8,
-        signature: 'eyJ1bmludmVyaWZpZWQifQ.eyJmcm9tIjoiYXJjaGl2aXN0IiwidGFza19raW5kIjoicmF0aWZpY2F0aW9uIn0.unsigned',
-      signature_alg: 'RS256',
+      evidence: { required: true, evidence_path: '', verified: false, verified_by: 'archivist' },
+      heartbeat: { interval_seconds: 300, last_heartbeat_at: new Date().toISOString(), status: 'active' },
+      signature: 'eyJ1bmludmVyaWZpZWQifQ.eyJmcm9tIjoiYXJjaGl2aXN0IiwidGFza19raW5kIjoicmF0aWZpY2F0aW9uIn0.unsigned',
+      signature_alg: 'EdDSA',
       key_id: 'self'
     };
   }
@@ -285,7 +282,7 @@ class TaskChainEngine {
       try { fs.mkdirSync(targetDir, { recursive: true }); } catch (_) {}
     }
 
-    var fileName = new Date().toISOString().replace(/[:.]/g, '-') + '_' + this.lane + '_' + followup.task_id + '.json';
+    var fileName = sanitizeFilename(new Date().toISOString()) + '_' + this.lane + '_' + followup.task_id + '.json';
     var filePath = path.join(targetDir, fileName);
     this._writeJson(filePath, followup);
     this._log('Followup written: ' + filePath);
