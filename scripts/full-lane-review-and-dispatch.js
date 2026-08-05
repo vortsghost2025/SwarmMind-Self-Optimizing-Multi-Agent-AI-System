@@ -5,13 +5,11 @@ const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
 
-const { createSignedMessage, buildCanonicalMessage } = require('./create-signed-message');
-const { deliverMessage, getCanonicalPath } = require('../src/lane/SchemaValidator');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
-
+const { createSignedMessage } = require('./create-signed-message');
+const { createMessage, deliverMessage, getCanonicalPath } = require('../src/lane/SchemaValidator');
 
 const REVIEW_ID = `full-lane-review-${Date.now()}`;
-const REPORT_DIR = sToLocal('S:/Archivist-Agent/lanes/archivist/outbox');
+const REPORT_DIR = 'S:/Archivist-Agent/lanes/archivist/outbox';
 
 function runNodeJson(scriptPath, args = []) {
   const res = spawnSync('node', [scriptPath, ...args], { encoding: 'utf8' });
@@ -49,15 +47,20 @@ function readJsonIfExists(file) {
 }
 
 function buildEvidence() {
-  const syncGate = runNodeJson(sToLocal('S:/self-organizing-library/scripts/sync-gate-verify.js'));
+  const syncGate = runNodeJson('S:/self-organizing-library/scripts/sync-gate-verify.js');
 
   // post-compact writes to file; run and then read the artifact
-  spawnSync('node', [sToLocal('S:/Archivist-Agent/scripts/post-compact-audit.js')], { encoding: 'utf8' });
-  const compactAudit = readJsonIfExists(sToLocal('S:/Archivist-Agent/.compact-audit/POST_COMPACT_AUDIT.json'));
+  spawnSync('node', ['S:/Archivist-Agent/scripts/post-compact-audit.js'], { encoding: 'utf8' });
+  const compactAudit = readJsonIfExists('S:/Archivist-Agent/.compact-audit/POST_COMPACT_AUDIT.json');
 
-  const recovery = runNodeJson(sToLocal('S:/Archivist-Agent/scripts/recover-action-required-from-processed.js'));
+  const recovery = runNodeJson('S:/Archivist-Agent/scripts/recover-action-required-from-processed.js');
 
-  const repos = getRoots();
+  const repos = {
+    archivist: 'S:/Archivist-Agent',
+    library: 'S:/self-organizing-library',
+    kernel: 'S:/kernel-lane',
+    swarmmind: 'S:/SwarmMind',
+  };
 
   const git = {};
   for (const [lane, repo] of Object.entries(repos)) {
@@ -131,8 +134,7 @@ function formatLaneBody(lane, evidence, tasks) {
 }
 
 function sendSignedTask(toLane, subject, body, priority = 'P0') {
-  const base = buildCanonicalMessage({
-    profile: 'control_actionable_pre_execution',
+  const base = createMessage({
     from: 'archivist',
     to: toLane,
     type: 'task',
@@ -142,6 +144,8 @@ function sendSignedTask(toLane, subject, body, priority = 'P0') {
     body,
     requires_action: true,
     payload: {
+      mode: 'inline',
+      compression: 'none',
       path: null,
       chunk: { index: 0, count: 1, group_id: null },
     },
@@ -152,13 +156,25 @@ function sendSignedTask(toLane, subject, body, priority = 'P0') {
       session_id: null,
       parent_id: null,
     },
-    evidence: { required: false, verified: false },
-    evidence_exchange: {},
-    extra: {
-      review_id: REVIEW_ID,
-      generated_by: 'full-lane-review-and-dispatch.js',
+    evidence: {
+      required: false,
+      evidence_path: null,
+      verified: false,
+      verified_by: null,
+      verified_at: null,
     },
+    review_id: REVIEW_ID,
+    generated_by: 'full-lane-review-and-dispatch.js',
   });
+
+  if (base.delivery_verification) {
+    base.delivery_verification = {
+      verified: false,
+      verified_at: null,
+      retries: 0,
+    };
+  }
+
   const signed = createSignedMessage(base, 'archivist');
   const canonicalPath = getCanonicalPath(toLane);
   const delivery = deliverMessage(signed, canonicalPath);
@@ -201,7 +217,7 @@ function sendArchivistSummary(evidence, dispatchResults, tasks) {
     lines.push(`- ${r.lane}: delivered=${r.delivered} verified=${r.verified} path=${r.path}`);
   }
 
-  const msg = buildCanonicalMessage({
+  const msg = createMessage({
     from: 'archivist',
     to: 'archivist',
     type: 'ack',
@@ -211,6 +227,8 @@ function sendArchivistSummary(evidence, dispatchResults, tasks) {
     body: lines.join('\n'),
     requires_action: false,
     payload: {
+      mode: 'inline',
+      compression: 'none',
       path: null,
       chunk: { index: 0, count: 1, group_id: null },
     },
@@ -221,13 +239,16 @@ function sendArchivistSummary(evidence, dispatchResults, tasks) {
       session_id: null,
       parent_id: null,
     },
-    evidence: { required: false, verified: false },
-    evidence_exchange: {},
-    extra: {
-      review_id: REVIEW_ID,
-      generated_by: 'full-lane-review-and-dispatch.js',
-      dispatch_count: dispatchResults.length,
+    evidence: {
+      required: false,
+      evidence_path: null,
+      verified: false,
+      verified_by: null,
+      verified_at: null,
     },
+    review_id: REVIEW_ID,
+    generated_by: 'full-lane-review-and-dispatch.js',
+    dispatch_count: dispatchResults.length,
   });
 
   const signed = createSignedMessage(msg, 'archivist');

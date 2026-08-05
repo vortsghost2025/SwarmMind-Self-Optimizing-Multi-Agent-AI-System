@@ -6,11 +6,15 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { getRoots } = require('./util/lane-discovery');
 
 const LANE = process.env.LANE || 'swarmmind';
 
-const LANE_ROOTS = getRoots();
+const LANE_ROOTS = {
+  swarmmind: 'S:/SwarmMind',
+  archivist: 'S:/Archivist-Agent',
+  kernel: 'S:/kernel-lane',
+  library: 'S:/self-organizing-library'
+};
 
 const LANE_ROOT = LANE_ROOTS[LANE];
 const INBOX_DIR = path.join(LANE_ROOT, 'lanes', LANE, 'inbox');
@@ -91,7 +95,7 @@ function analyzeBlockers(stats, audit) {
       impact: stats.blocked > 5 ? 'high' : 'medium',
       count_last_24h: stats.blocked + stats.quarantine,
       actionable: true,
-      request_to_other_lanes: 'All lanes: please ensure all outgoing messages use RS256 signatures and schema v1.3 with non-null evidence_exchange.artifact_path.'
+      request_to_other_lanes: 'All lanes: please ensure all outgoing messages use RS256 or EdDSA signatures and schema v1.3 with non-null evidence_exchange.artifact_path.'
     });
   }
 
@@ -270,14 +274,12 @@ const report = {
   evidence_exchange: { artifact_type: 'report', artifact_path: 'inline', delivered_at: new Date().toISOString() },
   heartbeat: { interval_seconds: 86400, last_heartbeat_at: new Date().toISOString(), timeout_seconds: 3600, status: 'done' },
   convergence_gate: {
-  claim: `${LANE} daily productivity report generated`,
-  evidence: EVIDENCE_BASE,
-  verified_by: LANE,
-  contradictions: [],
-  status: 'proven'
-  },
-  confidence: 8,
-  investigation: null
+    claim: `${LANE} daily productivity report generated`,
+    evidence: EVIDENCE_BASE,
+    verified_by: LANE,
+    contradictions: [],
+    status: 'proven'
+  }
 };
 
 saveTracker(updatedTracker);

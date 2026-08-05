@@ -7,13 +7,13 @@ const crypto = require('crypto');
 const { IdentityEnforcer } = require('./identity-enforcer');
 
 const LANES = [
-  { id: 'archivist', dir: getRoots()['archivist'] },
-  { id: 'library', dir: getRoots()['library'] },
-  { id: 'swarmmind', dir: getRoots()['swarmmind'] },
-  { id: 'kernel', dir: getRoots()['kernel'] },
+  { id: 'archivist', dir: 'S:/Archivist-Agent' },
+  { id: 'library', dir: 'S:/self-organizing-library' },
+  { id: 'swarmmind', dir: 'S:/SwarmMind' },
+  { id: 'kernel', dir: 'S:/kernel-lane' },
 ];
 
-const PASSPHRASE_FILE = sToLocal('S:/Archivist-Agent/.runtime/lane-passphrases.json');
+const PASSPHRASE_FILE = 'S:/Archivist-Agent/.runtime/lane-passphrases.json';
 
 function generatePassphrase() {
   return crypto.randomBytes(32).toString('hex');
@@ -84,8 +84,6 @@ function main() {
   for (const lane of LANES) {
     const identityDir = path.join(lane.dir, '.identity');
     const KeyManager = require(path.join(lane.dir, 'src/attestation/KeyManager.js')).KeyManager;
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
-
     const km = new KeyManager({ identityDir, laneId: lane.id });
 
     if (km.hasKeys()) {
@@ -99,7 +97,7 @@ const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
     }
   }
 
-  const trustStorePath = sToLocal('S:/Archivist-Agent/lanes/broadcast/trust-store.json');
+  const trustStorePath = 'S:/Archivist-Agent/lanes/broadcast/trust-store.json';
   IdentityEnforcer.writeTrustStoreStrict(trustStorePath, trustStore, { actorLane: 'archivist' });
   console.log(`\nTrust store saved to: ${trustStorePath}`);
 

@@ -24,7 +24,7 @@ const DEFAULT_CONFIG = {
 
 class AdaptiveCpuAlerts {
   constructor(options = {}) {
-    this.lane = options.lane || 'swarmmind';
+    this.lane = options.lane || 'archivist';
     this.stateDir = options.stateDir;
     this.config = Object.assign({}, DEFAULT_CONFIG, options.config || {});
     this.statePath = path.join(this.stateDir, 'adaptive-alert-state.json');
@@ -144,6 +144,7 @@ class AdaptiveCpuAlerts {
 
     let deltaCpuUsec;
     let wallSeconds;
+
     if (this._prevCpu !== null && this._prevWallMs !== null) {
       deltaCpuUsec = Math.max(0, cpuTotalUsec - this._prevCpu);
       wallSeconds = _wallSecondsOverride != null
@@ -159,32 +160,32 @@ class AdaptiveCpuAlerts {
         : Math.max(this.config.sample_window_seconds, process.uptime());
     }
 
+    const cpuPct = this._normalizeCpuPct(deltaCpuUsec, wallSeconds);
+
     this._prevWallMs = now;
     this._prevCpu = cpuTotalUsec;
 
-    const cpuPct = this._normalizeCpuPct(deltaCpuUsec, wallSeconds);
+   const thresholds = this._getAdaptiveThresholds();
+   const result = this._checkThresholds(cpuPct, memRss, thresholds);
 
-    const thresholds = this._getAdaptiveThresholds();
-    const result = this._checkThresholds(cpuPct, memRss, thresholds);
+   if (cpuPct < thresholds.warningPct) {
+     this._state.samples.push({
+       timestamp: new Date().toISOString(),
+       cpuPct: Math.round(cpuPct * 1000) / 1000,
+       cpuDeltaUsec: deltaCpuUsec,
+       cpuTotalUsec,
+       wallSeconds: Math.round(wallSeconds * 10) / 10,
+     });
+   }
 
-    if (cpuPct < thresholds.warningPct) {
-      this._state.samples.push({
-        timestamp: new Date().toISOString(),
-        cpuPct: Math.round(cpuPct * 1000) / 1000,
-        cpuDeltaUsec: deltaCpuUsec,
-        cpuTotalUsec,
-        wallSeconds: Math.round(wallSeconds * 10) / 10,
-      });
-    }
+     const maxSamples = this.config.baseline_window_samples * 2;
+     if (this._state.samples.length > maxSamples) {
+       this._state.samples = this._state.samples.slice(-this.config.baseline_window_samples);
+     }
 
-    const maxSamples = this.config.baseline_window_samples * 2;
-    if (this._state.samples.length > maxSamples) {
-      this._state.samples = this._state.samples.slice(-this.config.baseline_window_samples);
-    }
-
-    this.saveState();
-    return result;
-  }
+     this.saveState();
+     return result;
+   }
 
    _checkThresholds(cpuPct, memRss, thresholds) {
      const alerts = [];
@@ -257,45 +258,44 @@ class AdaptiveCpuAlerts {
            this._state.consecutiveHighCpu = 0;
          }
        }
-      } else {
-        this._state.consecutiveHighCpu = 0;
-        this._state.consecutiveCriticalCpu = 0;
-        this._state.consecutiveEmergencyCpu = 0;
-      }
+     } else {
+       this._state.consecutiveHighCpu = 0;
+       this._state.consecutiveCriticalCpu = 0;
+       this._state.consecutiveEmergencyCpu = 0;
+     }
 
-      // Memory threshold check (always evaluated, not just first sample)
-      if (memRss > this.config.mem_threshold_bytes) {
-        const key = `mem-warning-${this.lane}`;
-        if (!this._isCooldownActive(key)) {
-          const memPct = (memRss / this.config.mem_threshold_bytes) * 100;
-          alerts.push({
-            severity: memPct > 200 ? 'CRITICAL' : 'WARNING',
-            metric: 'memory',
-            value: memRss,
-            threshold: this.config.mem_threshold_bytes,
-            thresholdType: 'static',
-            mode: 'static',
-            message: `Memory RSS at ${(memRss / 1024 / 1024).toFixed(1)}MB exceeds threshold ${(this.config.mem_threshold_bytes / 1024 / 1024).toFixed(0)}MB`,
-          });
-          this._setCooldown(key, this.config.mem_cooldown_seconds);
-        }
-      }
+     if (memRss > this.config.mem_threshold_bytes) {
+       const key = `mem-warning-${this.lane}`;
+       if (!this._isCooldownActive(key)) {
+         const memPct = (memRss / this.config.mem_threshold_bytes) * 100;
+         alerts.push({
+           severity: memPct > 200 ? 'CRITICAL' : 'WARNING',
+           metric: 'memory',
+           value: memRss,
+           threshold: this.config.mem_threshold_bytes,
+           thresholdType: 'static',
+           mode: 'static',
+           message: `Memory RSS at ${(memRss / 1024 / 1024).toFixed(1)}MB exceeds threshold ${(this.config.mem_threshold_bytes / 1024 / 1024).toFixed(0)}MB`,
+         });
+         this._setCooldown(key, this.config.mem_cooldown_seconds);
+       }
+     }
 
-      const escalate = alerts.some(a => a.severity === 'CRITICAL');
-      const maxAlert = alerts.length > 0 ? alerts.reduce((a, b) => {
-        const rank = { CRITICAL: 3, WARNING: 2, INFO: 1 };
-        return (rank[a.severity] || 0) >= (rank[b.severity] || 0) ? a : b;
-      }) : null;
+     const escalate = alerts.some(a => a.severity === 'CRITICAL');
+     const maxAlert = alerts.length > 0 ? alerts.reduce((a, b) => {
+       const rank = { CRITICAL: 3, WARNING: 2, INFO: 1 };
+       return (rank[a.severity] || 0) >= (rank[b.severity] || 0) ? a : b;
+     }) : null;
 
-      return {
-        shouldAlert: alerts.length > 0,
-        severity: maxAlert ? maxAlert.severity : null,
-        alerts,
-        cpuPct,
-        thresholds,
-        escalate,
-      };
-    }
+     return {
+       shouldAlert: alerts.length > 0,
+       severity: maxAlert ? maxAlert.severity : null,
+       alerts,
+       cpuPct,
+       thresholds,
+       escalate,
+     };
+   }
 
    getStatus() {
      this.loadState();

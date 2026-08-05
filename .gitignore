@@ -95,3 +95,4 @@ reports/swarm/
 # Work claim registry (runtime coordination, advisory only)
 lanes/*/state/work-claim.json
 .work-claim.json
+**/quarantine-archive-*/

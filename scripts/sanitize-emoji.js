@@ -12,8 +12,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
-
 
 const EMOJI_MAP = {
   '\u2705': '[OK]',       // ✅
@@ -78,10 +76,10 @@ function walk(dir) {
 }
 
 const LANES = [
-  sToLocal('S:/SwarmMind/lanes'),
-  sToLocal('S:/Archivist-Agent/lanes'),
-  sToLocal('S:/kernel-lane/lanes'),
-  sToLocal('S:/self-organizing-library/lanes'),
+  'S:/Archivist-Agent/lanes',
+  'S:/kernel-lane/lanes',
+  'S:/self-organizing-library/lanes',
+  'S:/SwarmMind/lanes',
 ];
 
 let sanitizedCount = 0;

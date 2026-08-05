@@ -40,13 +40,12 @@
 #>
 
 param(
-[int]$PollSeconds = 0,
-[string[]]$Lanes = @("swarmmind"),
-[string]$LogFile = "$PSScriptRoot\inbox-watcher.log",
-[string]$NodeExe = "C:\Program Files\nodejs\node.exe",
-[string]$AgentPresenceScript = "$PSScriptRoot\agent-presence.js",
-[switch]$SkipExecutor = $false,
-[switch]$SkipOfflineRunner = $false
+  [int]$PollSeconds = 0,
+  [string[]]$Lanes = @("swarmmind"),
+  [string]$LogFile = "$PSScriptRoot\inbox-watcher.log",
+  [string]$NodeExe = "C:\Program Files\nodejs\node.exe",
+  [string]$AgentPresenceScript = "$PSScriptRoot\agent-presence.js",
+  [switch]$SkipExecutor = $false
 )
 
 function Write-Log {
@@ -161,20 +160,7 @@ foreach ($lane in $ActiveLanes) {
 }
 
 if (-not $anyActivity) {
-    Write-Log "[watcher] idle - nothing to process"
-}
-
-# Step 4: Offline runner — deterministic standing duties
-if (-not $SkipOfflineRunner) {
-    $offlineRunnerScript = "$PSScriptRoot\swarm-offline-runner.js"
-    if (Test-Path $offlineRunnerScript) {
-        Write-Log "[watcher] Step 4: Running offline runner"
-        Run-Step "offline-runner" $offlineRunnerScript "--apply" $AllLaneRoots["swarmmind"]
-    } else {
-        Write-Log "[watcher] Step 4: offline-runner script not found, skipping"
-    }
-} else {
-    Write-Log "[watcher] Step 4: offline runner skipped (SkipOfflineRunner=$SkipOfflineRunner)"
+  Write-Log "[watcher] idle - nothing to process"
 }
 
 Write-Log "[watcher] Pass complete"

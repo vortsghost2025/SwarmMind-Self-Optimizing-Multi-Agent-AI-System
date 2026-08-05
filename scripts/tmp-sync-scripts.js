@@ -1,12 +1,13 @@
 const fs = require('fs');
 const p = require('path');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
+const { LaneDiscovery } = require('./util/lane-discovery');
 
-const arDir = sToLocal('S:/Archivist-Agent/scripts');
+const discovery = new LaneDiscovery();
+const arDir = p.join(discovery.getInbox('archivist'), '..', 'scripts');
 const lanes = [
-  { name: 'kernel', root: getRoots()['kernel'] },
-  { name: 'library', root: getRoots()['library'] },
-  { name: 'swarmmind', root: getRoots()['swarmmind'] }
+  { name: 'kernel', root: discovery.getLocalPath('kernel') },
+  { name: 'library', root: discovery.getLocalPath('library') },
+  { name: 'swarmmind', root: discovery.getLocalPath('swarmmind') }
 ];
 
 // Get all scripts in Archivist

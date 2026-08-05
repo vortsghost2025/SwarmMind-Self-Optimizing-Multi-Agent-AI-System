@@ -3,8 +3,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
-
 
 const REPLY_TYPES = new Set([
   'collaboration_response',
@@ -19,28 +17,28 @@ const REPLY_TYPES = new Set([
 
 const LANES = {
   archivist: {
-    ar: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/action-required'),
-    pr: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/processed'),
-    qDup: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/quarantine/duplicates'),
-    qInv: sToLocal('S:/Archivist-Agent/lanes/archivist/inbox/quarantine/invalid-schema'),
+    ar: 'S:/Archivist-Agent/lanes/archivist/inbox/action-required',
+    pr: 'S:/Archivist-Agent/lanes/archivist/inbox/processed',
+    qDup: 'S:/Archivist-Agent/lanes/archivist/inbox/quarantine/duplicates',
+    qInv: 'S:/Archivist-Agent/lanes/archivist/inbox/quarantine/invalid-schema',
   },
   kernel: {
-    ar: sToLocal('S:/kernel-lane/lanes/kernel/inbox/action-required'),
-    pr: sToLocal('S:/kernel-lane/lanes/kernel/inbox/processed'),
-    qDup: sToLocal('S:/kernel-lane/lanes/kernel/inbox/quarantine/duplicates'),
-    qInv: sToLocal('S:/kernel-lane/lanes/kernel/inbox/quarantine/invalid-schema'),
+    ar: 'S:/kernel-lane/lanes/kernel/inbox/action-required',
+    pr: 'S:/kernel-lane/lanes/kernel/inbox/processed',
+    qDup: 'S:/kernel-lane/lanes/kernel/inbox/quarantine/duplicates',
+    qInv: 'S:/kernel-lane/lanes/kernel/inbox/quarantine/invalid-schema',
   },
   library: {
-    ar: sToLocal('S:/self-organizing-library/lanes/library/inbox/action-required'),
-    pr: sToLocal('S:/self-organizing-library/lanes/library/inbox/processed'),
-    qDup: sToLocal('S:/self-organizing-library/lanes/library/inbox/quarantine/duplicates'),
-    qInv: sToLocal('S:/self-organizing-library/lanes/library/inbox/quarantine/invalid-schema'),
+    ar: 'S:/self-organizing-library/lanes/library/inbox/action-required',
+    pr: 'S:/self-organizing-library/lanes/library/inbox/processed',
+    qDup: 'S:/self-organizing-library/lanes/library/inbox/quarantine/duplicates',
+    qInv: 'S:/self-organizing-library/lanes/library/inbox/quarantine/invalid-schema',
   },
   swarmmind: {
-    ar: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox/action-required'),
-    pr: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox/processed'),
-    qDup: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox/quarantine/duplicates'),
-    qInv: sToLocal('S:/SwarmMind/lanes/swarmmind/inbox/quarantine/invalid-schema'),
+    ar: 'S:/SwarmMind/lanes/swarmmind/inbox/action-required',
+    pr: 'S:/SwarmMind/lanes/swarmmind/inbox/processed',
+    qDup: 'S:/SwarmMind/lanes/swarmmind/inbox/quarantine/duplicates',
+    qInv: 'S:/SwarmMind/lanes/swarmmind/inbox/quarantine/invalid-schema',
   },
 };
 

@@ -3,8 +3,6 @@
 
 const { execSync } = require('child_process');
 const fs = require('fs');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
-
 
 const lanes = ['archivist', 'kernel', 'library', 'swarmmind'];
 const results = {};
@@ -12,7 +10,7 @@ const results = {};
 for (const lane of lanes) {
   try {
     const out = execSync(`node scripts/ci-integration-check.js ${lane}`, {
-      cwd: getRoots()['archivist'],
+      cwd: 'S:/Archivist-Agent',
       encoding: 'utf8',
       stdio: ['pipe', 'pipe', 'pipe']
     });

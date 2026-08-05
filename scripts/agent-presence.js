@@ -3,9 +3,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getRoots } = require('./util/lane-discovery');
 
-const LANE_ROOTS = getRoots();
+const LANE_ROOTS = {
+  archivist: 'S:/Archivist-Agent',
+  kernel: 'S:/kernel-lane',
+  library: 'S:/self-organizing-library',
+  swarmmind: 'S:/SwarmMind',
+};
 
 function stateDir(lane) {
   return path.join(LANE_ROOTS[lane], 'lanes', lane, 'state');
@@ -74,6 +78,7 @@ function acquire(lane, opts = {}) {
   };
   fs.writeFileSync(lockPath(lane), JSON.stringify(lock, null, 2));
   setWatcherMode(lane, 'agent-assist');
+  try { require('./emit-identity').emit(lane); } catch (_) {}
   return lock;
 }
 
@@ -83,6 +88,7 @@ function release(lane) {
     try { fs.unlinkSync(lp); } catch (_) {}
   }
   setWatcherMode(lane, 'auto');
+  try { require('./emit-identity').emit(lane); } catch (_) {}
 }
 
 function setWatcherMode(lane, mode) {

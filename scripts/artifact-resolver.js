@@ -4,18 +4,10 @@
 const fs = require('fs');
 const path = require('path');
 
-// LOCAL IMPLEMENTATION - Avoid cross-lane require()
-// ORIGIN: Previously required S:/Archivist-Agent/.global/lane-discovery
-// LOCALIZED: 2026-05-02 for SwarmMind sovereignty
-const { LANES, getAllLanes } = require('./util/lane-discovery');
-
 let _discovery = null;
 try {
-  // Try to use local static lane config
-  _discovery = {
-    listLanes: () => Object.keys(LANES),
-		getLocalPath: (laneId) => (LANES[laneId] && LANES[laneId].root) || null
-  };
+  const { LaneDiscovery } = require('./util/lane-discovery');
+  _discovery = new LaneDiscovery();
 } catch (_) {}
 
 function _getDefaultAllowedRoots() {
@@ -26,14 +18,7 @@ function _getDefaultAllowedRoots() {
     }
     if (roots.length > 0) return roots;
   }
-
-  // Fallback: hardcoded roots for sovereignty
-  return [
-    'S:/Archivist-Agent',
-    'S:/self-organizing-library',
-    'S:/kernel-lane',
-    'S:/SwarmMind'
-  ];
+  return ['S:/Archivist-Agent', 'S:/kernel-lane', 'S:/self-organizing-library', 'S:/SwarmMind'];
 }
 
 const DEFAULT_ALLOWED_ROOTS = _getDefaultAllowedRoots();
@@ -91,15 +76,17 @@ class ArtifactResolver {
     return false;
   }
 
-  hasPathTraversal(artifactPath) {
-    if (!artifactPath || typeof artifactPath !== 'string') return true;
-    try {
-      const resolved = path.resolve(artifactPath);
-      return !this.isWithinAllowedRoots(resolved);
-    } catch (_) {
-      return true;
-    }
-  }
+ hasPathTraversal(artifactPath) {
+ if (!artifactPath || typeof artifactPath !== 'string') return true;
+ if (/\.\./.test(artifactPath)) return true;
+ try {
+ const resolved = path.resolve(artifactPath);
+ if (/\.\./.test(resolved)) return true;
+ } catch (_) {
+ return true;
+ }
+ return false;
+ }
 
   resolveRelativePath(artifactPath) {
     if (!artifactPath || typeof artifactPath !== 'string') return null;

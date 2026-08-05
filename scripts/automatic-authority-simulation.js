@@ -7,10 +7,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-
-const LANE_ROOTS = getRoots();
+const LANE_ROOTS = {
+  archivist: 'S:/Archivist-Agent',
+  kernel: 'S:/kernel-lane',
+  library: 'S:/self-organizing-library',
+  swarmmind: 'S:/SwarmMind'
+};
 
 function loadJson(filePath) {
   try {
@@ -36,7 +39,7 @@ function evaluateConvergence() {
   }
   
   // 2. Check latest convergence monitor report
-  const monitorPath = sToLocal('S:/Archivist-Agent/convergence-monitor-report-20260423.json');
+  const monitorPath = 'S:/Archivist-Agent/convergence-monitor-report-20260423.json';
   const monitor = loadJson(monitorPath);
   if (monitor) {
     console.log(`\n[Monitor] Status: ${monitor.status}`);
@@ -44,7 +47,7 @@ function evaluateConvergence() {
   }
   
   // 3. Check post-compact audit
-  const auditPath = sToLocal('S:/Archivist-Agent/.compact-audit/POST_COMPACT_AUDIT.json');
+  const auditPath = 'S:/Archivist-Agent/.compact-audit/POST_COMPACT_AUDIT.json';
   const audit = loadJson(auditPath);
   if (audit) {
     console.log(`\n[Audit] overall_ok: ${audit.overall_ok}`);
