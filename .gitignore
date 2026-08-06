@@ -96,3 +96,5 @@ reports/swarm/
 lanes/*/state/work-claim.json
 .work-claim.json
 **/quarantine-archive-*/
+
+lanes/*/state/events.log
