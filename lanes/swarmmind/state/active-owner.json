@@ -3,8 +3,8 @@
   "lane": "swarmmind",
   "lane_state": "ACTIVE",
   "claimed_at": "2026-08-07T17:11:26.814Z",
-  "renewed_at": "2026-08-07T20:16:37.608Z",
-  "expires_at": "2026-08-07T20:31:37.608Z",
+  "renewed_at": "2026-08-07T20:47:39.472Z",
+  "expires_at": "2026-08-07T21:02:39.472Z",
   "pid": 186994,
   "origin_runtime": "kilo",
   "origin_workspace": "/home/we4free/agent/repos/SwarmMind"
