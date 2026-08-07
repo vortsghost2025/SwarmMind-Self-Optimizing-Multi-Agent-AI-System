@@ -15,7 +15,9 @@ const path = require('path');
 const os = require('os');
 
 const isWin32 = process.platform === 'win32';
-const UBUNTU_ROOT = path.join(os.homedir(), 'agent', 'repos');
+const UBUNTU_ROOT = process.env.LANE_REPOS_ROOT
+  ? path.resolve(process.env.LANE_REPOS_ROOT)
+  : path.join(os.homedir(), 'agent', 'repos');
 
 const REGISTRY_PATH = process.env.LANE_REGISTRY_PATH
   ? path.resolve(process.env.LANE_REGISTRY_PATH)

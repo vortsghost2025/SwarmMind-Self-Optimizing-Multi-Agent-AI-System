@@ -9,16 +9,29 @@ jobs:
   lane-worker-and-executor-tests:
     runs-on: ubuntu-latest
     env:
-      LANE_REGISTRY_PATH: ${{ github.workspace }}/archivist-registry/.global/lane-registry.json
+      LANE_REGISTRY_PATH: ${{ github.workspace }}/Archivist-Agent/.global/lane-registry.json
+      LANE_REPOS_ROOT: ${{ github.workspace }}
+      KERNEL_ROOT: ${{ github.workspace }}/kernel-lane
+    defaults:
+      run:
+        working-directory: ./SwarmMind
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          path: SwarmMind
 
-      - name: Checkout canonical lane registry
+      - name: Checkout canonical Archivist-Agent
         uses: actions/checkout@v4
         with:
           repository: vortsghost2025/Archivist-Agent
-          path: archivist-registry
+          path: Archivist-Agent
+
+      - name: Checkout kernel-lane
+        uses: actions/checkout@v4
+        with:
+          repository: vortsghost2025/kernel-lane
+          path: kernel-lane
 
       - name: Setup Node
         uses: actions/setup-node@v4
