@@ -21,9 +21,9 @@ const UBUNTU_ROOT = process.env.LANE_REPOS_ROOT
 
 const REGISTRY_PATH = process.env.LANE_REGISTRY_PATH
   ? path.resolve(process.env.LANE_REGISTRY_PATH)
-  : isWin32
+  : (isWin32
     ? 'S:/Archivist-Agent/.global/lane-registry.json'
-    : path.join(UBUNTU_ROOT, 'Archivist-Agent', '.global', 'lane-registry.json');
+    : path.join(UBUNTU_ROOT, 'Archivist-Agent', '.global', 'lane-registry.json'));
 
 function _resolvePath(winPath) {
   if (isWin32) return winPath;
