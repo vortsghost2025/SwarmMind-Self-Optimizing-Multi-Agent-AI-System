@@ -1,8 +1,11 @@
 {
-  "session_id": "sess_msj3t0g8_3218",
+  "session_id": "sess_msj7bxi6_186994",
   "lane": "swarmmind",
-  "claimed_at": "2026-08-07T15:32:47.023Z",
-  "pid": 3218,
-  "origin_runtime": "opencode",
+  "lane_state": "ACTIVE",
+  "claimed_at": "2026-08-07T17:11:26.814Z",
+  "renewed_at": "2026-08-07T17:40:28.564Z",
+  "expires_at": "2026-08-07T17:55:28.564Z",
+  "pid": 186994,
+  "origin_runtime": "kilo",
   "origin_workspace": "/home/we4free/agent/repos/SwarmMind"
 }
