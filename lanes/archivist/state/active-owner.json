@@ -1,11 +1,11 @@
 {
-  "session_id": "sess_msjcdyu8_361680",
+  "session_id": "sess_msjdv5zt_431824",
   "lane": "archivist",
   "lane_state": "ACTIVE",
-  "claimed_at": "2026-08-07T19:32:59.936Z",
-  "renewed_at": "2026-08-07T19:33:09.773Z",
-  "expires_at": "2026-08-07T19:48:09.773Z",
-  "pid": 361680,
+  "claimed_at": "2026-08-07T20:14:21.977Z",
+  "renewed_at": "2026-08-07T20:14:26.629Z",
+  "expires_at": "2026-08-07T20:29:26.629Z",
+  "pid": 431824,
   "origin_runtime": "kilo",
   "origin_workspace": "/home/we4free/agent/repos/Archivist-Agent"
 }
