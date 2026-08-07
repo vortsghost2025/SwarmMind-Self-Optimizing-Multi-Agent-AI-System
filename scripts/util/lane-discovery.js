@@ -212,7 +212,7 @@ function getRoots() {
 
 function sToLocal(winPath) {
   if (!isWin32 && winPath) {
-    return winPath.replace(/^S:/, '/home/we4free/agent/repos').replace(/\\/g, '/');
+    return winPath.replace(/^S:/, UBUNTU_ROOT).replace(/\\/g, '/');
   }
   return winPath;
 }
