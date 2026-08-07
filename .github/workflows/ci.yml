@@ -8,9 +8,17 @@ on:
 jobs:
   lane-worker-and-executor-tests:
     runs-on: ubuntu-latest
+    env:
+      LANE_REGISTRY_PATH: ${{ github.workspace }}/archivist-registry/.global/lane-registry.json
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout canonical lane registry
+        uses: actions/checkout@v4
+        with:
+          repository: vortsghost2025/Archivist-Agent
+          path: archivist-registry
 
       - name: Setup Node
         uses: actions/setup-node@v4

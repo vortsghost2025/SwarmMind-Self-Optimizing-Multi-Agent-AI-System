@@ -17,9 +17,11 @@ const os = require('os');
 const isWin32 = process.platform === 'win32';
 const UBUNTU_ROOT = path.join(os.homedir(), 'agent', 'repos');
 
-const REGISTRY_PATH = isWin32
-  ? 'S:/Archivist-Agent/.global/lane-registry.json'
-  : path.join(UBUNTU_ROOT, 'Archivist-Agent', '.global', 'lane-registry.json');
+const REGISTRY_PATH = process.env.LANE_REGISTRY_PATH
+  ? path.resolve(process.env.LANE_REGISTRY_PATH)
+  : isWin32
+    ? 'S:/Archivist-Agent/.global/lane-registry.json'
+    : path.join(UBUNTU_ROOT, 'Archivist-Agent', '.global', 'lane-registry.json');
 
 function _resolvePath(winPath) {
   if (isWin32) return winPath;
