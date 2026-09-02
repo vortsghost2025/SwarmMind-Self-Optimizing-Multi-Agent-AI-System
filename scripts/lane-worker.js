@@ -55,7 +55,8 @@ const UNICODE_NORMALIZE_MAP = {
   '\u2011': '-',    // non-breaking hyphen
   '\u2012': '-',    // figure dash
   '\u2015': '--',   // horizontal bar
-  '\u2212': '-',    // minus sign
+  '\u2212': '-', // minus sign
+  '\u00B5': 'u', // micro sign (µs → us in resource alerts)
 };
 
 const UNICODE_NORMALIZE_RE = new RegExp('[' + Object.keys(UNICODE_NORMALIZE_MAP).join('') + ']', 'g');
@@ -173,7 +174,7 @@ function sendNack(originalMsg, rejectionReason, rejectionDetail, targetLane, fro
       return null;
     }
     // Guard 4: rate-limit NACKs per (sender, original task_id)
-    const rateKey = `${senderLane}::${originalMsg.task_id || originalMsg.idempotency_key || 'unknown'}`;
+    const rateKey = `${senderLane}::${originalMsg.task_id || 'unknown'}`;
     const lastNack = NACK_RATE_LIMIT.get(rateKey);
     const now = Date.now();
     if (lastNack && (now - lastNack) < NACK_COOLDOWN_MS) {
@@ -361,18 +362,15 @@ function isActionable(msg) {
   );
 }
 
-const NON_ASCII_PATTERN = /[^\x20-\x7E\n\r\t]/;
+const NON_ASCII_PATTERN = /[^\x00-\x7F]/;
 
 function isEnglishOnly(msg) {
   if (!msg || typeof msg !== 'object') return true;
   const textFields = ['subject', 'body', 'type', 'from', 'to'];
   for (const field of textFields) {
-    let val = msg[field];
-    if (typeof val === 'string') {
-      val = normalizeToAscii(val);
-      if (NON_ASCII_PATTERN.test(val)) {
-        return false;
-      }
+    const val = msg[field];
+    if (typeof val === 'string' && NON_ASCII_PATTERN.test(val)) {
+      return false;
     }
   }
   return true;
@@ -571,27 +569,27 @@ class LaneWorker {
     };
   }
 
-   _loadSignatureValidator() {
-     try {
-       const mod = require(path.join(this.repoRoot, 'scripts', 'identity-enforcer'));
-       if (mod && typeof mod.IdentityEnforcer === 'function') {
-         const enforcer = new mod.IdentityEnforcer({ enforcementMode: 'warn' });
-         return (msg) => {
-           try {
-             const result = enforcer.enforceMessage(msg);
-             const valid = !!result && result.decision !== 'reject';
-             return { valid, reason: valid ? null : (result.reason || 'IDENTITY_REJECT'), details: result };
-           } catch (err) {
-             return { valid: false, reason: err.message, details: null };
-           }
-         };
-       }
-     } catch (_) {}
- 
-     return () => ({ valid: false, reason: 'IDENTITY_ENFORCER_UNAVAILABLE_FAIL_CLOSED', details: null });
-   }
+  _loadSignatureValidator() {
+    try {
+      const mod = require(path.join(this.repoRoot, 'scripts', 'identity-enforcer'));
+      if (mod && typeof mod.IdentityEnforcer === 'function') {
+        const enforcer = new mod.IdentityEnforcer({ enforcementMode: 'warn' });
+        return (msg) => {
+          try {
+            const result = enforcer.enforceMessage(msg);
+            const valid = !!result && result.decision !== 'reject';
+            return { valid, reason: valid ? null : (result.reason || 'IDENTITY_REJECT'), details: result };
+          } catch (err) {
+            return { valid: false, reason: err.message, details: null };
+          }
+        };
+      }
+    } catch (_) {}
 
-   _loadAdaptiveAlertConfig() {
+    return () => ({ valid: false, reason: 'IDENTITY_ENFORCER_UNAVAILABLE_FAIL_CLOSED', details: null });
+  }
+
+    _loadAdaptiveAlertConfig() {
      try {
        const configPath = path.join(this.repoRoot, 'config', 'adaptive-alerts.json');
        if (fs.existsSync(configPath)) {
@@ -604,7 +602,7 @@ class LaneWorker {
      return {};
    }
 
-   ensureQueues() {
+  ensureQueues() {
     const q = this.config.queues;
     if (!fs.existsSync(q.inbox)) {
       if (this.dryRun) {
@@ -654,7 +652,6 @@ class LaneWorker {
     if (!signatureResult.valid) {
       return { queue: 'blocked', reason: 'SIGNATURE_INVALID', detail: signatureResult.reason || 'Signature validation failed' };
     }
-
     // Law 5: Confidence Ratings Mandatory check
     // Exempt system message types (notification, heartbeat, status) from confidence requirement
     const exemptTypes = new Set(['notification', 'heartbeat', 'status']);
@@ -694,10 +691,31 @@ class LaneWorker {
         };
         try {
           const cpsPath = path.join(this.laneRoot || path.resolve(__dirname, '..'), 'context-buffer', 'cps_log.jsonl');
-           fs.appendFileSync(cpsPath, JSON.stringify(cpsEntry) + '\n');
+          fs.appendFileSync(cpsPath, JSON.stringify(cpsEntry) + '\n');
         } catch (_) {}
       }
     }
+// CONFIDENCE_DERIVATION_CONTRACT: Flag performative confidence (≥7 without derivation)
+if (msg.confidence !== undefined && msg.confidence >= 7) {
+    const derivation = msg.confidence_derivation;
+    if (!derivation || typeof derivation !== 'object' || !derivation.measured || !derivation.how_measured) {
+        if (!msg._governance_flags) msg._governance_flags = [];
+        msg._governance_flags.push('PERFORMATIVE_CONFIDENCE');
+        const cpsEntry = {
+            timestamp: new Date().toISOString(),
+            event: 'PERFORMATIVE_CONFIDENCE',
+            agent: msg.from || 'unknown',
+            task_id: msg.task_id || 'unknown',
+            confidence: msg.confidence,
+        };
+        const cpsPath = path.join(repoRoot, 'context-buffer', 'cps_log.jsonl');
+        try {
+            fs.appendFileSync(cpsPath, JSON.stringify(cpsEntry) + '\n');
+        } catch (e) {
+            process.stderr.write(`[lane-worker] CPS log failed: ${e.message}\n`);
+        }
+    }
+}
   if (!isEnglishOnly(msg)) {
       return { queue: 'quarantine', reason: 'FORMAT_VIOLATION_NON_ASCII', detail: 'Message contains non-ASCII content. Re-request in English per governance constraint.' };
     }
@@ -828,7 +846,7 @@ class LaneWorker {
     }
   }
   // Non-actionable messages claiming completion without verifiable artifact = blocked
-   if (gate.pass && !isActionable(msg) && !cp.isTerminalInformational(msg)) {
+  if (gate.pass && !isActionable(msg) && !cp.isTerminalInformational(msg)) {
     const proofClassification2 = this.artifactResolver.classifyProof(msg);
     const isLegacyPath2 = proofClassification2.type === 'LEGACY_ARTIFACT_PATH';
 
@@ -1184,64 +1202,73 @@ _routeRaw(filePath, queueKey, meta) {
         },
       };
       fs.appendFileSync(metricsFile, JSON.stringify(entry) + '\n', 'utf8');
-          // Alerting: check thresholds
-          const cpuUsageMs = cpu.user + cpu.system;
-          const cpuThresholdMs = 80000; // 80ms as example threshold (adjust as needed)
-          const memThresholdBytes = 100 * 1024 * 1024; // 100 MB
-          if (cpuUsageMs > cpuThresholdMs || mem.rss > memThresholdBytes) {
-            const alertLine = `${new Date().toISOString()},lane=${this.lane},pid=${process.pid},cpu=${cpuUsageMs}µs,mem=${mem.rss}bytes`;
-            const alertDir = path.join(this.repoRoot, 'lanes', this.lane, 'state');
-            if (!fs.existsSync(alertDir)) fs.mkdirSync(alertDir, { recursive: true });
-            const alertFile = path.join(alertDir, 'alerts.log');
-            fs.appendFileSync(alertFile, alertLine + '\n', 'utf8');
+// Alerting: check thresholds (delta-based CPU, not cumulative)
+      const cpuUsageMs = cpu.user + cpu.system;
+      const cpuDeltaMs = this._lastCpuMs ? (cpuUsageMs - this._lastCpuMs) : 0;
+      this._lastCpuMs = cpuUsageMs;
+      const cpuDeltaThresholdMs = 80000; // 80ms delta per tick
+      const memThresholdBytes = 100 * 1024 * 1024; // 100 MB
+      const alertCooldownMs = 3600000; // 1 hour between same-type alerts
+      const lastAlertTime = this._lastResourceAlertTime || 0;
+      const alertNow = Date.now();
+      const alertCooldownOk = (alertNow - lastAlertTime) >= alertCooldownMs;
+      if ((cpuDeltaMs > cpuDeltaThresholdMs || mem.rss > memThresholdBytes) && alertCooldownOk) {
+        const alertLine = `${new Date().toISOString()},lane=${this.lane},pid=${process.pid},cpu_delta=${cpuDeltaMs}us,cpu_total=${cpuUsageMs}us,mem=${mem.rss}bytes`;
+        const alertDir = path.join(this.repoRoot, 'lanes', this.lane, 'state');
+        if (!fs.existsSync(alertDir)) fs.mkdirSync(alertDir, { recursive: true });
+        const alertFile = path.join(alertDir, 'alerts.log');
+        fs.appendFileSync(alertFile, alertLine + '\n', 'utf8');
+      }
+      // Send notification to Archivist lane as P0 alert (only if cooldown elapsed)
+      if (alertCooldownOk) {
+      try {
+        const alertMsg = {
+          schema_version: '1.3',
+          task_id: `alert-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+          idempotency_key: `alert-${this.lane}-${Date.now()}`,
+          from: this.lane,
+          to: 'archivist',
+          type: 'notification',
+          task_kind: 'alert',
+          priority: 'P0',
+          subject: `Resource Alert: ${this.lane}`,
+          body: `Resource usage exceeded thresholds: cpu_delta=${cpuDeltaMs}us (threshold ${cpuDeltaThresholdMs}us), cpu_total=${cpuUsageMs}us, mem=${mem.rss}bytes (threshold ${memThresholdBytes}bytes).`,
+          timestamp: nowIso(),
+          requires_action: true,
+          payload: { mode: 'inline', compression: 'none' },
+          execution: { mode: 'manual', engine: 'kilo', actor: 'lane' },
+          lease: { owner: null, acquired_at: null },
+          retry: { attempt: 1, max_attempts: 3 },
+          evidence: { required: false, verified: false },
+          heartbeat: { status: 'pending', last_heartbeat_at: nowIso(), interval_seconds: 300, timeout_seconds: 900 },
+          watcher: { enabled: false, poll_seconds: 60, p0_fast_path: true, max_concurrent: 1, heartbeat_required: true, stale_after_seconds: 300, backoff: { initial_seconds: 60, max_seconds: 300, multiplier: 2 } },
+          delivery_verification: { verified: false, verified_at: null, retries: 0 }
+        };
+        const signFn = getCreateSignedMessage();
+        let finalMsg = alertMsg;
+        if (signFn) {
+          try {
+            finalMsg = signFn(alertMsg, 'archivist');
+          } catch (e) {
+            process.stderr.write(`[lane-worker] Alert signing failed: ${e.message}\n`);
           }
-            // Send notification to Archivist lane as P0 alert
-            try {
-              const alertMsg = {
-                schema_version: '1.3',
-                task_id: `alert-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
-                idempotency_key: `alert-${this.lane}-${Date.now()}`,
-                from: this.lane,
-                to: 'archivist',
-                type: 'notification',
-                task_kind: 'alert',
-                priority: 'P0',
-                subject: `Resource Alert: ${this.lane}`,
-                body: `Resource usage exceeded thresholds: cpu=${cpuUsageMs}µs (threshold ${cpuThresholdMs}µs), mem=${mem.rss}bytes (threshold ${memThresholdBytes}bytes).`,
-                timestamp: nowIso(),
-                requires_action: true,
-                payload: { mode: 'inline', compression: 'none' },
-                execution: { mode: 'manual', engine: 'kilo', actor: 'lane' },
-                lease: { owner: null, acquired_at: null },
-                retry: { attempt: 1, max_attempts: 3 },
-                evidence: { required: false, verified: false },
-                heartbeat: { status: 'pending', last_heartbeat_at: nowIso(), interval_seconds: 300, timeout_seconds: 900 },
-                watcher: { enabled: false, poll_seconds: 60, p0_fast_path: true, max_concurrent: 1, heartbeat_required: true, stale_after_seconds: 300, backoff: { initial_seconds: 60, max_seconds: 300, multiplier: 2 } },
-                delivery_verification: { verified: false, verified_at: null, retries: 0 }
-              };
-              const signFn = getCreateSignedMessage();
-              let finalMsg = alertMsg;
-              if (signFn) {
-                try {
-                  finalMsg = signFn(alertMsg, 'archivist');
-                } catch (e) {
-                  process.stderr.write(`[lane-worker] Alert signing failed: ${e.message}\n`);
-                }
-              }
-              const archivistRoot = LANE_ROOTS['archivist'];
-              if (archivistRoot) {
-                const archivistInbox = path.join(archivistRoot, 'lanes', 'archivist', 'inbox');
-                if (!fs.existsSync(archivistInbox)) {
-                  fs.mkdirSync(archivistInbox, { recursive: true });
-                }
-                const alertPath = path.join(archivistInbox, `alert-${finalMsg.task_id}.json`);
-                fs.writeFileSync(alertPath, JSON.stringify(finalMsg, null, 2), 'utf8');
-              } else {
-                process.stderr.write(`[lane-worker] Could not determine archivist root for alert notification\n`);
-              }
-            } catch (notifyErr) {
-              process.stderr.write(`[lane-worker] Failed to send resource alert notification: ${notifyErr.message}\n`);
-            }
+        }
+        const archivistRoot = LANE_ROOTS['archivist'];
+        if (archivistRoot) {
+          const archivistInbox = path.join(archivistRoot, 'lanes', 'archivist', 'inbox');
+          if (!fs.existsSync(archivistInbox)) {
+            fs.mkdirSync(archivistInbox, { recursive: true });
+          }
+          const alertPath = path.join(archivistInbox, `alert-${finalMsg.task_id}.json`);
+          fs.writeFileSync(alertPath, JSON.stringify(finalMsg, null, 2), 'utf8');
+          this._lastResourceAlertTime = alertNow;
+        } else {
+          process.stderr.write(`[lane-worker] Could not determine archivist root for alert notification\n`);
+        }
+      } catch (notifyErr) {
+        process.stderr.write(`[lane-worker] Failed to send resource alert notification: ${notifyErr.message}\n`);
+      }
+      }
     } catch (err) {
       process.stderr.write(`[lane-worker] Resource metrics logging failed: ${err.message}\n`);
     }

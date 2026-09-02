@@ -279,18 +279,18 @@ test('non-ASCII format violation routes to quarantine', (tmpRoot) => {
 test('requires_action=true without proof routes to action-required', (tmpRoot) => {
   const { worker, config } = makeWorker(tmpRoot, 'archivist', { dryRun: false });
   const msg = {
-  id: 'action-no-proof',
-  from: 'library',
-  to: 'archivist',
-  type: 'task',
-  priority: 'P1',
-  timestamp: new Date().toISOString(),
+    id: 'action-no-proof',
+    from: 'library',
+    to: 'archivist',
+    type: 'task',
+    priority: 'P1',
+    timestamp: new Date().toISOString(),
   requires_action: true,
   subject: 'Actionable task',
   body: 'No completion proof provided',
   confidence: 8,
-  };
-  writeMsg(config.queues.inbox, '2026-01-01_actionnoproof.json', msg);
+};
+writeMsg(config.queues.inbox, '2026-01-01_actionnoproof.json', msg);
 
   const summary = worker.processOnce();
   assert.strictEqual(summary.routed.action_required, 1);
@@ -303,19 +303,19 @@ test('requires_action=true without proof routes to action-required', (tmpRoot) =
 test('fake terminal_decision without artifact routes to blocked', (tmpRoot) => {
   const { worker, config } = makeWorker(tmpRoot, 'archivist', { dryRun: false });
   const msg = {
-  id: 'fake-proof',
-  from: 'library',
-  to: 'archivist',
-  type: 'task',
-  priority: 'P0',
-  timestamp: new Date().toISOString(),
-  requires_action: true,
-  subject: 'Fake completion',
-  body: 'Has terminal_decision but no artifact',
+    id: 'fake-proof',
+    from: 'library',
+    to: 'archivist',
+    type: 'task',
+    priority: 'P0',
+    timestamp: new Date().toISOString(),
+    requires_action: true,
+    subject: 'Fake completion',
+    body: 'Has terminal_decision but no artifact',
   terminal_decision: 'completed',
   disposition: 'resolved',
   confidence: 8,
-  };
+};
   writeMsg(config.queues.inbox, '2026-01-01_fakeproof.json', msg);
 
   const summary = worker.processOnce();
@@ -333,19 +333,19 @@ test('fake terminal_decision without artifact routes to blocked', (tmpRoot) => {
 test('evidence.required=true without artifact_path routes to blocked', (tmpRoot) => {
   const { worker, config } = makeWorker(tmpRoot, 'archivist', { dryRun: false });
   const msg = {
-  id: 'evidence-no-artifact',
-  from: 'library',
-  to: 'archivist',
-  type: 'task',
-  priority: 'P1',
-  timestamp: new Date().toISOString(),
-  requires_action: true,
-  subject: 'Missing artifact path',
-  body: 'evidence.required but no evidence_exchange.artifact_path',
+    id: 'evidence-no-artifact',
+    from: 'library',
+    to: 'archivist',
+    type: 'task',
+    priority: 'P1',
+    timestamp: new Date().toISOString(),
+    requires_action: true,
+    subject: 'Missing artifact path',
+    body: 'evidence.required but no evidence_exchange.artifact_path',
   evidence: { required: true },
   terminal_decision: 'done',
   confidence: 8,
-  };
+};
   writeMsg(config.queues.inbox, '2026-01-01_evidencenoartifact.json', msg);
 
   const summary = worker.processOnce();
@@ -359,17 +359,17 @@ test('evidence.required=true without artifact_path routes to blocked', (tmpRoot)
 test('valid terminal informational routes to processed', (tmpRoot) => {
   const { worker, config } = makeWorker(tmpRoot, 'archivist', { dryRun: false });
   const msg = {
-  id: 'terminal-ack',
-  from: 'library',
-  to: 'archivist',
-  type: 'ack',
-  priority: 'P3',
-  timestamp: new Date().toISOString(),
-  requires_action: false,
+    id: 'terminal-ack',
+    from: 'library',
+    to: 'archivist',
+    type: 'ack',
+    priority: 'P3',
+    timestamp: new Date().toISOString(),
+    requires_action: false,
   subject: 'Acknowledgment',
-  body: 'Terminal informational message',
-  confidence: 9,
-  };
+  body: 'OUTPUT_PROVENANCE:\nagent: library\nlane: library\ntarget: archivist\n\nTerminal informational message',
+  confidence: 8,
+};
   writeMsg(config.queues.inbox, '2026-01-01_terminalack.json', msg);
 
   const summary = worker.processOnce();
@@ -434,17 +434,17 @@ test('signed message missing known default fields -> remediated + processed', (t
     signatureValidator: () => ({ valid: true, reason: null, details: null }),
   });
   const msg = {
-  id: 'signed-remediate-known',
-  from: 'library',
-  to: 'archivist',
-  type: 'ack',
-  priority: 'P2',
+    id: 'signed-remediate-known',
+    from: 'library',
+    to: 'archivist',
+    type: 'ack',
+    priority: 'P2',
   requires_action: false,
   subject: 'Remediation path',
-  body: 'Missing known defaults only',
+  body: 'OUTPUT_PROVENANCE:\nagent: library\nlane: library\ntarget: archivist\n\nMissing known defaults only',
   confidence: 8,
-  };
-  writeMsg(config.queues.inbox, '2026-01-01_signed_remediate_known.json', msg);
+};
+writeMsg(config.queues.inbox, '2026-01-01_signed_remediate_known.json', msg);
 
   const summary = worker.processOnce();
   assert.strictEqual(summary.routed.processed, 1, 'Remediated signed message should process');
@@ -534,16 +534,16 @@ test('remediated message includes schema_remediation audit metadata', (tmpRoot) 
     signatureValidator: () => ({ valid: true, reason: null, details: null }),
   });
   const msg = {
-  id: 'signed-remediation-audit',
-  from: 'library',
-  to: 'archivist',
-  type: 'ack',
-  priority: 'P2',
-  requires_action: false,
+    id: 'signed-remediation-audit',
+    from: 'library',
+    to: 'archivist',
+    type: 'ack',
+    priority: 'P2',
+    requires_action: false,
   subject: 'Audit metadata',
-  body: 'Expect schema_remediation in metadata',
+  body: 'OUTPUT_PROVENANCE:\nagent: library\nlane: library\ntarget: archivist\n\nExpect schema_remediation in metadata',
   confidence: 8,
-  };
+};
   writeMsg(config.queues.inbox, '2026-01-01_signed_remediation_audit.json', msg);
 
   worker.processOnce();
@@ -572,15 +572,14 @@ test('remediation retries only once', (tmpRoot) => {
     signatureValidator: () => ({ valid: true, reason: null, details: null }),
   });
   const msg = {
-  id: 'signed-one-retry-only',
-  from: 'library',
-  to: 'archivist',
-  type: 'ack',
-  priority: 'P2',
-  requires_action: false,
-  subject: 'Retry once',
-  body: 'Should remediate once then stop',
-  confidence: 8,
+    id: 'signed-one-retry-only',
+    from: 'library',
+    to: 'archivist',
+    type: 'ack',
+    priority: 'P2',
+    requires_action: false,
+    subject: 'Retry once',
+    body: 'Should remediate once then stop',
   };
   writeMsg(config.queues.inbox, '2026-01-01_signed_retry_once.json', msg);
 

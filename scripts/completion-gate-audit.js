@@ -3,8 +3,6 @@
 
 const fs = require("fs");
 const path = require("path");
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
-
 
 const TERMINAL_TYPES = new Set(["ack", "acknowledgment", "heartbeat", "notification", "response"]);
 
@@ -84,10 +82,10 @@ function evaluate(msg) {
 }
 
 var LANES = {
-  archivist: { processed: sToLocal("S:/Archivist-Agent/lanes/archivist/inbox/processed") },
-  kernel: { processed: sToLocal("S:/kernel-lane/lanes/kernel/inbox/processed") },
-  library: { processed: sToLocal("S:/self-organizing-library/lanes/library/inbox/processed") },
-  swarmmind: { processed: sToLocal("S:/SwarmMind/lanes/swarmmind/inbox/processed") },
+  archivist: { processed: "S:/Archivist-Agent/lanes/archivist/inbox/processed" },
+  kernel: { processed: "S:/kernel-lane/lanes/kernel/inbox/processed" },
+  library: { processed: "S:/self-organizing-library/lanes/library/inbox/processed" },
+  swarmmind: { processed: "S:/SwarmMind/lanes/swarmmind/inbox/processed" },
 };
 
 function safeReadJson(filePath) {

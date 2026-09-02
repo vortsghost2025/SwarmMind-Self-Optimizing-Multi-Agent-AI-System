@@ -1,11 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const ts = Date.now();
-const { buildCanonicalMessage, createSignedMessage } = require('./create-signed-message');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
 
-
-const arDir = sToLocal('S:/kernel-lane/lanes/kernel/inbox/action-required');
+const arDir = 'S:/kernel-lane/lanes/kernel/inbox/action-required';
 fs.mkdirSync(arDir, { recursive: true });
 
 const tasks = [
@@ -102,15 +99,8 @@ const tasks = [
 ];
 
 for (const t of tasks) {
-  const canonical = buildCanonicalMessage({
-    profile: 'control_actionable_pre_execution',
-    ...t,
-    evidence: { ...(t.evidence || {}), required: false },
-    evidence_exchange: {},
-  });
-  const signed = createSignedMessage(canonical, 'archivist');
-  const fname = `${signed.task_id}.json`;
-  fs.writeFileSync(path.join(arDir, fname), JSON.stringify(signed, null, 2), 'utf8');
+  const fname = `${t.task_id}.json`;
+  fs.writeFileSync(path.join(arDir, fname), JSON.stringify(t, null, 2), 'utf8');
   console.log(`Dispatched: ${fname} | P${t.priority} | ${t.subject.slice(0, 55)}`);
 }
 

@@ -10,8 +10,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { getRoots, sToLocal, LANES: _DL } = require('./util/lane-discovery');
-
 
 const REGISTRY_PATH = path.join(__dirname, '..', 'lanes', 'broadcast', 'governance-verification-registry.json');
 const BROADCAST_PATH = path.join(__dirname, '..', 'lanes', 'broadcast');
@@ -64,10 +62,10 @@ function checkAcknowledgment(messageId, lane) {
 
 function getLaneInbox(lane) {
   const paths = {
-    'archivist': sToLocal('S:/Archivist-Agent/lanes/archivist/inbox'),
-    'library': sToLocal('S:/self-organizing-library/lanes/library/inbox'),
-    'swarmmind': sToLocal('S:/SwarmMind/lanes/swarmmind/inbox'),
-    'kernel': sToLocal('S:/kernel-lane/lanes/kernel/inbox')
+    'archivist': 'S:/Archivist-Agent/lanes/archivist/inbox',
+    'library': 'S:/self-organizing-library/lanes/library/inbox',
+    'swarmmind': 'S:/SwarmMind/lanes/swarmmind/inbox',
+    'kernel': 'S:/kernel-lane/lanes/kernel/inbox'
   };
   return paths[lane];
 }

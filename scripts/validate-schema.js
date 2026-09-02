@@ -17,11 +17,17 @@ function log(message, level = 'info') {
   console.log(`${LOG[level] || ''} ${message}`);
 }
 
-const SCHEMAS_DIR = path.join('S:', 'Archivist-Agent', 'schemas');
+const REPO_ROOT = path.resolve(__dirname, '..');
+const LANE_ROOTS = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, 'config', 'lane-roots.json'), 'utf8'));
+const isWin32 = process.platform === 'win32';
+const BASE = isWin32 ? LANE_ROOTS.base_paths.windows : LANE_ROOTS.base_paths.unix;
+function lanePath(laneId) { return path.join(BASE, LANE_ROOTS.lanes[laneId]); }
+
+const SCHEMAS_DIR = path.join(REPO_ROOT, 'schemas');
 const LANES = {
-  'archivist-agent': 'S:\\Archivist-Agent',
-  'swarmmind': 'S:\\SwarmMind',
-  'library': 'S:\\self-organizing-library'
+  'archivist-agent': lanePath('archivist'),
+  'swarmmind': lanePath('swarmmind'),
+  'library': lanePath('library')
 };
 
 /**
@@ -245,8 +251,8 @@ function validateAll() {
   log(`Valid: ${results.summary.valid}`, 'success');
   log(`Invalid: ${results.summary.invalid}`, results.summary.invalid > 0 ? 'error' : 'info');
   
-  // Write results
-  const resultsPath = path.join(LANES['archivist-agent'], 'SCHEMA_VALIDATION_RESULTS.json');
+  // Write results to repo root (works on CI runners where lane root may not exist)
+  const resultsPath = path.join(REPO_ROOT, 'SCHEMA_VALIDATION_RESULTS.json');
   fs.writeFileSync(resultsPath, JSON.stringify(results, null, 2));
   log(`\nResults written to: ${resultsPath}`, 'success');
   
