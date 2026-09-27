@@ -1,0 +1,19 @@
+{
+  "role": "verification",
+  "apply": false,
+  "results": [
+    {
+      "role": "verification",
+      "ok": true,
+      "status": 0,
+      "summary": {
+        "lane": "swarmmind",
+        "processed": 2,
+        "blocked": 1,
+        "quarantine": 0,
+        "truth_posture": "attention-required",
+        "timestamp": "2026-04-27T17:26:35.792Z"
+      }
+    }
+  ]
+}

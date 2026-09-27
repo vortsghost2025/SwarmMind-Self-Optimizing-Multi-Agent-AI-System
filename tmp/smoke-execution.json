@@ -1,0 +1,14 @@
+{
+  "role": "execution",
+  "apply": true,
+  "results": [
+    {
+      "role": "execution",
+      "tool": "task-executor.js",
+      "ok": true,
+      "status": 0,
+      "stdout": "[task-executor] dry_run=false scanned=1 executed=1 errors=0\n  EXECUTED: smoke-valid-actionable-1 \"smoke valid actionable\" -> S:\\SwarmMind\\worktrees\\swarm-role-split\\lanes\\swarmmind\\inbox\\response-smoke-valid-actionable-1.json",
+      "stderr": ""
+    }
+  ]
+}

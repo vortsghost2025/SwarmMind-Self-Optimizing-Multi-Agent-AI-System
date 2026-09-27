@@ -1,0 +1,42 @@
+{
+  "evidence_exchange": {},
+  "type": "task",
+  "subject": "smoke valid actionable",
+  "task_id": "smoke-valid-actionable-1",
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "evidence": {
+    "verified": false,
+    "required": false
+  },
+  "requires_action": true,
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-27T17:26:28.0430289Z"
+  },
+  "retry": {
+    "max_attempts": 1,
+    "attempt": 1
+  },
+  "from": "archivist",
+  "priority": "P2",
+  "execution": {
+    "mode": "manual",
+    "engine": "opencode",
+    "actor": "lane"
+  },
+  "task_kind": "proposal",
+  "timestamp": "2026-04-27T17:26:28.0430289Z",
+  "schema_version": "1.3",
+  "to": "swarmmind",
+  "body": "list dir scripts",
+  "heartbeat": {
+    "interval_seconds": 300,
+    "timeout_seconds": 900,
+    "last_heartbeat_at": "2026-04-27T17:26:28.0430289Z",
+    "status": "pending"
+  },
+  "idempotency_key": "smoke-valid-actionable-1"
+}

@@ -1,0 +1,43 @@
+{
+  "evidence_exchange": {},
+  "terminal_decision": "DONE",
+  "type": "task",
+  "subject": "smoke invalid pre-exec",
+  "task_id": "smoke-invalid-preexec-1",
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "evidence": {
+    "verified": false,
+    "required": true
+  },
+  "requires_action": true,
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-27T17:26:28.0430289Z"
+  },
+  "retry": {
+    "max_attempts": 1,
+    "attempt": 1
+  },
+  "from": "archivist",
+  "priority": "P1",
+  "execution": {
+    "mode": "manual",
+    "engine": "opencode",
+    "actor": "lane"
+  },
+  "task_kind": "proposal",
+  "timestamp": "2026-04-27T17:26:28.0430289Z",
+  "schema_version": "1.3",
+  "to": "swarmmind",
+  "body": "execute with fake proof",
+  "heartbeat": {
+    "interval_seconds": 300,
+    "timeout_seconds": 900,
+    "last_heartbeat_at": "2026-04-27T17:26:28.0430289Z",
+    "status": "pending"
+  },
+  "idempotency_key": "smoke-invalid-preexec-1"
+}

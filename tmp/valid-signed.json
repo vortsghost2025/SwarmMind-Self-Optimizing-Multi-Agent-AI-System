@@ -1,0 +1,46 @@
+{
+  "evidence_exchange": {},
+  "type": "task",
+  "subject": "smoke valid actionable",
+  "task_id": "smoke-valid-actionable-1",
+  "payload": {
+    "mode": "inline",
+    "compression": "none"
+  },
+  "evidence": {
+    "verified": false,
+    "required": false
+  },
+  "requires_action": true,
+  "lease": {
+    "owner": "swarmmind",
+    "acquired_at": "2026-04-27T17:26:28.0430289Z"
+  },
+  "retry": {
+    "max_attempts": 1,
+    "attempt": 1
+  },
+  "from": "archivist",
+  "priority": "P2",
+  "execution": {
+    "mode": "manual",
+    "engine": "opencode",
+    "actor": "lane"
+  },
+  "task_kind": "proposal",
+  "timestamp": "2026-04-27T17:26:28.0430289Z",
+  "schema_version": "1.3",
+  "to": "swarmmind",
+  "body": "list dir scripts",
+  "heartbeat": {
+    "interval_seconds": 300,
+    "timeout_seconds": 900,
+    "last_heartbeat_at": "2026-04-27T17:26:28.0430289Z",
+    "status": "pending"
+  },
+  "idempotency_key": "smoke-valid-actionable-1",
+  "content_hash": "sha256:068145c15fbf4c0220dd86b5a0917d6be0baf93b0a76dafb8e60f79edf75a1e8",
+  "signature": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImVlNzBiNzgxMDViYzYxODkifQ.eyJjb250ZW50X2hhc2giOiJzaGEyNTY6MDY4MTQ1YzE1ZmJmNGMwMjIwZGQ4NmI1YTA5MTdkNmJlMGJhZjkzYjBhNzZkYWZiOGU2MGY3OWVkZjc1YTFlOCIsImV4cCI6MTc3NzM5NzE4OCwiZnJvbSI6ImFyY2hpdmlzdCIsImlhdCI6MTc3NzMxMDc4OCwiaWQiOm51bGwsImxhbmUiOiJhcmNoaXZpc3QiLCJwcmlvcml0eSI6IlAyIiwidGFza19pZCI6InNtb2tlLXZhbGlkLWFjdGlvbmFibGUtMSIsInRvIjoic3dhcm1taW5kIn0.hQgVwb90__TpxiHVzlBtCARMb35LOR9_PlxghP_SWl1jmD8Znt-cDOjw-_gMw84gsnUvcAUsucO-rk2hgS1R0DvMXguKJxJUnJQCmgrkE8qOJZOIQs1gEqPvxZ_3Uh8vXA42XSrZxntp978H51o_lh-VPwPno7JmNzjx01jBbGPdZl625doH_yjpEOND_KvL6f7i0-xC6YJXOALjGIE8vV5GgfpFcc_Lxr82YgLZjLlXh6bpukpDFm8lTrk7HPKPrXePfQbiWKmNnPBgEZREz-LH32FIK3V6WPsM93u8pKN0B3zt7kioJFI4uj4s4cmieHve-ICp1i-tfE1rWjfPMw",
+  "signature_alg": "RS256",
+  "key_id": "ee70b78105bc6189"
+}
