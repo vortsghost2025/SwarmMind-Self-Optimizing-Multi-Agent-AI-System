@@ -17,8 +17,9 @@
       "category": "incoming_messages",
       "impact": "medium",
       "requested_at": "2026-05-21T13:00:03.641Z",
-      "status": "pending",
-      "lane": "swarmmind"
+      "status": "resolved",
+      "lane": "swarmmind",
+      "resolved_at": "2026-06-20T13:00:02.573Z"
     },
     {
       "request_id": "267d39f1-2796-4f8a-a58a-9aafaad6171b",
@@ -28,8 +29,17 @@
       "requested_at": "2026-05-21T13:00:03.641Z",
       "status": "pending",
       "lane": "swarmmind"
+    },
+    {
+      "request_id": "a28297a2-02b5-4792-a84c-c61064551036",
+      "description": "20 blocked, 20 quarantined files need attention",
+      "category": "incoming_messages",
+      "impact": "high",
+      "requested_at": "2026-06-20T13:00:02.573Z",
+      "status": "pending",
+      "lane": "swarmmind"
     }
   ],
-  "last_report_date": "2026-06-09T13:00:02.987Z",
-  "report_cycle": 34
+  "last_report_date": "2026-09-26T13:00:03.523Z",
+  "report_cycle": 141
 }

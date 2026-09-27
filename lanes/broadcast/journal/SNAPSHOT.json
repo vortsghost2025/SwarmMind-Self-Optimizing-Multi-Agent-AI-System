@@ -1,69 +1,70 @@
 {
   "schema": "store-journal-snapshot-v2",
-  "generated_at": "2026-05-08T01:02:50.808Z",
-  "host": "we",
-  "date": "2026-05-08",
+  "generated_at": "2026-05-19T07:19:42.978Z",
+  "host": "WE",
+  "date": "2026-05-19",
   "lanes": {
-    "library": {
-      "total_entries": 0,
-      "in_progress": [],
-      "active_ownerships": [],
-      "files_changed_today": [],
-      "last_activity": null
-    },
     "archivist": {
       "total_entries": 0,
       "in_progress": [],
       "active_ownerships": [],
       "files_changed_today": [],
-      "last_activity": null
+      "last_activity": null,
+      "uncertainty_summary": null,
+      "review_summary": null
     },
-    "swarmmind": {
-      "total_entries": 5,
-      "in_progress": [
-        {
-          "agent": "smoke-test-ubuntu",
-          "session_id": "smoke-test-004",
-          "target": "journal smoke test",
-          "started_at": "2026-05-08T00:12:37.262Z"
-        },
-        {
-          "agent": "autonomous-executor-v1.0.0",
-          "session_id": "auto-3008750",
-          "target": "autonomous-executor-swarmmind",
-          "started_at": "2026-05-08T00:18:21.526Z"
-        }
-      ],
-      "active_ownerships": [
-        {
-          "path": "lanes/swarmmind/inbox/action-required",
-          "owner": "autonomous-executor-v1.0.0",
-          "reason": "autonomous task execution"
-        }
-      ],
-      "files_changed_today": [
-        "scripts/autonomous-executor.js",
-        "scripts/blocked-remediator.js"
-      ],
-      "last_activity": {
-        "timestamp": "2026-05-08T01:02:50.784Z",
-        "event": "work_completed",
-        "agent": "git-post-commit"
-      }
+    "authority": {
+      "total_entries": 0,
+      "in_progress": [],
+      "active_ownerships": [],
+      "files_changed_today": [],
+      "last_activity": null,
+      "uncertainty_summary": null,
+      "review_summary": null
     },
     "kernel": {
       "total_entries": 0,
       "in_progress": [],
       "active_ownerships": [],
       "files_changed_today": [],
-      "last_activity": null
+      "last_activity": null,
+      "uncertainty_summary": null,
+      "review_summary": null
     },
-    "opencode": {
+    "swarmmind": {
+      "total_entries": 62,
+      "in_progress": [],
+      "active_ownerships": [],
+      "files_changed_today": [],
+      "last_activity": {
+        "timestamp": "2026-05-19T06:44:26.482Z",
+        "event": "work_quarantined",
+        "agent": "lane-worker"
+      },
+      "uncertainty_summary": null,
+      "review_summary": null
+    },
+    "library": {
+      "total_entries": 20,
+      "in_progress": [],
+      "active_ownerships": [],
+      "files_changed_today": [],
+      "last_activity": {
+        "timestamp": "2026-05-19T07:19:42.968Z",
+        "event": "work_quarantined",
+        "agent": "lane-worker"
+      },
+      "uncertainty_summary": null,
+      "review_summary": null
+    },
+    "kucoin": {
       "total_entries": 0,
       "in_progress": [],
       "active_ownerships": [],
       "files_changed_today": [],
-      "last_activity": null
+      "last_activity": null,
+      "uncertainty_summary": null,
+      "review_summary": null
     }
   }
 }
