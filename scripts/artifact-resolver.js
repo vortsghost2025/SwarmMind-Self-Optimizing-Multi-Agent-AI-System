@@ -70,19 +70,23 @@ class ArtifactResolver {
       return { exists: false, reason: 'PATH_TRAVERSAL_REJECTED' };
     }
 
-    if (!this.isWithinAllowedRoots(artifactPath)) {
+    const checkPath = path.isAbsolute(artifactPath)
+      ? artifactPath
+      : path.resolve(process.cwd(), artifactPath);
+
+    if (!this.isWithinAllowedRoots(checkPath)) {
       return { exists: false, reason: 'OUTSIDE_ALLOWED_ROOTS' };
     }
 
     if (this.dryRun) {
-      return { exists: true, reason: 'DRY_RUN_SKIP_FS_CHECK', path: artifactPath };
+      return { exists: true, reason: 'DRY_RUN_SKIP_FS_CHECK', path: checkPath };
     }
 
     try {
-      const stat = fs.statSync(artifactPath);
-      return { exists: true, reason: 'FILE_EXISTS', path: artifactPath, isFile: stat.isFile() };
+      const stat = fs.statSync(checkPath);
+      return { exists: true, reason: 'FILE_EXISTS', path: checkPath, isFile: stat.isFile() };
     } catch (_) {
-      return { exists: false, reason: 'FILE_NOT_FOUND', path: artifactPath };
+      return { exists: false, reason: 'FILE_NOT_FOUND', path: checkPath };
     }
   }
 
